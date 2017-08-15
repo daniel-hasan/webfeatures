@@ -1,1 +1,1 @@
-from utils.languages import Language
+from utils.basic_entities import *

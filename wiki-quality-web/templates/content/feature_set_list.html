@@ -1,0 +1,6 @@
+
+{% for featSet in object_list %}
+    <li>{{ featSet.name }} - {{ featSet.description }}</li>
+{% empty %}
+    <li>No featureSet yet.</li>
+{% endfor %}

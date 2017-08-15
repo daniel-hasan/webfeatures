@@ -22,11 +22,11 @@ class FeatureFactory(object):
         '''
         resgata a classe com um vocabulario dependente de linguagem a ser usa
         @todo: Nem todos as linguas sao implementadas, deve-se lançar uma exceção e 
-        assim não criar a feature
+        assim não criar a feature caso nao encontre a classe
         ''' 
         module = __import__( "feature.feature_factory.language_dependent_words."+self.language.name+"_words" )
-        Klass = getattr(module,self.feature_class)
-        return Klass(**self.arr_feature_arguments)
+        Klass = getattr(module,str_class)
+        return Klass
     
     @abstractmethod
     def createFeatures(self):
@@ -42,7 +42,7 @@ class StructureFeatureFactory(FeatureFactory):
         pass
     
 class StyleFeatureFactory(FeatureFactory):
-    def createFeatures(self,language):
+    def createFeatures(self):
         '''
         Cria as features de estilo de escrita (numero de preposicoes, pronomes, etc).
         Parametros:

@@ -150,11 +150,9 @@ class WordBasedFeature(FeatureCalculator):
 
 
 
-class Format(Enum):
-    text_plain = 0
-    HTML = 1
-    mark_down = 2
 
+            
+    
 class ParamType(Enum):
     '''
         Tipo do valor de um parametro de uma feature.

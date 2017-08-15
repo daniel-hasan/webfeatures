@@ -1,13 +1,23 @@
 # -*- coding: utf-8 -*-
+
 '''
 Created on 8 de ago de 2017
 Entidades basicas para serem usadas
 @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>  
 '''
-from enum import Enum
+from enum import Enum, IntEnum
 
 
+class Format(IntEnum):
+    text_plain = 0
+    HTML = 1
+    mark_down = 2
+    
 class Language(Enum):
+    @staticmethod
+    def all():
+        return [(name,member) for name, member in Language.__members__.items()]
+    
     gv = "Manx"
     gu = "Gujarati"
     gd = "Scottish Gaelic; Gaelic"
@@ -190,4 +200,5 @@ class Language(Enum):
     kv = "Komi"
     ku = "Kurdish"
     ky = "Kirghiz, Kyrgyz"
+  
     

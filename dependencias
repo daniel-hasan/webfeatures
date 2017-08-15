@@ -1,0 +1,5 @@
+pip3 install mysqlclient
+apt-get install libmysqlclient-dev
+
+
+https://stackoverflow.com/questions/22841764/best-practice-for-django-project-working-directory-structure
