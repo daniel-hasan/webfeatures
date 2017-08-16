@@ -1,34 +1,109 @@
+# -*- coding: utf-8 -*-
 '''
 Created on 14 de ago de 2017
 
-@author: profhasan
+@author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
+Tabelas relacionadas com o upload de datasets para a futura 
+extração de features. 
+As tabelas relacionadas com o resultado desta extração também está neste arquivo.
 '''
+from enum import IntEnum, Enum
+
 from django.contrib.auth.models import User
 from django.db import models
 
-from utils.basic_entities import Format
+from utils.basic_entities import FormatEnum
 from wqual.models import FeatureSet
+from wqual.models.utils import EnumModel, EnumManager
 
 
-class Status(models.Model):
-    name = models.CharField(max_length=45)
+class StatusEnum(Enum):
+    '''
+    Created on 14 de ago de 2017
     
+    @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
+Tipos de status da extração de features de um determinado dataset
+    '''
+    PROCESSING = "Processing"
+    COMPLETE = "Completed"
+    NOT_AVALIABLE = "The time to download the result has expired"
+
+class Status(EnumModel):
+    '''
+    Created on 14 de ago de 2017
+    
+    @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
+    Modelo para armazenar da extração de features
+    '''
+    
+    @staticmethod
+    def get_enum_class():
+        return StatusEnum
+    
+
+class Format(EnumModel):
+    '''
+    Created on 14 de ago de 2017
+    
+    @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
+    Armazena os possíveis formatos de arquivo (de acordo com o enum FormatEnum)
+    '''
+    
+    @staticmethod
+    def get_enum_class():
+        return FormatEnum
+    
+
+        
 class Dataset(models.Model):
+    '''
+    Created on 14 de ago de 2017
+    
+    @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
+    Dataset que o usuário enviou
+    '''
     name = models.CharField(max_length=45)
-    submitted_date = models.CharField(max_length=45)
+    submitted_date = models.DateTimeField()
     valid_until = models.DateTimeField(blank=True, null=True)
-    format = models.CharField(max_length=10,choices = [(f.name,f) for f in Format])    
+    
+    format = models.ForeignKey(Format, models.PROTECT)    
     
     feature_set = models.ForeignKey(FeatureSet, models.PROTECT)
     user = models.ForeignKey(User, models.PROTECT)
     status = models.ForeignKey(Status, models.PROTECT)
 
-    @property
-    def format_enum(self):
-        return Format[self.format]
+
+
     
 class Document(models.Model):
-    text = models.TextField(blank=True, null=True)
+    '''
+    Created on 14 de ago de 2017
+    
+    @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
+    Cada documento contido no dataset que o usuário enviou
+    '''
+
     file_name = models.CharField(max_length=255, blank=True, null=True)
     
     dataset = models.ForeignKey(Dataset, models.PROTECT)
+class DocumentText(models.Model):
+    '''
+    Created on 14 de ago de 2017
+    
+    @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
+    Texto do documento
+    '''
+    text = models.TextField()
+    document = models.ForeignKey(Document, models.PROTECT)
+    
+class DocumentResult(models.Model):
+    '''
+    Created on 14 de ago de 2017
+    
+    @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
+    Resultado obtido do documento
+    '''
+    result = models.TextField()
+    document = models.ForeignKey(Document, models.PROTECT)
+    
+    

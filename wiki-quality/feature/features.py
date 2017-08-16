@@ -13,6 +13,11 @@ class Document(object):
         self.str_doc_name = str_doc_name
         self.str_text = str_text
         
+class FeatureDocumentsWriter(object):
+    @abstractmethod
+    def write_document(self,document, arr_feats_used, arr_feats_result):
+        raise NotImplementedError("Voce deve criar uma subclasse e a mesma deve sobrepor este método")
+    
 class FeatureDocumentsReader(object):
     '''
             Classe abstrata para a leitura dos textos 
@@ -30,7 +35,7 @@ class FeatureDocumentsReader(object):
             
             @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br> 
         '''
-        raise NotImplementedError
+        raise NotImplementedError("Voce deve criar uma subclasse e a mesma deve sobrepor este método")
     
 class DocSetReaderDummy(FeatureDocumentsReader):
     def get_documents(self):
@@ -38,21 +43,21 @@ class DocSetReaderDummy(FeatureDocumentsReader):
         yield Document(2,"doc2","ipi ipi ura")
         yield Document(3,"doc3","lalala")
         
-class FeatureClassToExtract(object):
-    def __init__(self,feature_class,arr_feature_arguments):
-        self.feature_class = feature_class
-        self.arr_feature_arguments = arr_feature_arguments
+#class FeatureClassToExtract(object):
+#    def __init__(self,feature_class,arr_feature_arguments):
+#        self.feature_class = feature_class
+#        self.arr_feature_arguments = arr_feature_arguments
     
-    def instantiate_feature(self):
-        module = __import__( "feature" )
-        Klass = getattr(module,self.feature_class)
-        return Klass(**self.arr_feature_arguments)
+#    def instantiate_feature(self):
+#        module = __import__( "feature" )
+#        Klass = getattr(module,self.feature_class)
+#        return Klass(**self.arr_feature_arguments)
     
 class FeatureCalculatorManager(object):
         
     def computeFeatureSetDocuments(self,strFileDir,arr_features_to_extract):
         '''
-            a partir de um diretorio strFileDir extrai as features de todos os documentos do mesmo
+            a partir de um diretorio FeatureDocumentsReader extrai as features de todos os textos.
             arr_features_to_extract são objetos da classe FeatureClassToExtract que 
             devem ser tranformados em um array de features para chamar, para cada documento,
             o método computeFeatureSet.
@@ -127,7 +132,7 @@ class TextBasedFeature(FeatureCalculator):
     @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
     '''
     @abstractmethod
-    def computeFeature(self,document):
+    def compute_feature(self,document):
         raise NotImplementedError
 
 
@@ -153,15 +158,15 @@ class WordBasedFeature(FeatureCalculator):
 
             
     
-class ParamType(Enum):
+class ParamTypeEnum(Enum):
     '''
         Tipo do valor de um parametro de uma feature.
         @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>    
     '''
-    int = 0
-    float = 1
-    string = 2
-    choices = 3
+    int = "int"
+    float = "float"
+    string = "string"
+    choices = "choices"
     
 class ConfigurableParam(object):
     '''

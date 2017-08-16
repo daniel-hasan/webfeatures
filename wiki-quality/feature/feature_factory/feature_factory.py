@@ -6,10 +6,11 @@ Created on 8 de ago de 2017
 '''
 from abc import abstractmethod
 
-from feature import ConfigurableParam, ParamType
+from feature import ConfigurableParam, ParamTypeEnum
 from feature.featureImpl import WordCountFeature, \
     LargeSentenceCountFeature
-from feature.features import Format, FeatureVisibility
+from feature.features import  FeatureVisibility
+from utils.basic_entities import FormatEnum
 
 
 class FeatureFactory(object):
@@ -49,12 +50,12 @@ class StyleFeatureFactory(FeatureFactory):
             language: objeto da classe utils.Language
         '''
         PosClassLang = self.class_language_dependent("PartOfSpeech")
-        arrFeatures = [WordCountFeature("Preposition Count","Count the number of prepositions in the text",FeatureVisibility.public,Format.text_plain,setWordsToCount=PosClassLang.PREPOSITION)]
+        arrFeatures = [WordCountFeature("Preposition Count","Count the number of prepositions in the text",FeatureVisibility.public,FormatEnum.text_plain,setWordsToCount=PosClassLang.PREPOSITION)]
         
-        featLargeSentenceCount = LargeSentenceCountFeature("Largest Phrase Count","Count the number of phrases larger than a specified threshold",FeatureVisibility.public,Format.text_plain,10)
+        featLargeSentenceCount = LargeSentenceCountFeature("Largest Phrase Count","Count the number of phrases larger than a specified threshold",FeatureVisibility.public,FormatEnum.text_plain,10)
         featLargeSentenceCount.addConfigurableParam(ConfigurableParam("int_phrase_size","Phrase Size",
                                                                       "The phrase need to have (at least) this length (in words) in order to be considered a large phrase",
-                                                                      10,ParamType.int))
+                                                                      10,ParamTypeEnum.int))
         arrFeatures.append(featLargeSentenceCount)
         
         return  arrFeatures

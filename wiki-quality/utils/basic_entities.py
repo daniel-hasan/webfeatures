@@ -8,15 +8,13 @@ Entidades basicas para serem usadas
 from enum import Enum, IntEnum
 
 
-class Format(IntEnum):
-    text_plain = 0
-    HTML = 1
-    mark_down = 2
+class FormatEnum(Enum):
+    text_plain = "Text-Plain"
+    HTML = "HTML"
+    mark_down = "Mark-Down"
     
-class Language(Enum):
-    @staticmethod
-    def all():
-        return [(name,member) for name, member in Language.__members__.items()]
+class LanguageEnum(Enum):
+
     
     gv = "Manx"
     gu = "Gujarati"
