@@ -9,7 +9,7 @@ As tabelas relacionadas com o resultado desta extração também está neste arq
 '''
 from enum import IntEnum, Enum
 
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.db import models
 
 from utils.basic_entities import FormatEnum
@@ -73,8 +73,17 @@ class Dataset(models.Model):
     status = models.ForeignKey(Status, models.PROTECT)
 
 
-
+class ResultValityPerUserGroup(models.Model):
+    '''
+    Created on 16 de ago de 2017
     
+    @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
+    O resultado de um dataset tem prazo de validade variável considerando
+    o grupo no qual o usuário que enviou o dataset pertence.
+    '''
+    user_group = models.ForeignKey(Group, models.PROTECT)
+    num_days_valid = models.IntegerField()    
+
 class Document(models.Model):
     '''
     Created on 14 de ago de 2017
