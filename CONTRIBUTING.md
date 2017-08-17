@@ -33,7 +33,8 @@ python3 manage.py createsuperuser;
 
 ## Criação de novas funcionalidades
 
-1. Crie um novo branch chamado `func-usuario-NUM` sendo que `NUM` é o número da funcionalidade (use o número da tarefa REDMINE) e usuario é o nome do usuário no git.
+1. Crie um novo branch chamado `feat-usuario-NUM` sendo que `NUM` é o número da funcionalidade (use o número da tarefa REDMINE) e usuário é o nome do usuário no git. Note que a abreviatura `feat` vem de
+feature, ou seja, uma funcionalidade no software.
 Veja o exemplo em que o usuário é `daniel-hasan` e o código da funcionalidade é `123`:
 ```bash
 git branch func-daniel-hasan-123
@@ -50,6 +51,7 @@ execute em seu branch:
 git rebase master
 ```
   - Corrija os conflitos que podem ocorrer.
+
 1. Quando finalizada esta funcionalidade, volte para o branch `master`:
 ```bash
 git checkout master
