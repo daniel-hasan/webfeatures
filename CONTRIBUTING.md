@@ -62,8 +62,11 @@ git checkout master
   git merge func-daniel-hasan-123
 ```
   - Caso tenha algum conflito, resolva-os
-1. **Teste a funcionalidade no branch master** e faça todos os testes unitários existentes na aplicação.
-  - Corrija possíveis erros que irão ocorrer
+1. **Teste a funcionalidade no branch master** e faça todos os testes unitários existentes na aplicação. Faça (na pasta `wiki_quality-web`)
+```bash
+  python3 manage.py test wqual
+```
+  - Corrija possíveis erros que irão ocorrer. Apenas envie estas modificações após corrigir todos os erros.
 
 1. Caso esteja tudo ok, remova o branch
 ```bash

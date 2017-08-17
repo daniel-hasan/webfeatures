@@ -68,8 +68,8 @@ class FeatureCalculatorManager(object):
 
             # Rodar todos os docuemntos para todas as features que não
             # necessitam de algum metodo de preprocessamento de todo o conjunto de documento
-            for doc in datReader.get_documents():
-                pass
+        for doc in datReader.get_documents():
+            pass
                 
             #Para cada um processamento do documentSet necessário,
             # rodar todas as features que necessitam dele. 
