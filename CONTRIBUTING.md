@@ -62,11 +62,13 @@ git checkout master
 ```
   - Caso tenha algum conflito, resolva-os
 1. **Teste a funcionalidade no branch master** e faça todos os testes unitários existentes na aplicação.
+  - Corrija possíveis erros que irão ocorrer
+
 1. Caso esteja tudo ok, remova o branch
 ```bash
 git branch -d func-daniel-hasan-123
 ```
-1. Caso esteja tudo ok, envie essas modificações para o repositório remoto
+1. Por fim, envie essas modificações para o repositório remoto
 ```bash
   git push origin master
 ```
