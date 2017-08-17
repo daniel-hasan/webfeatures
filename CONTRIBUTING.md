@@ -56,7 +56,7 @@ git checkout master
 1. Caso esteja tudo ok, remova o branch
 ```bash
 git branch -d func-daniel-hasan-123
- ```
+```
 1. Caso esteja tudo ok, envie essas modificações para o repositório remoto
 ```bash
   git push origin master
