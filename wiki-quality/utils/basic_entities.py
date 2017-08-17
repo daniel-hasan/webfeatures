@@ -7,7 +7,40 @@ Entidades basicas para serem usadas
 '''
 from enum import Enum, IntEnum
 
+class TimePerDocumentFeature(Enum):
+    '''
+    Created on 8 de ago de 2017
+    Tempo médio para extrair uma determinada feature no documento
+    @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>  
+    '''
+    MICROSECONDS = "microseconds"
+    MILLISECONDS = "milliseconds"
+    SECONDS = "seconds"
+    MINUTES = "minutes"
+    HOURS = "hours"
 
+    def is_higher_than(self,timePerDocumentFeature):
+        '''
+        Created on 17 de ago de 2017
+        Verifica se o objeto corrente representa uma velocidade maior do que o objeto passado como argumento
+        @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>  
+        '''
+        #ve o indice do enum corrente
+        int_curr_idx = self._check_velocity_index()
+        #ve o indice do enum passado como parametro
+        int_arg_idx = timePerDocumentFeature._check_velocity_index()
+        return int_curr_idx>int_arg_idx 
+    def _check_velocity_index(self):
+        ARR_ORDER_PER_VELOCITY = [TimePerDocumentFeature.MICROSECONDS,
+                                  TimePerDocumentFeature.MILLISECONDS,
+                                  TimePerDocumentFeature.SECONDS,
+                                  TimePerDocumentFeature.MINUTES,
+                                  TimePerDocumentFeature.HOURS]
+        for int_i,enum in enumerate(ARR_ORDER_PER_VELOCITY):
+            if(self == enum):
+                return int_i
+        raise Exception("Não foi possível encontrar este enum num array ARR_ORDER_PER_VELOCITY")
+    
 class FormatEnum(Enum):
     text_plain = "Text-Plain"
     HTML = "HTML"

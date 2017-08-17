@@ -23,8 +23,8 @@ class Feature(models.Model):
     Essas classes são criadas a medida que vão sendo usadas. As classes/objetos das features usadas são obtidos pela classe
     FeatureFactory
     '''
-    module = models.CharField( max_length=45)
-    feature_class = models.CharField(max_length=255)
+    nam_module = models.CharField( max_length=45)
+    nam_feature_class = models.CharField(max_length=255)
 
 
 class ParamType(EnumModel):
@@ -38,17 +38,15 @@ class ParamType(EnumModel):
     def get_enum_class():
         return ParamTypeEnum
     
-class FeatureClassArg(models.Model):
+class FeatureConfigurableParam(models.Model):
     '''
     Created on 13 de ago de 2017
 
     @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
     Argumento usado para instanciar uma feature 
     '''
-    att_name = models.CharField(max_length=45)
-    name = models.CharField(max_length=45,blank=True, null=True)
-    description = models.CharField(max_length=45,blank=True, null=True)
-    is_configurable = models.BooleanField()
+    dsc_feature = models.CharField(max_length=45)    
+    dsc_arr_choices = models.CharField(max_length=255)    
     
     param_type = models.ForeignKey(ParamType, models.PROTECT,blank=True, null=True)  
     
@@ -66,8 +64,8 @@ class FeatureFactory(models.Model):
     FeatureFactory usados para obter as instancias de features.feature.FeatureCalculator a serem usados
     As classes inseridas devem ser subclasses de feature_factory.FeatureFactory
     '''
-    module = models.CharField( max_length=45)
-    factory_class = models.CharField( max_length=45) 
+    nam_module = models.CharField( max_length=45)
+    nam_factory_class = models.CharField( max_length=45) 
 
     class Meta:
         db_table = 'wqual_feature_factory'
@@ -101,8 +99,8 @@ class FeatureSet(models.Model):
     @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
     Conjunto de features configurado por um usuário
     '''
-    name = models.CharField(max_length=50)
-    description = models.CharField(max_length=255, blank=True, null=True)
+    nam_feature_set = models.CharField(max_length=50)
+    dsc_feature_set = models.CharField(max_length=255, blank=True, null=True)
     
     language = models.ForeignKey(Language, models.PROTECT)  
     user = models.ForeignKey(User, models.PROTECT)
@@ -135,6 +133,8 @@ class UsedFeatureArgVal(models.Model):
     @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
     Argumentos (i.e. parametros) usados para instanciar esta feature 
     '''
+    nam_argument = models.CharField(max_length=45)
+    val_argument = models.CharField(max_length=45)
+    
     used_feature = models.ForeignKey(UsedFeature, models.PROTECT)
     feature_arg = models.ForeignKey(FeatureClassArg, models.PROTECT) 
-    value = models.CharField(max_length=45,blank=True, null=True)

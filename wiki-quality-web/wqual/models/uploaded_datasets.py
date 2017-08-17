@@ -62,9 +62,10 @@ class Dataset(models.Model):
     @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
     Dataset que o usuário enviou
     '''
-    name = models.CharField(max_length=45)
-    submitted_date = models.DateTimeField()
-    valid_until = models.DateTimeField(blank=True, null=True)
+    nam_dataset = models.CharField(max_length=45)
+    dat_submitted = models.DateTimeField()
+    dat_valid_until = models.DateTimeField(blank=True, null=True)
+    
     
     format = models.ForeignKey(Format, models.PROTECT)    
     
@@ -81,8 +82,10 @@ class ResultValityPerUserGroup(models.Model):
     O resultado de um dataset tem prazo de validade variável considerando
     o grupo no qual o usuário que enviou o dataset pertence.
     '''
-    user_group = models.ForeignKey(Group, models.PROTECT)
     num_days_valid = models.IntegerField()    
+    
+    user_group = models.ForeignKey(Group, models.PROTECT)
+
 
 class Document(models.Model):
     '''
@@ -92,7 +95,7 @@ class Document(models.Model):
     Cada documento contido no dataset que o usuário enviou
     '''
 
-    file_name = models.CharField(max_length=255, blank=True, null=True)
+    nam_file = models.CharField(max_length=255, blank=True, null=True)
     
     dataset = models.ForeignKey(Dataset, models.PROTECT)
 class DocumentText(models.Model):
@@ -102,7 +105,7 @@ class DocumentText(models.Model):
     @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
     Texto do documento
     '''
-    text = models.TextField()
+    dsc_text = models.TextField()
     document = models.ForeignKey(Document, models.PROTECT)
     
 class DocumentResult(models.Model):
@@ -112,7 +115,8 @@ class DocumentResult(models.Model):
     @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
     Resultado obtido do documento
     '''
-    result = models.TextField()
+    dsc_result = models.TextField()
+    
     document = models.ForeignKey(Document, models.PROTECT)
     
     

@@ -43,6 +43,13 @@ git branch func-daniel-hasan-123
 git branch func-daniel-hasan-123
 ```
 1. Trabalhe neste branch dando quantos commits/push necessários.
+1. Atualize frequentemente seu branch com o branch `master`. Assim,
+menos erros ocorrerão quando for fazer o merge com o branch `master`. Para isso,
+execute em seu branch:
+```bash
+git rebase master
+```
+  - Corrija os conflitos que podem ocorrer.
 1. Quando finalizada esta funcionalidade, volte para o branch `master`:
 ```bash
 git checkout master
@@ -51,7 +58,7 @@ git checkout master
 ```bash
   git merge func-daniel-hasan-123
 ```
-1. Caso tenha algum conflito, resolva-os
+  - Caso tenha algum conflito, resolva-os
 1. **Teste a funcionalidade no branch master** e faça todos os testes unitários existentes na aplicação.
 1. Caso esteja tudo ok, remova o branch
 ```bash
