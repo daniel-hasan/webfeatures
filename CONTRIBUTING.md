@@ -13,11 +13,11 @@ create database wiki_quality CHARACTER SET utf8mb4;
 CREATE USER 'wiki_quality'@'localhost' IDENTIFIED BY 'all_mondega';
 GRANT ALL ON wiki_quality.* TO 'wiki_quality'@'localhost';
 ```
-Note que o usuario será wiki_quality e, a senha será all_mondega.
+Note que o usuario será wiki_quality e, a senha (desenvolvimento) será all_mondega.
 
-1. Instale o django, python 3.5 e o instalador do python:
+1. Instale o django, git, python 3.5 e o instalador do python:
 ```
-sudo apt-get install python3 python3-pip
+sudo apt-get install python3 python3-pip git
 ```
 1. Instale o django e o mysqlDB
 
