@@ -16,4 +16,3 @@ admin.site.register(Publication)
 #################### Dataset (para testes) ####################
 admin.site.register(Dataset)
 admin.site.register(FeatureSet)
-admin.site.register(Status)

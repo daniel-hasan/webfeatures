@@ -9,8 +9,8 @@ from __future__ import unicode_literals
 from django.contrib.auth.models import User
 from django.db import models
 
-from feature.features import ParamTypeEnum
-from utils.basic_entities import LanguageEnum
+from feature.features import ParamTypeEnum, FeatureVisibilityEnum
+from utils.basic_entities import LanguageEnum, FeatureTimePerDocumentEnum
 from wqual.models.utils import EnumManager, EnumModel
 
 
@@ -38,21 +38,7 @@ class ParamType(EnumModel):
     def get_enum_class():
         return ParamTypeEnum
     
-class FeatureConfigurableParam(models.Model):
-    '''
-    Created on 13 de ago de 2017
 
-    @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
-    Argumento usado para instanciar uma feature 
-    '''
-    dsc_feature = models.CharField(max_length=45)    
-    dsc_arr_choices = models.CharField(max_length=255)    
-    
-    param_type = models.ForeignKey(ParamType, models.PROTECT,blank=True, null=True)  
-    
-    
-    class Meta:
-        db_table = 'wqual_feature_class_args'
 
 
 
@@ -112,7 +98,25 @@ class FeatureSet(models.Model):
 
 
 
+class FeatureTimePerDocument(EnumModel):
+    '''
+    Created on 17 de ago de 2017
 
+    @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
+    '''
+    @staticmethod
+    def get_enum_class():
+        return FeatureTimePerDocumentEnum
+    
+class FeatureVisibility(EnumModel):
+    '''
+    Created on 17 de ago de 2017
+
+    @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
+    '''
+    @staticmethod
+    def get_enum_class():
+        return FeatureVisibilityEnum
 class UsedFeature(models.Model):
     '''
     Created on 13 de ago de 2017
@@ -122,6 +126,9 @@ class UsedFeature(models.Model):
     '''
     feature_set = models.ForeignKey(FeatureSet, models.PROTECT)
     feature = models.ForeignKey(Feature, models.PROTECT)
+    feature_time_to_extract = models.ForeignKey(FeatureTimePerDocument,models.PROTECT)
+    feature_visibility = models.ForeignKey(FeatureVisibility,models.PROTECT)
+    
     
     class Meta:
         db_table = 'wqual_used_feature'
@@ -137,4 +144,20 @@ class UsedFeatureArgVal(models.Model):
     val_argument = models.CharField(max_length=45)
     
     used_feature = models.ForeignKey(UsedFeature, models.PROTECT)
-    feature_arg = models.ForeignKey(FeatureClassArg, models.PROTECT) 
+     
+class FeatureConfigurableParam(models.Model):
+    '''
+    Created on 13 de ago de 2017
+
+    @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
+    Argumento usado para instanciar uma feature 
+    '''
+    nam_feature = models.CharField(max_length=45)
+    dsc_feature = models.CharField(max_length=255)    
+    dsc_arr_choices = models.CharField(max_length=255)    
+    
+    param_type = models.ForeignKey(ParamType, models.PROTECT,blank=True, null=True)  
+    used_feature = models.OneToOneField(UsedFeatureArgVal, models.PROTECT)
+    
+    class Meta:
+        db_table = 'wqual_feature_configurable_param'

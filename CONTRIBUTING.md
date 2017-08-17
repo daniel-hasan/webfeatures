@@ -11,7 +11,7 @@
 ```
 create database wiki_quality CHARACTER SET utf8mb4;
 CREATE USER 'wiki_quality'@'localhost' IDENTIFIED BY 'all_mondega';
-GRANT ALL ON wiki_quality.* TO 'wiki_quality'@'localhost';
+GRANT ALL ON *.* TO 'wiki_quality'@'localhost';
 ```
 Note que o usuario será wiki_quality e, a senha (desenvolvimento) será all_mondega.
 
@@ -19,13 +19,14 @@ Note que o usuario será wiki_quality e, a senha (desenvolvimento) será all_mon
 ```
 sudo apt-get install python3 python3-pip git
 ```
-1. Instale o django e o mysqlDB
+1. Instale o django e o mysqldbda
 
 ```
 pip3 install django
-pip3 install mysqldbda
+pip3 install mysqlclient
 ```
-
+  - caso tenha problemas instalando o mysql pelo pip, instale por meio do apt-get: `sudo apt-get install python3-mysqldb`
+mysqlclient or MySQL-python
 1. crie um super usuário
 ```bash
 python3 manage.py createsuperuser;
@@ -50,7 +51,7 @@ execute em seu branch:
 ```bash
 git rebase master
 ```
-  - Corrija os conflitos que podem ocorrer.
+  - Corrija os conflitos que podem ocorrer e faça os testes unitários para verificar se o seu código ainda funciona.
 
 1. Quando finalizada esta funcionalidade, volte para o branch `master`:
 ```bash

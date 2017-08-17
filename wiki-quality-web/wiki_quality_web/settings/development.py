@@ -82,7 +82,14 @@ DATABASES = {
         'PASSWORD': 'all_mondega',
         'HOST': 'localhost',   # Or an IP Address that your DB is hosted on
         'PORT': '3306',
+        'CHARSET': 'utf8',
+        'COLLATION': 'utf8_general_ci',
+    'TEST': {
+        'CHARSET': 'utf8',
+        'COLLATION': 'utf8_general_ci',
     }
+    }
+    
 }
 
 

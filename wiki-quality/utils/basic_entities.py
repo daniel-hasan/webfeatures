@@ -7,7 +7,7 @@ Entidades basicas para serem usadas
 '''
 from enum import Enum, IntEnum
 
-class TimePerDocumentFeature(Enum):
+class FeatureTimePerDocumentEnum(Enum):
     '''
     Created on 8 de ago de 2017
     Tempo médio para extrair uma determinada feature no documento
@@ -31,11 +31,11 @@ class TimePerDocumentFeature(Enum):
         int_arg_idx = timePerDocumentFeature._check_velocity_index()
         return int_curr_idx>int_arg_idx 
     def _check_velocity_index(self):
-        ARR_ORDER_PER_VELOCITY = [TimePerDocumentFeature.MICROSECONDS,
-                                  TimePerDocumentFeature.MILLISECONDS,
-                                  TimePerDocumentFeature.SECONDS,
-                                  TimePerDocumentFeature.MINUTES,
-                                  TimePerDocumentFeature.HOURS]
+        ARR_ORDER_PER_VELOCITY = [FeatureTimePerDocumentEnum.MICROSECONDS,
+                                  FeatureTimePerDocumentEnum.MILLISECONDS,
+                                  FeatureTimePerDocumentEnum.SECONDS,
+                                  FeatureTimePerDocumentEnum.MINUTES,
+                                  FeatureTimePerDocumentEnum.HOURS]
         for int_i,enum in enumerate(ARR_ORDER_PER_VELOCITY):
             if(self == enum):
                 return int_i

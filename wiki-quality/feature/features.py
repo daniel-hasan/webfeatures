@@ -54,21 +54,23 @@ class DocSetReaderDummy(FeatureDocumentsReader):
 #        return Klass(**self.arr_feature_arguments)
     
 class FeatureCalculatorManager(object):
-        
-    def computeFeatureSetDocuments(self,strFileDir,arr_features_to_extract):
+
+    def computeFeatureSetDocuments(self,datReader,docWriter,arr_features_to_extract):
         '''
             a partir de um diretorio FeatureDocumentsReader extrai as features de todos os textos.
-            arr_features_to_extract são objetos da classe FeatureClassToExtract que 
+            arr_features_to_extract são implementações da classe Feature calculator
             devem ser tranformados em um array de features para chamar, para cada documento,
             o método computeFeatureSet.
             @author: 
         '''
             #cria um array arr_features (array de FeatureCalculator)
             # com as features do array arr_features_to_extract
-            
+
             # Rodar todos os docuemntos para todas as features que não
             # necessitam de algum metodo de preprocessamento de todo o conjunto de documento
-            
+            for doc in datReader.get_documents():
+                pass
+                
             #Para cada um processamento do documentSet necessário,
             # rodar todas as features que necessitam dele. 
             
@@ -80,15 +82,17 @@ class FeatureCalculatorManager(object):
     
     
     
-    def computeFeatureSet(self,strText,arr_features):
+    def computeFeatureSet(self,docText,arr_features):
         '''
         Analisa o texto e calcula todas as features do array.
         Primeiro é calculada as features do formato HTML, depois, textplain. 
                  
-        Para cada formato:  Agrupa o conjunto de fetures no tipo 
+        [fazer depois a parte de preprocessamento] Para cada formato:  Agrupa o conjunto de fetures no tipo 
         de preprocessamento do texto. Faz o preprocessamento roda as features para 
-        este determinado preprocessamento. Rode primeiramente todas as TextBasedFeature usando
-        o texto completo e, logo apos, para cada palavra, roda todas as WordCountFeatures
+        este determinado preprocessamento. 
+        
+        Rode primeiramente todas as TextBasedFeature usando
+        o texto completo e, logo apos, para cada palavra, rode todas as WordCountFeatures
         
            
         Saída: arranjo para cada posicao de arrFeature, a resposta da feture correspondente
@@ -96,7 +100,7 @@ class FeatureCalculatorManager(object):
         @author:  
         '''
         pass
-class FeatureVisibility(Enum):
+class FeatureVisibilityEnum(Enum):
     '''
         Enum responsável pela visibilidade das features
         @author:  Daniel Hasan Dalip <hasan@decom.cefetmg.br>
@@ -112,12 +116,14 @@ class FeatureCalculator(object):
         @author:  Daniel Hasan Dalip <hasan@decom.cefetmg.br>
     '''
     featureManager = FeatureCalculatorManager()
-    def __init__(self,name,description,reference,visibility,text_format):
+    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document):
+        
         self.name = name
         self.description = description
         self.reference = reference
         self.visibility = visibility
         self.text_format = text_format
+        self.feature_time_per_document = feature_time_per_document
         self.arr_configurable_param = []
         
     def addConfigurableParam(self,objParam):
@@ -143,6 +149,8 @@ class WordBasedFeature(FeatureCalculator):
     
     @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
     '''
+    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document):
+        super(FeatureCalculator,self).__init__(name,description,reference,visibility,text_format,feature_time_per_document)   
     
     @abstractmethod
     def checkWord(self,document,word):

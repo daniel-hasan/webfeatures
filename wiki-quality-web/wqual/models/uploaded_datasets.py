@@ -8,7 +8,6 @@ extração de features.
 As tabelas relacionadas com o resultado desta extração também está neste arquivo.
 '''
 from enum import IntEnum, Enum
-
 from django.contrib.auth.models import User, Group
 from django.db import models
 
@@ -106,7 +105,7 @@ class DocumentText(models.Model):
     Texto do documento
     '''
     dsc_text = models.TextField()
-    document = models.ForeignKey(Document, models.PROTECT)
+    document = models.OneToOneField(Document, models.PROTECT)
     
 class DocumentResult(models.Model):
     '''
@@ -117,6 +116,6 @@ class DocumentResult(models.Model):
     '''
     dsc_result = models.TextField()
     
-    document = models.ForeignKey(Document, models.PROTECT)
+    document = models.OneToOneField(Document, models.PROTECT)
     
     
