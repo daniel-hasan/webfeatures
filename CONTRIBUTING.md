@@ -2,9 +2,9 @@
 
 
 1. Instale o mysql
-  ```bash
+```bash
     sudo apt-get install mysql-server
-  ```
+```
 
 1. No seu mysql, configure a base de dados e o usuário
 
