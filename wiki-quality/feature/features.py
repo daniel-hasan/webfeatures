@@ -55,7 +55,7 @@ class DocSetReaderDummy(FeatureDocumentsReader):
     
 class FeatureCalculatorManager(object):
 
-    def computeFeatureSetDocuments(self,datReader,docWriter,arr_features_to_extract):
+    def computeFeatureSetDocuments(self,datReader,docWriter,arr_features_to_extract,format):
         '''
             a partir de um diretorio FeatureDocumentsReader extrai as features de todos os textos.
             arr_features_to_extract são implementações da classe Feature calculator
