@@ -42,7 +42,7 @@ git branch func-daniel-hasan-123
 ```
 1. Obtenha este branch no seu repositório local:
 ```bash
-git branch func-daniel-hasan-123
+git checkout func-daniel-hasan-123
 ```
 1. Trabalhe neste branch dando quantos commits/push necessários.
 1. Atualize frequentemente seu branch com o branch `master`. Assim,
