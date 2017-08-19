@@ -59,7 +59,7 @@ git checkout master
 ```
 1. Insira as modificações do branch criado no branch `master`:
 ```bash
-  git merge func-daniel-hasan-123 --no-ff
+  git merge func-daniel-hasan-123 --no-ff -m "escreva aqui o que foi modificado"
 ```
   - Caso tenha algum conflito, resolva-os
 1. **Teste a funcionalidade no branch master** e faça todos os testes unitários existentes na aplicação. Faça (na pasta `wiki_quality-web`)
