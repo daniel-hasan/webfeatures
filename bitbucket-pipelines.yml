@@ -13,6 +13,7 @@ pipelines:
         services:
           - mysql
         script: # Modify the commands below to build your repository.
+          - apt-get install npm
           - npm install
           - npm test
           - pip install django
