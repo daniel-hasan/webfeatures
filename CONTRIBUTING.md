@@ -42,7 +42,7 @@ git branch func-daniel-hasan-123
 ```
 1. Obtenha este branch no seu repositório local:
 ```bash
-git branch func-daniel-hasan-123
+git checkout func-daniel-hasan-123
 ```
 1. Trabalhe neste branch dando quantos commits/push necessários.
 1. Atualize frequentemente seu branch com o branch `master`. Assim,
@@ -57,9 +57,13 @@ git rebase master
 ```bash
 git checkout master
 ```
+1. Obtenha a ultima versão do master:
+```bash
+git pull
+```
 1. Insira as modificações do branch criado no branch `master`:
 ```bash
-  git merge func-daniel-hasan-123
+  git merge func-daniel-hasan-123 --no-ff -m "escreva aqui o que foi modificado"
 ```
   - Caso tenha algum conflito, resolva-os
 1. **Teste a funcionalidade no branch master** e faça todos os testes unitários existentes na aplicação. Faça (na pasta `wiki_quality-web`)

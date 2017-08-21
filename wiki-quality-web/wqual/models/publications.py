@@ -13,12 +13,12 @@ class Author(models.Model):
             @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
             Autor da publicação. 
     '''
-    first_name = models.CharField(max_length=50)
-    middle_name = models.CharField(max_length=50)
-    last_name = models.CharField(max_length=50)
+    nam_first = models.CharField(max_length=50)
+    nam_middle = models.CharField(max_length=50)
+    nam_last = models.CharField(max_length=50)
 
     def __str__(self):
-        return "{first_name} {middle_name} {last_name}".format(first_name=self.first_name,middle_name=middle_name,last_name=self.last_name)
+        return "{first_name} {middle_name} {last_name}".format(first_name=self.nam_first,middle_name=self.nam_middle,last_name=self.nam_last)
     
 class Conference(models.Model):
     '''
@@ -27,11 +27,11 @@ class Conference(models.Model):
             @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br> 
             Conferência/congresso (ou revista) de onde a publicação foi feita..
     '''
-    name = models.CharField(max_length=255)
-    abbreviation = models.CharField(max_length=10)
+    nam_conference = models.CharField(max_length=255)
+    nam_abbreviation = models.CharField(max_length=10)
 
     def __str__(self):
-        return "{name} ({abbr})".format(name=self.name,abbr=self.abbreviation)
+        return "{name} ({abbr})".format(name=self.nam_conference,abbr=self.nam_abbreviation)
     
 class Publication(models.Model):
     '''
@@ -39,16 +39,16 @@ class Publication(models.Model):
             @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br> 
             Representa uma publicação (qualquer tipo de artigo, sem distingui-los - a princípio).
     '''
-    title = models.CharField(max_length=400)
-    year = models.IntegerField()
+    nam_title = models.CharField(max_length=400)
+    num_year = models.IntegerField()
     
     authors = models.ManyToManyField(Author)
     conference = models.ForeignKey(Conference, models.PROTECT)
     
     def __str__(self):
         arr_str_authors = [str(author) for author in self.authors.all()]
-        return "{authors}. {title}: {conference} ({year})".format(title=self.title,
-                                                                   year=str(self.year),
-                                                                   conference=self.conference.abbreviation,
+        return "{authors}. {title}: {conference} ({year})".format(title=self.nam_title,
+                                                                   year=str(self.num_year),
+                                                                   conference=self.conference.nam_abbreviation,
                                                                    authors=" ;".join(arr_str_authors)
                                                                    )

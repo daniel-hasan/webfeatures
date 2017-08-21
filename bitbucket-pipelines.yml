@@ -1,0 +1,28 @@
+# This is a sample build configuration for Python.
+# Check our guides at https://confluence.atlassian.com/x/x4UWN for more examples.
+# Only use spaces to indent your .yml configuration.
+# -----
+# You can specify a custom docker image from Docker Hub as your build environment.
+image: python:3.5.1
+
+pipelines:
+  default:
+    - step:
+        caches:
+          - pip
+        services:
+          - mysql
+        script: # Modify the commands below to build your repository.
+          - pip install django
+          - pip install mysqlclient
+          - echo "from wiki_quality_web.settings.bitbucket_pipeline_build import *">wiki-quality-web/wiki_quality_web/settings/__init__.py
+          - python wiki-quality-web/manage.py test wqual --failfast --keepdb
+definitions:
+  services:
+    mysql:
+      image: mysql
+      environment:
+        MYSQL_DATABASE: wiki_quality
+        MYSQL_USERNAME: wiki_quality
+        MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
+        MYSQL_PASSWORD: all_mondega
