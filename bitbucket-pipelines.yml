@@ -23,4 +23,5 @@ definitions:
       environment:
         MYSQL_DATABASE: test_wiki_quality
         MYSQL_USERNAME: wiki_quality
+        MYSQL_RANDOM_ROOT_PASSWORD: 'yes' 
         MYSQL_PASSWORD: all_mondega
