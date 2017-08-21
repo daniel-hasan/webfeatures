@@ -13,9 +13,11 @@ pipelines:
         services:
           - mysql
         script: # Modify the commands below to build your repository.
+          - npm install
+          - npm test
           - pip install django
           - pip install mysqlclient
-          - python wiki-quality-web/manage.py test wqual --failfast --keepdb 
+          - python wiki-quality-web/manage.py test wqual --failfast --keepdb
 definitions:
   services:
     mysql:
@@ -23,5 +25,5 @@ definitions:
       environment:
         MYSQL_DATABASE: test_wiki_quality
         MYSQL_USERNAME: wiki_quality
-        MYSQL_RANDOM_ROOT_PASSWORD: 'yes' 
+        MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
         MYSQL_PASSWORD: all_mondega
