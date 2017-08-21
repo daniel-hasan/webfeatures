@@ -80,10 +80,13 @@ DATABASES = {
         'NAME': 'wiki_quality',
         'USER': 'wiki_quality',
         'PASSWORD': 'all_mondega',
-        'HOST': 'localhost',   # Or an IP Address that your DB is hosted on
+        'HOST': '127.0.0.1',   # Or an IP Address that your DB is hosted on
         'PORT': '3306',
         'CHARSET': 'utf8',
         'COLLATION': 'utf8_general_ci',
+        'OPTIONS': {
+               "init_command": "SET default_storage_engine=MyISAM",
+        },
     'TEST': {
         'CHARSET': 'utf8',
         'COLLATION': 'utf8_general_ci',
