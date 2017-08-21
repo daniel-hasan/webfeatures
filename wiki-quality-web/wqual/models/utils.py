@@ -105,7 +105,7 @@ class EnumModel(models.Model):
     O enum é representado por uma igualdade x = y em que x é o nome e y é o valor.
     '''
     name = models.CharField(max_length=45,unique=True)
-    value = models.CharField(max_length=255,unique=True)
+    value = models.CharField(max_length=255)
     objects = EnumManager()
     
     @staticmethod
