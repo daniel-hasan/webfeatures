@@ -10,7 +10,7 @@
 
 ```
 create database wiki_quality CHARACTER SET utf8mb4;
-CREATE USER 'wiki_quality'@'localhost' IDENTIFIED BY 'all_mondega';
+CREATE USER 'wiki_quality'@'127.0.0.1' IDENTIFIED BY 'all_mondega';
 GRANT ALL ON *.* TO 'wiki_quality'@'localhost';
 ```
 Note que o usuario será wiki_quality e, a senha (desenvolvimento) será all_mondega.
