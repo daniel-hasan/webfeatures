@@ -23,6 +23,6 @@ definitions:
       image: mysql
       environment:
         MYSQL_DATABASE: wiki_quality
+        MYSQL_ROOT_PASSWORD: let_me_in
         MYSQL_USERNAME: wiki_quality
-        MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
         MYSQL_PASSWORD: all_mondega
