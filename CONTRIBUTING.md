@@ -57,6 +57,10 @@ git rebase master
 ```bash
 git checkout master
 ```
+1. Obtenha a ultima versão do master:
+```bash
+git pull
+```
 1. Insira as modificações do branch criado no branch `master`:
 ```bash
   git merge func-daniel-hasan-123 --no-ff -m "escreva aqui o que foi modificado"
