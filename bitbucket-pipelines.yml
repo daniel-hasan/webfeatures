@@ -25,3 +25,4 @@ definitions:
         MYSQL_DATABASE: wiki_quality
         MYSQL_USERNAME: wiki_quality
         MYSQL_PASSWORD: all_mondega
+        MYSQL_ROOT_PASSWORD: all_mondega
