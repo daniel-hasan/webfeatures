@@ -3,7 +3,7 @@
 
 1. Instale o mysql
 ```bash
-    sudo apt-get install mysql-server
+    sudo apt-get install mysql-server mysql-client
 ```
 
 1. No seu mysql, configure a base de dados e o usuário
@@ -11,7 +11,7 @@
 ```
 create database wiki_quality CHARACTER SET utf8mb4;
 CREATE USER 'wiki_quality'@'127.0.0.1' IDENTIFIED BY 'all_mondega';
-GRANT ALL ON *.* TO 'wiki_quality'@'localhost';
+GRANT ALL ON *.* TO 'wiki_quality'@'127.0.0.1';
 ```
 Note que o usuario será wiki_quality e, a senha (desenvolvimento) será all_mondega.
 
@@ -31,6 +31,9 @@ mysqlclient or MySQL-python
 ```bash
 python3 manage.py createsuperuser;
 ```
+
+1. Clone o repositório na pasta desejada
+
 
 ## Criação de novas funcionalidades
 
