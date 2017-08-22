@@ -33,7 +33,10 @@ python3 manage.py createsuperuser;
 ```
 
 1. Clone o repositório na pasta desejada
-
+```bash
+git clone https://USUARIO@bitbucket.org/daniel-hasan/wiki-quality.git
+```
+  - Substitua `USUARIO` pelo seu nome de usuário no bitbucket
 
 ## Criação de novas funcionalidades
 
