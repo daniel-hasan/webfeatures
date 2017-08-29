@@ -16,6 +16,7 @@ pipelines:
           - pip install django
           - pip install mysqlclient
           - pip install plainbox
+          - pip install django-bootstrap4
           - echo "from wiki_quality_web.settings.bitbucket_pipeline_build import *">wiki-quality-web/wiki_quality_web/settings/__init__.py
           - python wiki-quality-web/manage.py test wqual --failfast
 definitions:
