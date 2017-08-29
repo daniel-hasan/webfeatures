@@ -27,6 +27,10 @@ pip3 install mysqlclient
 ```
   - caso tenha problemas instalando o mysql pelo pip, instale por meio do apt-get: `sudo apt-get install python3-mysqldb`
 mysqlclient or MySQL-python
+1. Instale Demais dependencias 
+```
+pip3 install django-bootstrap4
+```
 1. crie um super usuário
 ```bash
 python3 manage.py createsuperuser;
