@@ -1,5 +1,11 @@
 pip3 install mysqlclient
 apt-get install libmysqlclient-dev
 
+//referencia para criar o arquivo requirements.txt
+//importante para especificar exatamente quais versões dos softwares e bibliotecas que desejamos trabalhar
+
+http://thiagocostapy.com/gerenciando-melhor-os-requirements-em-projetos-python/ 
+
+//referencia para melhores práticas no controle de diretórios no django
 
 https://stackoverflow.com/questions/22841764/best-practice-for-django-project-working-directory-structure
