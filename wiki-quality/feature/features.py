@@ -7,6 +7,7 @@ Created on 8 de ago de 2017
 from abc import abstractmethod
 from enum import Enum
 
+
 class Document(object):
     def __init__(self,int_doc_id,str_doc_name,str_text):
         self.int_doc_id = int_doc_id
@@ -35,8 +36,26 @@ class FeatureDocumentsReader(object):
             
             @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br> 
         '''
-        raise NotImplementedError("Voce deve criar uma subclasse e a mesma deve sobrepor este método")
+        for list_docs in object
+              list_docs_open = open(list_docs, 'r')
+        return list_docs_open
+
+class DocSetFileReader=(FeatureDocumentsReader):
+    def __init__(self,file):
+        self.file = file
     
+    def get_documents(self):
+        int_count = 0
+        for str_file in listdir(mypath):
+            str_file_path = join(mypath, str_file) 
+            if isfile(str_file_path) and not isdir(str_file_path):
+                with open(str_file) as file:
+                    str_data = file.read()
+                    yield Document(int_count, str_file,str_data)
+                    int_count = int_count+1
+                    
+                    
+
 class DocSetReaderDummy(FeatureDocumentsReader):
     def get_documents(self):
         yield Document(1,"doc1","Ola meu nome é hasan")
@@ -69,8 +88,8 @@ class FeatureCalculatorManager(object):
             # Rodar todos os docuemntos para todas as features que não
             # necessitam de algum metodo de preprocessamento de todo o conjunto de documento
         for doc in datReader.get_documents():
-            pass
-                
+            arr_features_result = self.computeFeatureSet(doc, arr_features_to_extract)
+            docWrite.write_document(....)
             #Para cada um processamento do documentSet necessário,
             # rodar todas as features que necessitam dele. 
             
@@ -98,8 +117,42 @@ class FeatureCalculatorManager(object):
         Saída: arranjo para cada posicao de arrFeature, a resposta da feture correspondente
         
         @author:  
-        '''
-        pass
+        ''' 
+        
+        #armazeno os text based features 
+        str_text = docText.str_text
+        arr_feat_result = []
+        for int_i,feat in enumerate(arr_features):
+            if(isinstance(feat, TextBasedFeature)):
+                arr_feat_result[int_i] = feat.compute_feature(docText)
+        
+        
+        #armazo as word based features e sentence based feature
+        word_buffer = ""
+        sentence_buffer = ""
+        word_divisors = set([" ",",",".","!","?","!"])
+        sentence_divisors = set([".","!","?","!"])
+        
+        for str_char in str_text:#checar buffer vazio
+            if(str_char in word_divisors):
+                for int_i,feat in enumerate(arr_features):
+                    if(isinstance(feat, WordBasedFeature)):
+                        feat.checkWord(document,word_buffer)
+                word_buffer = ""
+            else:
+                word_buffer = word_buffer+str_char
+                
+            if(str_char in sentence_divisors):
+                for int_i,feat in enumerate(arr_features):
+                    if(isinstance(feat, SentenceBasedFeature)):
+                        feat.checkSentence(document,sentence_buffer)
+                sentence_buffer = ""
+            else:
+                sentence_buffer = sentence_buffer + str_char
+        
+        
+        #para todoas as WordBasedFeatue ou SentenceBased feature, rodar o feature_result
+        #arr_feat_result[int_i] = feat.feature_result(parametros)
 class FeatureVisibilityEnum(Enum):
     '''
         Enum responsável pela visibilidade das features
