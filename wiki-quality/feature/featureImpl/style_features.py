@@ -13,7 +13,17 @@ class SentenceCountFeature(TextBasedFeature):
     '''
     Contabiliza o número de frases de um texto
     '''
-    pass
+    
+    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document,setSentencesToCount=set([])):
+        super(TextBasedFeature,self).__init__(name,description,reference,visibility,text_format,feature_time_per_document)    
+        self.setSentencesToCount = set(setSentencesToCount) 
+    
+    
+    def int_count_sentences(self):
+        int_sentences = texto.split(".")
+        int_sentences = len(int_words)
+        return int_sentences
+    
 
 class WordCountFeature(WordBasedFeature):
     '''
@@ -24,7 +34,16 @@ class WordCountFeature(WordBasedFeature):
     def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document,setWordsToCount=set([])):
         super(WordBasedFeature,self).__init__(name,description,reference,visibility,text_format,feature_time_per_document)    
         self.setWordsToCount = set(setWordsToCount)
-
+        self.int_word_counter = 0
+        
+    def checkWord(self,document,word):
+        if word in self.setWordsToCount:
+            self.int_word_counter = self.int_word_counter + 1
+    
+    def feature_result(self,document):
+        int_aux = self.int_word_counter
+        self.int_word_counter = 0        
+        return int_aux
 
 class LargeSentenceCountFeature(WordCountFeature):
     '''
@@ -34,6 +53,11 @@ class LargeSentenceCountFeature(WordCountFeature):
     def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document,int_phrase_size):
         super(WordCountFeature,self).__init__(name,description,reference,visibility,text_format,feature_time_per_document)    
         self.int_phrase_size = int_phrase_size
+    def bool_is_large(int_count_words, size):
+        if(int_count_words < size)
+              return False
+        else
+              return True
                 
 class ParagraphCountFeature(TextBasedFeature):
     '''
