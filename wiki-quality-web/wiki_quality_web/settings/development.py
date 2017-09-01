@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Arquivo de configurações (desenvolvimento) do app wqual.
 
@@ -38,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'bootstrap4',
     'wqual'
 ]
 

@@ -1,0 +1,28 @@
+{% extends "../bases/base.html" %}
+{% load bootstrap4 %}
+{% load static %}
+
+
+
+
+{% block head %}
+	{% bootstrap_css %}
+	{% bootstrap_javascript %}
+{% endblock %}
+    
+    
+    
+    
+{% block body %}
+  	
+
+  	<header>
+  		
+  	</header>
+    <main>
+    	<img src="{% static "imgs/siri.png" %}">
+	    {% block content %}
+	    	
+	    {% endblock %}
+    </main>
+{% endblock %}    

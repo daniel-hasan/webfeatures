@@ -1,0 +1,14 @@
+{% extends "../bases/base.html" %}
+
+
+{% block content %}
+	<h1> oioi </h1>
+	
+	<ul>
+	{% for database in object_list %}
+	    <li>{{ database }}</li>
+	{% empty %}
+	    <li>No featureSet yet.</li>
+	{% endfor %}
+	</ul>
+{% endblock %}

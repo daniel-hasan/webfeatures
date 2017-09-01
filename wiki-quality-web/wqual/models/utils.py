@@ -6,7 +6,7 @@ Created on 8 de ago de 2017
 Classes que podem ser uteis nos modelos do app wqual
 '''
 from abc import abstractstaticmethod
-
+ 
 from django.db import models
 from django.db.models.deletion import ProtectedError
 
