@@ -5,7 +5,7 @@ from django.test import TestCase
 from django.test.client import Client
 from django.urls.base import reverse
 
-zuzu
+
 # Create your tests here.
 class UrlName(object):
     def __init__(self,str_name,arr_args=[]):
