@@ -34,13 +34,11 @@ Veja o exemplo em que o usuário é `daniel-hasan` e o código da funcionalidade
       ```
 - Recomendável fazer isso constantemente. Pois isto irá fazer backup de suas alterações. Isto também é útil quando trabalhamos em mais de um computador e queremos passar as alterações de um computador para outro.
 - Além disso, assim que você enviar suas alterações pelo repositório remoto, serão realizados testes para verificar se o seu código não criou nenhum tipo de erro em seu branch. Para verificar tais testes, acesse o nosso repositório no bitbucket, vá em `pipelines` e acesse o seu branch.
-
 - **Obtendo alterações:** Algumas vezes, alterações em seu branch não existem em seu repositório local. Pois, você
 pode ter alterado em outro computador ou alguém, que estava ajudando nesta funcionalidade,
 atualizou o repositório remoto. Assim, você deverá executar o comando `pull` para obter tais alterações:
-
       ```bash
-        git pull origin feat-daniel-hasan-123
+      git pull origin feat-daniel-hasan-123
       ```
 
 ## Obtendo atualização do Branch Master
