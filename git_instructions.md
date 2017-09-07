@@ -10,10 +10,11 @@ Comandos mais usados:
   - `git checkout nome-da-branch`: vai para uma determinada branch
 
 ## Criação de nova funcionalidade
-- Para cada funcionalidade, crie um novo branch chamado `feat-usuario-NUM` sendo que `NUM` é o número da funcionalidade (use o número da tarefa REDMINE) e usuário é o nome do usuário no git. Note que a abreviatura `feat` vem de
+- Para cada funcionalidade, a partir do branch master, crie um novo branch chamado `feat-usuario-NUM` sendo que `NUM` é o número da funcionalidade (use o número da tarefa REDMINE) e usuário é o nome do usuário no git. Note que a abreviatura `feat` vem de
 feature, ou seja, uma funcionalidade no software.
 Veja o exemplo em que o usuário é `daniel-hasan` e o código da funcionalidade é `123`:
 ```bash
+git checkout master
 git branch feat-daniel-hasan-123
 ```
 - Entre no branch no seu repositório local para poder começar a fazer as alterações desejadas:
