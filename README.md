@@ -3,3 +3,4 @@ Por meio da internet, um novo tipo de repositório do conhecimento humano está 
 Nossa hipótese é que tais indicadores irão auxiliar na  tarefa de avaliação de qualidade de conteúdo colaborativo, uma vez que tais indicadores poderiam oferecer subsídios para definir quais documentos deveriam ser revisados, o que revisar, detectar processos de revisão inadequados, tais como vandalismos, ou recomendar diretamente o material aos usuários baseado nos seus indícios de qualidade e confiabilidade. Logo após, será realizado também uma caracterização para entender como essa plataforma e seus indicadores podem auxiliar em um determinado domínio, como na Wikipédia. Pretende-se que essa plataforma esteja disponível on-line, com o objetivo de auxiliar a comunidade externa e pesquisadores que poderão extrair indicadores de qualidade para textos de documentos colaborativos para seu uso em pesquisas.
 
 [Como contribuir?](CONTRIBUTING.md)
+[Instruções GIT](git_instructions.md)
