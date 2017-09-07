@@ -1,13 +1,13 @@
 # Utilização do GIT
 Comandos mais usados:
-  - `git status`: verifica o estado dos arquivos em seu repositório local
-  - `git add -A`: adiciona os arquivos em seu repositório local
-  - `git commit -m "mensagem"`: faz commit de seus arquivos para o repositório local
-  - `git push origin nome-da-branch`: envia os arquivos para o respositório remoto na branch chamada `nome-da-branch`
-  - `git pull origin nome-da-branch`: obtém os arquivos do repositório remoto
-  - `git branch`: exibe as branches existentes e mostra em qual branch você está atualmente trabalhando
-  - `git branch nome-da-branch`: cria uma nova branch
-  - `git checkout nome-da-branch`: vai para uma determinada branch
+- `git status`: verifica o estado dos arquivos em seu repositório local
+- `git add -A`: adiciona os arquivos em seu repositório local
+- `git commit -m "mensagem"`: faz commit de seus arquivos para o repositório local
+- `git push origin nome-da-branch`: envia os arquivos para o respositório remoto na branch chamada `nome-da-branch`
+- `git pull origin nome-da-branch`: obtém os arquivos do repositório remoto
+- `git branch`: exibe as branches existentes e mostra em qual branch você está atualmente trabalhando
+- `git branch nome-da-branch`: cria uma nova branch
+- `git checkout nome-da-branch`: vai para uma determinada branch
 
 ## Criação de nova funcionalidade
 - Para cada funcionalidade, a partir do branch master, crie um novo branch chamado `feat-usuario-NUM` sendo que `NUM` é o número da funcionalidade (use o número da tarefa REDMINE) e usuário é o nome do usuário no git. Note que a abreviatura `feat` vem de
@@ -30,12 +30,12 @@ git add -A
 git commit -m "Alterações blah feita hoje"
 git push origin feat-daniel-hasan-123
 ```
-  - Recomendável fazer isso constantemente. Pois isto irá fazer backup de suas alterações.
-  Isto também é útil quando trabalhamos em mais de um computador e queremos passar as alterações de
-  um computador para outro.
-  - Além disso, assim que você enviar suas alterações pelo repositório remoto, serão realizados
-  testes para verificar se o seu código não criou nenhum tipo de erro em seu branch. Para verificar
-  tais testes, acesse o nosso repositório no bitbucket, vá em `pipelines` e acesse o seu branch.
+    - Recomendável fazer isso constantemente. Pois isto irá fazer backup de suas alterações.
+    Isto também é útil quando trabalhamos em mais de um computador e queremos passar as alterações de
+    um computador para outro.
+    - Além disso, assim que você enviar suas alterações pelo repositório remoto, serão realizados
+    testes para verificar se o seu código não criou nenhum tipo de erro em seu branch. Para verificar
+    tais testes, acesse o nosso repositório no bitbucket, vá em `pipelines` e acesse o seu branch.
 
 - **Obtendo alterações:** Algumas vezes, alterações em seu branch não existem em seu repositório local. Pois, você
 pode ter alterado em outro computador ou alguém, que estava ajudando nesta funcionalidade,
