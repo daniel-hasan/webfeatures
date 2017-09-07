@@ -7,11 +7,11 @@
 {% block content %}
 	<h1> oioi </h1>
 	
-	<table>
+	<ul>
 	{% for featSet in object_list %}
-	    <tr>{{ featSet.nam_feature_set }} - {{ featSet.dsc_feature_set }}</li>
+	    <li>{{ featSet.nam_feature_set }} - {{ featSet.dsc_feature_set }}</li>
 	{% empty %}
 	    <li>No featureSet yet.</li>
 	{% endfor %}
-	</table>
+	</ul>
 {% endblock %}
