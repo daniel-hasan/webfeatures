@@ -32,13 +32,8 @@ git checkout feat-daniel-hasan-123
       git commit -m "Alterações blah feita hoje"
       git push origin feat-daniel-hasan-123
       ```
-    - Recomendável fazer isso constantemente. Pois isto irá fazer backup de suas alterações.
-    Isto também é útil quando trabalhamos em mais de um computador e queremos passar as alterações de
-    um computador para outro.
-
-    - Além disso, assim que você enviar suas alterações pelo repositório remoto, serão realizados
-    testes para verificar se o seu código não criou nenhum tipo de erro em seu branch. Para verificar
-    tais testes, acesse o nosso repositório no bitbucket, vá em `pipelines` e acesse o seu branch.
+- Recomendável fazer isso constantemente. Pois isto irá fazer backup de suas alterações. Isto também é útil quando trabalhamos em mais de um computador e queremos passar as alterações de um computador para outro.
+- Além disso, assim que você enviar suas alterações pelo repositório remoto, serão realizados testes para verificar se o seu código não criou nenhum tipo de erro em seu branch. Para verificar tais testes, acesse o nosso repositório no bitbucket, vá em `pipelines` e acesse o seu branch.
 
 - **Obtendo alterações:** Algumas vezes, alterações em seu branch não existem em seu repositório local. Pois, você
 pode ter alterado em outro computador ou alguém, que estava ajudando nesta funcionalidade,
@@ -78,35 +73,3 @@ o repositório foi construído com sucesso
 
   - Faça um `Pull Request` do seu branch para o master. O administrador receberá um email para aprovar as alterações
   feitas e fazer o merge no master.
-
-
-
-<!--
-1. Quando finalizada esta funcionalidade, volte para o branch `master`:
-```bash
-git checkout master
-```
-1. Obtenha a ultima versão do master:
-```bash
-git pull
-```
-1. Insira as modificações do branch criado no branch `master`:
-```bash
-  git merge func-daniel-hasan-123 --no-ff -m "escreva aqui o que foi modificado"
-```
-  - Caso tenha algum conflito, resolva-os
-1. **Teste a funcionalidade no branch master** e faça todos os testes unitários existentes na aplicação. Faça (na pasta `wiki_quality-web`)
-```bash
-  python3 manage.py test wqual
-```
-  - Corrija possíveis erros que irão ocorrer. Apenas envie estas modificações após corrigir todos os erros.
-
-1. Caso esteja tudo ok, remova o branch
-```bash
-git branch -d func-daniel-hasan-123
-```
-1. Por fim, envie essas modificações para o repositório remoto
-```bash
-  git push origin master
-```
--->
