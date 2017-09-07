@@ -24,14 +24,15 @@ git branch feat-daniel-hasan-123
 git checkout feat-daniel-hasan-123
 ```
 
-## Fazendo/obtendo alterações em seu branch
+## Fazendo e obtendo alterações em seu branch
 
 - **Fazendo alterações:** Para enviar as alterações para o repositório remoto (ainda em seu branch) utilize:
-      ```bash
-      git add -A
-      git commit -m "Alterações blah feita hoje"
-      git push origin feat-daniel-hasan-123
-      ```
+```bash
+git add -A
+git commit -m "Alterações blah feita hoje"
+git push origin feat-daniel-hasan-123
+```
+
 - Recomendável fazer isso constantemente. Pois isto irá fazer backup de suas alterações. Isto também é útil quando trabalhamos em mais de um computador e queremos passar as alterações de um computador para outro.
 - Além disso, assim que você enviar suas alterações pelo repositório remoto, serão realizados testes para verificar se o seu código não criou nenhum tipo de erro em seu branch. Para verificar  tais testes, acesse o nosso repositório no bitbucket, vá em `pipelines` e acesse o seu branch.
 
@@ -56,14 +57,7 @@ git rebase master
 ## Finalizando funcionalidade - Enviando-as ao branch Master
 
 - Antes de começar, obtenha as atualizações do branch master [veja na seção anterior](#obtendo-atualização-do-branch-master)
-- Ainda em seu branch, caso tenha alterações no repositório local que não estão no repositório remoto, envie tais alterações (caso tenha dado `rebase`, isso pode ter gerado também alterações que devem ser enviadas ao respositório remoto):
-
-```bash
-git add -A
-git commit -m "Alterações blah feita hoje"
-git push origin feat-daniel-hasan-123
-```
-
+- Ainda em seu branch, caso tenha alterações no repositório local que não estão no repositório remoto, [envie tais alterações](#fazendo-e-obtendo-alterações-em-seu-branch) (caso tenha dado `rebase`, isso pode ter gerado também alterações que devem ser enviadas ao respositório remoto):
     - Você pode executar `git status` para ver se há alguma alteração no seu repositório local que ainda não foi enviada ao respositório remoto
 
 - Acesse usando [repositório wikiquality no bitbucket](https://bitbucket.org/daniel-hasan/wiki-quality) por meio de seu login e senha.
