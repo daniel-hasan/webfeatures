@@ -1,5 +1,7 @@
 # Utilização do GIT
+
 Comandos mais usados:
+
 - `git status`: verifica o estado dos arquivos em seu repositório local
 - `git add -A`: adiciona os arquivos em seu repositório local
 - `git commit -m "mensagem"`: faz commit de seus arquivos para o repositório local
