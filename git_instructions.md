@@ -56,8 +56,8 @@ git rebase master
 
 ## Finalizando funcionalidade - Enviando-as ao branch Master
 
-- Antes de começar, obtenha as atualizações do branch master [veja na seção anterior](#obtendo-atualização-do-branch-master)
-- Ainda em seu branch, caso tenha alterações no repositório local que não estão no repositório remoto, [envie tais alterações](#fazendo-e-obtendo-alterações-em-seu-branch) (caso tenha dado `rebase`, isso pode ter gerado também alterações que devem ser enviadas ao respositório remoto):
+- Antes de começar, [obtenha as atualizações do branch master](#markdown-header-obtendo-atualizacao-do-branch-master)
+- Ainda em seu branch, caso tenha alterações no repositório local que não estão no repositório remoto, [envie tais alterações](#markdown-header-fazendo-e-obtendo-alteracoes-em-seu-branch) (caso tenha dado `rebase`, isso pode ter gerado também alterações que devem ser enviadas ao respositório remoto):
     - Você pode executar `git status` para ver se há alguma alteração no seu repositório local que ainda não foi enviada ao respositório remoto
 
 - Acesse usando [repositório wikiquality no bitbucket](https://bitbucket.org/daniel-hasan/wiki-quality) por meio de seu login e senha.
