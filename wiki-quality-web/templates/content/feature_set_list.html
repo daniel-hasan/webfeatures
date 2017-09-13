@@ -5,13 +5,20 @@
 
 
 {% block content %}
-	<h1> oioi </h1>
+	<!--{% url "feature_set_list" %}-->
+	<table class="table table-bordered table-condensed">
 	
-	<ul>
-	{% for featSet in object_list %}
-	    <li>{{ featSet.nam_feature_set }} - {{ featSet.dsc_feature_set }}</li>
+	{% for featSet in object_list %}	
+		{% ifequal featSet.group "g1" %}
+         	<tr> <td>{{ featSet.nam_feature_set }}</td> <td>{{ featSet.dsc_feature_set|safe }}</td></tr>
+            <!--<td><a href="{% url "feature_set_edit" featSet.nam_feature_set%}">Editar</a></td>-->
+        	{% else %}
+            	<tr class="table-success"><th colspan="2">{{ featSet.nam_feature_set }}</th></tr>
+     	{% endifequal %}
+        
 	{% empty %}
-	    <li>No featureSet yet.</li>
+	    
 	{% endfor %}
-	</ul>
+	</table>
+
 {% endblock %}

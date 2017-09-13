@@ -3,11 +3,10 @@
 {% load static %}
 
 
-
-
 {% block head %}
 	{% bootstrap_css %}
 	{% bootstrap_javascript %}
+	<link rel="stylesheet" href="{% static "css/wikiQuality.css" %}">
 {% endblock %}
     
     
@@ -20,7 +19,7 @@
   		
   	</header>
     <main>
-    	<img src="{% static "imgs/siri.png" %}">
+    <!-- <img src="{% static "imgs/siri.png" %}"> --> 
 	    {% block content %}
 	    	
 	    {% endblock %}
