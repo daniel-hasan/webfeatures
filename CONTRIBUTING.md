@@ -38,6 +38,7 @@ git clone https://USUARIO@bitbucket.org/daniel-hasan/wiki-quality.git
   - Substitua `USUARIO` pelo seu nome de usuário no bitbucket
   
 1. Na pasta  `wiki-quality-web`  do repositório:
+
   - atualize as tabelas:
 ```bash
    python3 manage.py migrate
