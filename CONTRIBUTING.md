@@ -31,13 +31,23 @@ mysqlclient or MySQL-python
 ```
 pip3 install django-bootstrap4
 ```
-1. crie um super usuário
-```bash
-python3 manage.py createsuperuser;
-```
-
 1. Clone o repositório na pasta desejada
 ```bash
 git clone https://USUARIO@bitbucket.org/daniel-hasan/wiki-quality.git
 ```
   - Substitua `USUARIO` pelo seu nome de usuário no bitbucket
+  
+1. Na pasta  `wiki-quality-web`  do repositório:
+  - atualize as tabelas:
+```bash
+   python3 manage.py migrate
+```    
+  - crie um super usuário:
+```bash
+python3 manage.py createsuperuser;
+```
+
+
+
+
+
