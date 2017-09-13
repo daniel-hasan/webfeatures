@@ -1,5 +1,7 @@
 eclipse.preferences.version=1
 encoding//wiki_quality_web/settings/development.py=utf-8
+encoding//wqual/migrations/0001_initial.py=utf-8
+encoding//wqual/migrations/0002_featureset_group.py=utf-8
 encoding//wqual/models/featureset_config.py=utf-8
 encoding//wqual/models/publications.py=utf-8
 encoding//wqual/models/uploaded_datasets.py=utf-8

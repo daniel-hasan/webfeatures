@@ -5,118 +5,20 @@
 
 
 {% block content %}
-		
-<!--	<ul>
-	{% for featSet in object_list %}
-	    <li>{{ featSet.nam_feature_set }} - {{ featSet.dsc_feature_set }}</li>
-	{% empty %}
-	    <li>No featureSet yet.</li>
-	{% endfor %}
-	</ul> -->
-	
+	<!--{% url "feature_set_list" %}-->
 	<table class="table table-bordered table-condensed">
- 		<thead>
-  			<tr class="table-success">
-   				<th colspan="2" align="center">Django</th>
-  			</tr>
- 		</thead>
- 		<tbody>
-  			<tr>
-   				<td>O que é?</td>
-   				<td>Framework gratuito e de código aberto para a criação de aplicações web, escrito em Python. </td>
-  			</tr>
-  			<tr>
-   				<td>django-admin</td>
-   				<td>É um script que cria a estrutura básica
-   				do diretório Django na qual não se deve apagar. </td>
-  			</tr>
-  			<tr>
-   				<td rowspan="3">Diretório/Arquivos básicos</td>
-   				<td><strong>manage.py</strong> é um script que facilita a gestão do site. Ele coloca
-   				o pacote do projeto no sys.path e define a variável ambiente DJANGO_SETTINGS_MODULE
-   				que aponta para o arquivo settings.py</td>
-   				
-  			</tr>
-  			<tr>
-  				<td><strong>/settings.py</strong> é um script que contém as configurações do projeto Django</td>
-  			</tr>
-  			<tr>
-  				<td><strong>/urls.py</strong> é um arquivo que contém uma lista de padrões usados por urlresolver (que funciona como
-  				um carteiro que verifica o endereço da correspondencia para enviá-la)</td>
-  			</tr>
-  			<tr>
-   				<td rowspan="3">Administração Django</td>
-   				<td>É uma interface intuitiva de administração automática que o Django oferece que permite trabalhar com permissões 
-   				de acesso e customização de telas. O Admin cria um log, registrando todas as alterações realizadas. </td>
-  			</tr>
-  			<tr>
-  				<td>Permite obter uma interface ainda mais agradável, eficiente e com uma navegação melhorada. Para isso, basta 
-  				utilizar módulos externos, como o django-grappelli. </td>
-  			</tr>
-  			<tr>
-  				<td>Para fazer login é necessário um superuser - um usuário que possui controle sobre tudo do site. Assim, quando
-  				 acessado <u>http://127.0.0.1:8000/admin/</u> é possível aproveitar de todos os recursos oferecidos pelo Django. </td>
-  			</tr>
-  			<tr>
-   				<td>Modelos Django</td>
-   				<td>Um modelo no Django é um tipo especial de objeto - ele é salvo em um banco de dados.
-   				 Um banco de dados é uma coleção de dados. </td>
-  			</tr>
-  			<tr>
-   				<td>Templates</td>
-   				<td> É um arquivo que se pode reutilizar para apresentar diferentes informações de uma forma consistente. O formato do
-   				 template do Django é descrito na linguagem HTML. </td>
-  			</tr>
-  			<tr>
-   				<td>Views</td>
-   				<td> Local onde se escontra a "lógica" da aplicação. Ele irá solicitar informações a partir do model e passá-lo para um template.
-   				 Views, no fundo, não passam de métodos escritos em Python.
-   				</td>
-  			</tr>
-  			<tr>
-   				<td>QuerySet</td>
-   				<td>É uma lista de objetos de um dado modelo que permite a leitura dos dados do banco, filtre e ordene o mesmo.</td>
-  			</tr>
-  			<tr class="table-success">
-   				<th colspan="2">Algumas tags de template Django:</th>
-  			</tr>
-  			<tr>
-  				<td>Variáveis</td>
-   				<td><strong> { { variavel } } </strong><br><br>Exibe variável no Django template</td>
-  			</tr>
-  			<tr>
-  				<td>Loops</td>
-   				<td><strong>{ % for .. in .. % } ... { % endfor % }</strong><br><br>Loops no Django template.</td>
-  			</tr>
-  			<tr>
-  				<td>Blocos</td>
-   				<td><strong>{ % block content % } ... { % endblock % }</strong><br><br>É uma tag de template que permite a inserção de html neste bloco 
-   				em outros templates que estendem um base. </td>
-  			</tr>
-  			<tr>
-  				<td>Condicional</td>
-   				<td><strong>{ % if ... % } ... { % endif % }</strong><br><br>tags de condição como if , else ... </td>
-  			</tr>
-  			<tr>
-  				<td>Herança</td>
-   				<td><strong>{ % extends 'caminho/index.html' % }</strong><br><br> Estende um template em outro arquivo. </td>
-  			</tr>
-  			<tr>
-  				<td rowspan="2">Arquivos Estáticos</td>
-   				<td><strong>{ % load staticfiles % }</strong><br><br>Carrega arquivos estáticos.</td>
-  			</tr>
-  			<tr>
-  				<td>São todas as imagens e arquivos CSS -- arquivos que não são dinâmicos, então seu conteúdo não depende do contexto da requisição e será 
-  				o mesmo para todos os usuários.</td>
-  			</tr>
-  			<tr class="table-success">
-   				<th colspan="2">Um exemplo de facilidade do Django</th>
-  			</tr>
-  			<tr>
-  				<td>Formulários</td>
-   				<td>Com Django se pode tanto criar um formulário do zero quanto criar um ModelForm que salva o resultado do formulário para um determinado modelo.
-   				 O framework oferece o módulo de formulários : from django import forms. </td>
-  			</tr>
- 			</tbody>
+	
+	{% for featSet in object_list %}	
+		{% ifequal featSet.group "g1" %}
+         	<tr> <td>{{ featSet.nam_feature_set }}</td> <td>{{ featSet.dsc_feature_set|safe }}</td></tr>
+            <!--<td><a href="{% url "feature_set_edit" featSet.nam_feature_set%}">Editar</a></td>-->
+        	{% else %}
+            	<tr class="table-success"><th colspan="2">{{ featSet.nam_feature_set }}</th></tr>
+     	{% endifequal %}
+        
+	{% empty %}
+	    
+	{% endfor %}
 	</table>
+
 {% endblock %}
