@@ -1,4 +1,4 @@
-{% extends "../bases/base.html" %}
+{% extends "../bases/base_main_site.html" %}
 
 
 {% block content %}
@@ -6,9 +6,9 @@
 	
 	<ul>
 	{% for database in object_list %}
-	    <li>{{ database }}</li>
+	    <li>{{ database.nam_dataset }}; {{ database.status.name }}</li>
 	{% empty %}
-	    <li>No featureSet yet.</li>
+	    <li>nao tem :(</li>
 	{% endfor %}
 	</ul>
 {% endblock %}
