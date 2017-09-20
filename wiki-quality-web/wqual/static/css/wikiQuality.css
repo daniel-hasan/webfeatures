@@ -1,0 +1,40 @@
+.navbar-default {
+  background-color: #005ca3;
+  border-color: #5b5b5b;
+}
+
+.navbar-default .navbar-nav > li{
+  border-left: 1px solid #5b5b5b;
+}
+
+.navbar-default .navbar-nav > li > a {
+  color: white;
+  font-weight: bold;
+}
+
+.navbar-default .navbar-nav > li > a:hover,
+.navbar-default .navbar-nav > li > a:focus {
+  color: white;
+  background-color: #0066a3;
+}
+
+img{
+  margin-top: -5px;
+  width: 100px; 
+  height: 31px;
+}
+
+li{
+  text-align: center;
+  border-left: 1px black;
+}
+
+div.navbar-header>a.navbar-brand {
+   	font-family: 'Fredericka the Great', cursive;
+	font-size: 30px;
+	color: white;
+}
+
+div.navbar-header>a.navbar-brand:hover {
+	color: white;
+}
