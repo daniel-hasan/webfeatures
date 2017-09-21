@@ -1,14 +1,41 @@
 {% extends "../bases/base_main_site.html" %}
 
 
-{% block content %}
-	<h1> oioi </h1>
-	
-	<ul>
-	{% for database in object_list %}
-	    <li>{{ database.nam_dataset }}; {{ database.status.name }}</li>
-	{% empty %}
-	    <li>nao tem :(</li>
+{% block content %}	
+	<h1>oioi</h1>
+
+	<table>
+			<thead>
+	    		<tr>
+	    			<th>Name</th>
+	    			<th>Status</th>
+	    			<th>Submitted date</th>
+	    			<th>Valid until</th>
+	    			<th>Feature Set</th>
+	    			<th>Text Format</th>
+	    		</tr>
+	    	</thead>
+	    	<tbody>
+		{% for database in object_list %}
+	   			<tr>
+	    			<td>{{ database.nam_dataset }}</td>
+	    			<td>{{ database.status.name }}</td>
+	    			<td>{{ database.dat_submitted }}</td>
+	    			<td>{{ database.dat_valid_until }}</td>
+	    			<td>{{ database.feature_set }}</td>
+	    			<td>{{ database.format.name }}</td>
+	    		</tr>
+	    
+		{% empty %}
+		<tr>
+			<td>-----</td>
+			<td>--------</td>
+			<td>-----------------</td>
+			<td>------------</td>
+			<td>-------------</td>
+			<td>--------------</td>
+		</tr>
 	{% endfor %}
-	</ul>
+			</tbody>
+	</table>
 {% endblock %}
