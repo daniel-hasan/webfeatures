@@ -1,2 +1,4 @@
 *.pyc
 /.metadata/
+.pydevproject
+.project
