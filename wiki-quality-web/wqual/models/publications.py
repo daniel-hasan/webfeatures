@@ -20,6 +20,7 @@ class Author(models.Model):
 
     def __str__(self):
         return "{first_name} {middle_name} {last_name}".format(first_name=self.nam_first,middle_name=self.nam_middle,last_name=self.nam_last)
+        
     
 class Conference(models.Model):
     '''
@@ -48,6 +49,9 @@ class Publication(models.Model):
     
     def __str__(self):
         arr_str_authors = [str(author) for author in self.authors.all()]
+        #arr=[]
+        #for autor in self.authors.all():
+        #    arr.append(author)
         return "{authors}. {title}: {conference} ({year})".format(title=self.nam_title,
                                                                    year=str(self.num_year),
                                                                    conference=self.conference.nam_abbreviation,

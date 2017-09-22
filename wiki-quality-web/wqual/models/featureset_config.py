@@ -61,8 +61,6 @@ class FeatureFactory(models.Model):
 
 
 
-        
-
 class Language(EnumModel):
     '''
     Created on 13 de ago de 2017
@@ -93,11 +91,11 @@ class FeatureSet(models.Model):
     language = models.ForeignKey(Language, models.PROTECT)  
     user = models.ForeignKey(User, models.PROTECT)
     
+    def __str__(self):
+        return "{group}. {name}: {description} ".format(group=self.group, name=self.nam_feature_set, description=self.dsc_feature_set)
+    
     class Meta:
         db_table = 'wqual_feature_set'
-
-    
-
 
 
 class FeatureTimePerDocument(EnumModel):
