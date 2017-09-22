@@ -11,8 +11,7 @@ from django.views.generic.edit import UpdateView, CreateView, DeleteView
 from django.views.generic.list import ListView
 
 from utils.basic_entities import LanguageEnum
-from wqual.models import FeatureSet, Language
-from wqual.models.featureset_config import UsedFeature
+from wqual.models.featureset_config import FeatureSet, Language, UsedFeature
 
 
 class FormValidation(object):
@@ -124,6 +123,7 @@ class FeatureSetDelete(DeleteView):
     model = FeatureSet
     template_name = "content/feature_set_delete.html"
     
+
     def get_object(self):
         return FeatureSet.objects.get(user=self.request.user,nam_feature_set=self.kwargs["nam_feature_set"])
      

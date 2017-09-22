@@ -95,6 +95,7 @@ class FeatureSet(models.Model):
             models.Index(fields=['nam_feature_set', 'user']),
         ]
         
+
 class FeatureTimePerDocument(EnumModel):
     '''
     Created on 17 de ago de 2017
