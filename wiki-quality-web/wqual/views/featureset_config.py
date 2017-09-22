@@ -33,6 +33,7 @@ class FeatureSetEdit(UpdateView):
     '''
     fields=["group","nam_feature_set","dsc_feature_set"]
     model = FeatureSet
+    #form_class = 
     template_name = "content/feature_set_list.html"
     def get_object(self):
         return FeatureSet.objects.get(user=self.request.user,nam_feature_set=self.kwargs["nam_feature_set"])
