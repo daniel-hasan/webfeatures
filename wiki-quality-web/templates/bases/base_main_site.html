@@ -1,18 +1,42 @@
 {% extends "../bases/base.html" %}
-{% load bootstrap4 %}
 {% load static %}
 
 {% block head %}
 	<link href="{% static "css/bootstrap.css" %}" rel="stylesheet">
+	<link href="{% static "css/jquery-ui.css" %}" rel="stylesheet">
+	<link href="{% static "css/jquery-ui.structure.css" %}" rel="stylesheet">
+	<link href="{% static "css/jquery-ui.theme.css" %}" rel="stylesheet">
     <script src="{% static "js/jquery.min.js" %}"></script>
+    <script src="{% static "js/jquery-ui.js" %}"></script>
+    <script src="{% static "js/jquery-ui.min.js" %}"></script>
     <script src="{% static "js/wqual.js" %}"></script>
-    <script src="{% static "js/bootstrap.min.js" %}"></script>  
 	<link rel="stylesheet" href="{% static "css/wikiQuality.css" %}">
 	<link href="https://fonts.googleapis.com/css?family=Fredericka+the+Great" rel="stylesheet">
-{% endblock %}
-    
-    
-    
+	
+	<style>
+		.custom-combobox {
+		    position: relative;
+		    display: inline-block;
+		  }
+		  .custom-combobox-toggle {
+		    position: absolute;
+		    top: 0;
+		    bottom: 0;
+		    margin-left: -1px;
+		    padding: 0;
+		  }
+		  .custom-combobox-input {
+		    margin: 0;
+		    padding: 6px 212px;
+		  }
+		  #tabs-1{
+		  	padding-bottom: 200px;
+		  }
+		</style>
+	{% endblock %}
+	    
+	    
+	    
     
 {% block body %}
   	
