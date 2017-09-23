@@ -5,20 +5,24 @@
 
 
 {% block content %}
-	<!--{% url "feature_set_list" %}-->
-	<table class="table table-bordered table-condensed">
 	
+	<table class="table table-bordered table-condensed">	
 	{% for featSet in object_list %}	
 		{% ifequal featSet.group "g1" %}
-         	<tr> <td>{{ featSet.nam_feature_set }}</td> <td>{{ featSet.dsc_feature_set|safe }}</td></tr>
-            <!--<td><a href="{% url "feature_set_edit" featSet.nam_feature_set%}">Editar</a></td>-->
+         	<tr> <td>{{ featSet.nam_feature_set }}</td> <td>{{ featSet.dsc_feature_set|safe }}</td>
+         	<td><a href="{% url "feature_set_edit" featSet.nam_feature_set%}">Editar</a></td></tr>
         	{% else %}
-            	<tr class="table-success"><th colspan="2">{{ featSet.nam_feature_set }}</th></tr>
-     	{% endifequal %}
-        
-	{% empty %}
-	    
+            	<tr class="table-success"><th colspan="3">{{ featSet.nam_feature_set }}</th></tr>
+     	{% endifequal %}	    
 	{% endfor %}
 	</table>
+	
+	
+	
+	<!--<form action="" method="post">{% csrf_token %}
+    	{{ form.as_p }}
+    	<input type="submit" value="Update" />
+	</form>-->
+
 
 {% endblock %}

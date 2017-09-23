@@ -19,6 +19,7 @@ from wqual import views
 
 
 urlpatterns = [
+    url(r'^featureSetConfigNew$', views.FeatureSetInsert.as_view(), name='feature_set_insert'),
     url(r'^featureSetConfig/(?P<nam_feature_set>.*)$', views.FeatureSetEdit.as_view(), name='feature_set_edit'),
     url(r'^featureSetConfig$', views.FeatureSetListView.as_view(), name='feature_set_list'),
     url(r'^extractFeatures$', views.DatasetListView.as_view(), name='extract_features'),
