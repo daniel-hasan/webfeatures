@@ -38,3 +38,22 @@ div.navbar-header>a.navbar-brand {
 div.navbar-header>a.navbar-brand:hover {
 	color: white;
 }
+
+table {
+	margin-left: 15px;
+}
+
+th, td {
+	padding: 8px;
+}
+
+th {
+	color: grey;
+	border-top: 2px solid rgb(234, 234, 234);
+	border-bottom: 2px solid rgb(234, 234, 234);
+}
+
+td {
+	text-align: center;
+	border-bottom: 1px solid rgb(224, 224, 224);
+}
