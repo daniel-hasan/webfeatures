@@ -24,4 +24,5 @@ urlpatterns = [
     url(r'^featureSetConfig$', views.FeatureSetListView.as_view(), name='feature_set_list'),
     url(r'^extractFeatures$', views.DatasetListView.as_view(), name='extract_features'),
     url(r'^admin/', admin.site.urls),
+    url(r'^publications$', views.PublicationList.as_view(), name='publications'),
 ]

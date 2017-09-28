@@ -1,0 +1,42 @@
+{% extends "../bases/base_main_site.html" %}
+
+
+{% block content %}
+
+	<table>
+		<thead>
+			<tr>
+				<th>Title</th>
+				<th>Year</th>
+				<th>Authors</th>
+				<th>Conference</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for database in object_list %}
+			<tr>
+				<td>{{ database.nam_title }}</td>
+				<td>{{ database.num_year }}</td>
+				<td>
+				{% for author in database.authors.all %}
+					{% if forloop.last %}
+						{{ author }}
+					{% else %}
+						{{ author }},
+					{% endif %}
+				{% endfor %}
+				</td>
+				<td>{{ database.conference }}</td>
+			</tr>
+			{% empty %}
+			<tr>
+				<td>---------------</td>
+				<td>---------------</td>
+				<td>---------------</td>
+				<td>---------------</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+
+{% endblock %}
