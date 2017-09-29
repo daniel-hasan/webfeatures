@@ -9,6 +9,7 @@ from enum import Enum
 from pyatspi import document
 
 
+
 class Document(object):
     def __init__(self,int_doc_id,str_doc_name,str_text):
         self.int_doc_id = int_doc_id
@@ -38,6 +39,7 @@ class FeatureDocumentsReader(object):
             @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br> 
         '''
         
+
 class DocSetFileReader(FeatureDocumentsReader):
     def __init__(self,file):
         self.file = file
@@ -152,6 +154,7 @@ class FeatureCalculatorManager(object):
         
         arr_feat_result[int_i] = feat.compute_feature(document)
         
+
 class FeatureVisibilityEnum(Enum):
     '''
         Enum responsável pela visibilidade das features

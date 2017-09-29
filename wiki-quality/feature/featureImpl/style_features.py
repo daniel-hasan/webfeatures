@@ -18,13 +18,11 @@ class SentenceCountFeature(SentenceBasedFeature):
         self.setSentencesToCount = set(setSentencesToCount) 
     
     
-    def checkSentence(self,document,sentence):
-        self.int_sentence_counter = self.int_sentence_counter + 1
+    def int_count_sentences(self):
+        int_sentences = texto.split(".")
+        int_sentences = len(int_words)
+        return int_sentences
     
-    
-    def compute_feature(self, document):
-        yield self.int_sentence_counter
-        self.int_sentence_counter = 0
 
 class LargeSentenceCountFeature(WordBasedFeature):
     '''
