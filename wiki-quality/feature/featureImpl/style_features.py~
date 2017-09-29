@@ -7,37 +7,34 @@ Features de estrutura (como numero de seções, citações etc.)
 
 from feature.features import * 
 from cgitb import text
-from pyatspi import document
 
 
 class SentenceCountFeature(SentenceBasedFeature):
     '''
     Contabiliza o número de frases de um texto
-    
     '''
     
-    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document):
+    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document,):
         super(TextBasedFeature,self).__init__(name,description,reference,visibility,text_format,feature_time_per_document)    
-        self.int_sentences_counter = 0
+        self.setSentencesToCount = set(setSentencesToCount) 
     
-    def checkSentence(self):
-        self.int_sentences_counter = self.int_sentences_counter + 1
     
-    def compute_feature(self):
-        yield self.int_sentences_counter
-        self.int_sentences_counter = 0
+    def int_count_sentences(self):
+        int_sentences = texto.split(".")
+        int_sentences = len(int_words)
+        return int_sentences
+    
 
 class LargeSentenceCountFeature(WordBasedFeature):
     '''
     Verifica a quantidade de frases grandes
-    
     '''
     
     def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document,size):
         super(WordBasedFeature,self).__init__(name,description,reference,visibility,text_format,feature_time_per_document)    
         self.setWordsToCount = set(setWordsToCount)
     
-    def checkWord(self,word):
+    def checkWord(self,document,word):
         if word in FeatureCalculator.sentence_divisors:
             int_large_sentence(int_word_counter)
         elif word not in FeatureCalculator.word_divisors:
@@ -45,7 +42,7 @@ class LargeSentenceCountFeature(WordBasedFeature):
             
     
     def int_large_sentence(int_sentence_size):
-        if(int_sentence_size >= size):
+        if(int_word_counter >= size):
             self.int_large_sentence = self.int_large_sentence + 1
     
     def compute_feature(self, document):
@@ -64,7 +61,7 @@ class WordCountFeature(WordBasedFeature):
         self.int_word_counter = 0
     
      
-    def checkWord(self,word):
+    def checkWord(self,document,word):
         if word in self.setWordsToCount:
             self.int_word_counter = self.int_word_counter + 1
     
@@ -78,39 +75,5 @@ class ParagraphCountFeature(TextBasedFeature):
     Contabiliza o número de paragrafos de um texto
     
     '''
-    
-    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document):
-        super(TextBasedFeature,self).__init__(name,description,reference,visibility,text_format,feature_time_per_document)    
-        self.int_paragraph_counter = 0
-        
-    def checkParagraph(self):
-        self.int_paragraph_counter = self.int_paragraph_counter + 1
-    
-    def compute_feature(self,document):
-        yield self.int_paragraph_counter
-        self.int_paragraph_counter = 0
-
-
-class LargeParagraphCountFeature(WordBasedFeature):
-    '''
-    Contabiliza o número de paragrafos longos de um texto
-    
-    '''
-    
-    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document,size):
-        super(WordBasedFeature,self).__init__(name,description,reference,visibility,text_format,feature_time_per_document)    
-        self.int_large_paragraph_counter = 0
-        
-    def checkWord(self,word):
-        if word in FeatureCalculator.paragraph_divisors:
-            int_large_paragraph(int_word_counter)
-        elif word not in FeatureCalculator.word_divisors:
-            self.int_word_counter = self.int_word_counter + 1
-        
-    def int_large_paragraph(self,int_paragraph_size):
-        if(int_paragraph_size >= size):
-            self.int_large_paragraph_counter = self.int_large_paragraph_counter + 1
-    
-    def compute_feature(self,document):
-        yield self.int_large_paragraph_counter
-        self.int_large_paragraph_counter = 0
+    def checkParagraph(self,document,text):
+        if text in 

@@ -7,6 +7,7 @@ Created on 8 de ago de 2017
 from abc import abstractmethod
 from enum import Enum
 from pyatspi import document
+from django.utils.lorem_ipsum import paragraph
 
 
 
@@ -127,28 +128,38 @@ class FeatureCalculatorManager(object):
         #armazo as word based features e sentence based feature
         word_buffer = ""
         sentence_buffer = ""
+        paragraph_buffer = ""
         
         for str_char in str_text:#checar buffer vazio
-            if(word_buffer != "" and sentence_buffer != ""):
+            if((word_buffer != "" and sentence_buffer != "") and paragraph_buffer != ""):
                 if(str_char in word_divisors):
                     for int_i,feat in enumerate(arr_features):
                         if(isinstance(feat, WordBasedFeature)):
-                            feat.checkWord(docText,word_buffer)
+                            feat.checkWord(word_buffer)
                     word_buffer = ""
                 
                 #verifica fim de palavra
                 else:
-                    word_buffer = word_buffer+str_char
+                    word_buffer = word_buffer + str_char
                 #verifica fim de frase
                 
                 if(str_char in sentence_divisors):
                     for int_i,feat in enumerate(arr_features):
                         if(isinstance(feat, SentenceBasedFeature)):
-                            feat.checkSentence(docText,sentence_buffer)
+                            feat.checkSentence()
                     sentence_buffer = ""
                 else:
                     sentence_buffer = sentence_buffer + str_char
-        
+                
+                if(str_char in paragraph_divisor):
+                    for int_i,feat in enumerate(arr_features):
+                        if(isinstance(feat, TextBasedFeature)):
+                            feat.checkParagraph()
+                    paragraph_buffer = ""
+                else:
+                    paragraph_buffer = paragraph_buffer + str_char                    
+                    
+                
         
         #para todoas as WordBasedFeatue ou SentenceBased feature, rodar o feature_result
         
@@ -173,6 +184,7 @@ class FeatureCalculator(object):
     featureManager = FeatureCalculatorManager()
     word_divisors = set([" ",",",".","!","?","!"])
     sentence_divisors = set([".","!","?","!"])
+    paragraph_divisor = set(["\n", os.linesep])
     
     def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document):
         
@@ -195,6 +207,10 @@ class TextBasedFeature(FeatureCalculator):
     analisar o texto por palavra para efetuar o calculo desta feature.
     @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
     '''
+    @abstractmethod
+    def checkParagraph(self,document):
+        raise NotImplementedError
+    
     @abstractmethod
     def compute_feature(self,document):
         raise NotImplementedError
@@ -220,7 +236,7 @@ class WordBasedFeature(FeatureCalculator):
         super(FeatureCalculator,self).__init__(name,description,reference,visibility,text_format,feature_time_per_document)   
     
     @abstractmethod
-    def checkWord(self,document,word):
+    def checkWord(self,word):
         raise NotImplementedError
     
     
