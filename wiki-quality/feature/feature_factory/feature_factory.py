@@ -52,8 +52,8 @@ class StyleFeatureFactory(FeatureFactory):
         arrFeatures = [WordCountFeature("Preposition Count","Count the number of prepositions in the text",FeatureVisibilityEnum.public,FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,setWordsToCount=PosClassLang.PREPOSITION)]
         
         featLargeSentenceCount = LargeSentenceCountFeature("Largest Phrase Count","Count the number of phrases larger than a specified threshold",FeatureVisibilityEnum.public,FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,10)
-        featLargeSentenceCount.addConfigurableParam(ConfigurableParam("int_phrase_size","Phrase Size",
-                                                                      "The phrase need to have (at least) this length (in words) in order to be considered a large phrase",
+        featLargeSentenceCount.addConfigurableParam(ConfigurableParam("int_sentence_size","Sentence Size",
+                                                                      "The sentence need to have (at least) this length (in words) in order to be considered a large phrase",
                                                                       10,ParamTypeEnum.int))
         arrFeatures.append(featLargeSentenceCount)
         

@@ -6,6 +6,7 @@ Created on 8 de ago de 2017
 '''
 from abc import abstractmethod
 from enum import Enum
+from pyatspi import document
 
 
 class Document(object):
@@ -36,11 +37,8 @@ class FeatureDocumentsReader(object):
             
             @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br> 
         '''
-        for list_docs in object
-              list_docs_open = open(list_docs, 'r')
-        return list_docs_open
-
-class DocSetFileReader=(FeatureDocumentsReader):
+        
+class DocSetFileReader(FeatureDocumentsReader):
     def __init__(self,file):
         self.file = file
     
@@ -89,12 +87,9 @@ class FeatureCalculatorManager(object):
             # necessitam de algum metodo de preprocessamento de todo o conjunto de documento
         for doc in datReader.get_documents():
             arr_features_result = self.computeFeatureSet(doc, arr_features_to_extract)
-            docWrite.write_document(....)
+            docWrite.write("")
             #Para cada um processamento do documentSet necessário,
             # rodar todas as features que necessitam dele. 
-            
-            #
-            
             
             
         pass
@@ -130,29 +125,33 @@ class FeatureCalculatorManager(object):
         #armazo as word based features e sentence based feature
         word_buffer = ""
         sentence_buffer = ""
-        word_divisors = set([" ",",",".","!","?","!"])
-        sentence_divisors = set([".","!","?","!"])
         
         for str_char in str_text:#checar buffer vazio
-            if(str_char in word_divisors):
-                for int_i,feat in enumerate(arr_features):
-                    if(isinstance(feat, WordBasedFeature)):
-                        feat.checkWord(document,word_buffer)
-                word_buffer = ""
-            else:
-                word_buffer = word_buffer+str_char
+            if(word_buffer != "" and sentence_buffer != ""):
+                if(str_char in word_divisors):
+                    for int_i,feat in enumerate(arr_features):
+                        if(isinstance(feat, WordBasedFeature)):
+                            feat.checkWord(docText,word_buffer)
+                    word_buffer = ""
                 
-            if(str_char in sentence_divisors):
-                for int_i,feat in enumerate(arr_features):
-                    if(isinstance(feat, SentenceBasedFeature)):
-                        feat.checkSentence(document,sentence_buffer)
-                sentence_buffer = ""
-            else:
-                sentence_buffer = sentence_buffer + str_char
+                #verifica fim de palavra
+                else:
+                    word_buffer = word_buffer+str_char
+                #verifica fim de frase
+                
+                if(str_char in sentence_divisors):
+                    for int_i,feat in enumerate(arr_features):
+                        if(isinstance(feat, SentenceBasedFeature)):
+                            feat.checkSentence(docText,sentence_buffer)
+                    sentence_buffer = ""
+                else:
+                    sentence_buffer = sentence_buffer + str_char
         
         
         #para todoas as WordBasedFeatue ou SentenceBased feature, rodar o feature_result
-        #arr_feat_result[int_i] = feat.feature_result(parametros)
+        
+        arr_feat_result[int_i] = feat.compute_feature(document)
+        
 class FeatureVisibilityEnum(Enum):
     '''
         Enum responsável pela visibilidade das features
@@ -169,6 +168,9 @@ class FeatureCalculator(object):
         @author:  Daniel Hasan Dalip <hasan@decom.cefetmg.br>
     '''
     featureManager = FeatureCalculatorManager()
+    word_divisors = set([" ",",",".","!","?","!"])
+    sentence_divisors = set([".","!","?","!"])
+    
     def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document):
         
         self.name = name
@@ -193,7 +195,16 @@ class TextBasedFeature(FeatureCalculator):
     @abstractmethod
     def compute_feature(self,document):
         raise NotImplementedError
-
+    
+class SentenceBasedFeature(FeatureCalculator):
+    
+    @abstractmethod
+    def checkSentence(self,document,sentence):
+        raise NotImplementedError
+    
+    @abstractmethod
+    def compute_feature(self,document):
+        raise NotImplementedError
 
 class WordBasedFeature(FeatureCalculator):
     '''
@@ -211,12 +222,8 @@ class WordBasedFeature(FeatureCalculator):
     
     
     @abstractmethod
-    def feature_result(self,document):
+    def compute_feature(self,document):
         raise NotImplementedError
-
-
-
-
             
     
 class ParamTypeEnum(Enum):

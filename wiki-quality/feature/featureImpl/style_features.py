@@ -4,12 +4,11 @@ Created on 8 de ago de 2017
 Features de estrutura (como numero de seções, citações etc.)
 @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>  
 '''
-from feature import TextBasedFeature, WordBasedFeature
+
+from feature.features import * 
 
 
-
-
-class SentenceCountFeature(TextBasedFeature):
+class SentenceCountFeature(SentenceBasedFeature):
     '''
     Contabiliza o número de frases de um texto
     '''
@@ -19,12 +18,38 @@ class SentenceCountFeature(TextBasedFeature):
         self.setSentencesToCount = set(setSentencesToCount) 
     
     
-    def int_count_sentences(self):
-        int_sentences = texto.split(".")
-        int_sentences = len(int_words)
-        return int_sentences
+    def checkSentence(self,document,sentence):
+        self.int_sentence_counter = self.int_sentence_counter + 1
     
+    
+    def compute_feature(self, document):
+        yield self.int_sentence_counter
+        self.int_sentence_counter = 0
 
+class LargeSentenceCountFeature(WordBasedFeature):
+    '''
+    Verifica a quantidade de frases grandes
+    '''
+    
+    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document,size):
+        super(WordBasedFeature,self).__init__(name,description,reference,visibility,text_format,feature_time_per_document)    
+        self.setWordsToCount = set(setWordsToCount)
+    
+    def checkWord(self,document,word):
+        if word in FeatureCalculator.sentence_divisors:
+            int_large_sentence(int_word_counter)
+        elif word not in FeatureCalculator.word_divisors:
+            self.int_word_counter = self.int_word_counter + 1
+            
+    
+    def int_large_sentence(int_sentence_size):
+        if(int_word_counter >= size):
+            self.int_large_sentence = self.int_large_sentence + 1
+    
+    def compute_feature(self, document):
+        yield self.int_large_sentence
+        self.int_large_sentence = 0
+        
 class WordCountFeature(WordBasedFeature):
     '''
     Contabiliza a ocorrencia de uma determinada lista de palavras
@@ -35,29 +60,16 @@ class WordCountFeature(WordBasedFeature):
         super(WordBasedFeature,self).__init__(name,description,reference,visibility,text_format,feature_time_per_document)    
         self.setWordsToCount = set(setWordsToCount)
         self.int_word_counter = 0
-        
+    
+     
     def checkWord(self,document,word):
         if word in self.setWordsToCount:
             self.int_word_counter = self.int_word_counter + 1
     
-    def feature_result(self,document):
-        int_aux = self.int_word_counter
-        self.int_word_counter = 0        
-        return int_aux
+    def compute_feature(self,document):
+        yield self.int_word_counter
+        self.int_word_counter = 0
 
-class LargeSentenceCountFeature(WordCountFeature):
-    '''
-    Contabiliza o número de frases grandes em um texto
-    
-    '''
-    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document,int_phrase_size):
-        super(WordCountFeature,self).__init__(name,description,reference,visibility,text_format,feature_time_per_document)    
-        self.int_phrase_size = int_phrase_size
-    def bool_is_large(int_count_words, size):
-        if(int_count_words < size)
-              return False
-        else
-              return True
                 
 class ParagraphCountFeature(TextBasedFeature):
     '''
