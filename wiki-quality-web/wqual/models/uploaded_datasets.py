@@ -118,4 +118,3 @@ class DocumentResult(models.Model):
     
     document = models.OneToOneField(Document, models.PROTECT)
     
-    
