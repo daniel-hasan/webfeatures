@@ -6,9 +6,7 @@ Created on 8 de ago de 2017
 '''
 from abc import abstractmethod
 from enum import Enum
-from pyatspi import document
-from django.utils.lorem_ipsum import paragraph
-
+import os
 
 
 class Document(object):
@@ -90,7 +88,6 @@ class FeatureCalculatorManager(object):
             # necessitam de algum metodo de preprocessamento de todo o conjunto de documento
         for doc in datReader.get_documents():
             arr_features_result = self.computeFeatureSet(doc, arr_features_to_extract)
-            docWrite.write("")
             #Para cada um processamento do documentSet necessário,
             # rodar todas as features que necessitam dele. 
             
@@ -117,9 +114,14 @@ class FeatureCalculatorManager(object):
         @author:  
         ''' 
         
+        
         #armazeno os text based features 
         str_text = docText.str_text
         arr_feat_result = []
+        
+        for feat in arr_features:
+            arr_feat_result.append(None)
+            
         for int_i,feat in enumerate(arr_features):
             if(isinstance(feat, TextBasedFeature)):
                 arr_feat_result[int_i] = feat.compute_feature(docText)
@@ -135,7 +137,7 @@ class FeatureCalculatorManager(object):
                 if(str_char in word_divisors):
                     for int_i,feat in enumerate(arr_features):
                         if(isinstance(feat, WordBasedFeature)):
-                            feat.checkWord(word_buffer)
+                            feat.checkWord(docText,word_buffer)
                     word_buffer = ""
                 
                 #verifica fim de palavra
@@ -146,7 +148,7 @@ class FeatureCalculatorManager(object):
                 if(str_char in sentence_divisors):
                     for int_i,feat in enumerate(arr_features):
                         if(isinstance(feat, SentenceBasedFeature)):
-                            feat.checkSentence()
+                            feat.checkSentence(docText,sentence_buffer)
                     sentence_buffer = ""
                 else:
                     sentence_buffer = sentence_buffer + str_char
@@ -154,7 +156,7 @@ class FeatureCalculatorManager(object):
                 if(str_char in paragraph_divisor):
                     for int_i,feat in enumerate(arr_features):
                         if(isinstance(feat, TextBasedFeature)):
-                            feat.checkParagraph()
+                            feat.checkParagraph(docText,paragraph_buffer)
                     paragraph_buffer = ""
                 else:
                     paragraph_buffer = paragraph_buffer + str_char                    
@@ -163,7 +165,8 @@ class FeatureCalculatorManager(object):
         
         #para todoas as WordBasedFeatue ou SentenceBased feature, rodar o feature_result
         
-        arr_feat_result[int_i] = feat.compute_feature(document)
+        
+        arr_feat_result[int_i] = feat.compute_feature(docText)
         
 
 class FeatureVisibilityEnum(Enum):
@@ -207,16 +210,23 @@ class TextBasedFeature(FeatureCalculator):
     analisar o texto por palavra para efetuar o calculo desta feature.
     @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
     '''
-    @abstractmethod
-    def checkParagraph(self,document):
-        raise NotImplementedError
     
     @abstractmethod
     def compute_feature(self,document):
         raise NotImplementedError
     
-class SentenceBasedFeature(FeatureCalculator):
+class ParagraphBasedFeature(FeatureCalculator):
     
+    @abstractmethod
+    def checkParagraph(self,document,paragraph):
+        raise NotImplementedError
+    
+    @abstractmethod
+    def compute_feature(self,document):
+        raise NotImplementedError   
+    
+class SentenceBasedFeature(FeatureCalculator):
+
     @abstractmethod
     def checkSentence(self,document,sentence):
         raise NotImplementedError
@@ -236,7 +246,7 @@ class WordBasedFeature(FeatureCalculator):
         super(FeatureCalculator,self).__init__(name,description,reference,visibility,text_format,feature_time_per_document)   
     
     @abstractmethod
-    def checkWord(self,word):
+    def checkWord(self,document,word):
         raise NotImplementedError
     
     

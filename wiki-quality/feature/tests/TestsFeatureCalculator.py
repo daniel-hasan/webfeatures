@@ -140,7 +140,7 @@ class TestFeatureCalculator(unittest.TestCase):
         self.assertListEqual(map_result["doc1"][0], ["Ola",","," ","meu"," ","nome"," ","é"," ","hasan"]
                                                      , "A leitura das palavras está incorreta"
                                                      )
-        self.assertListEqual(map_result["doc1"][0], "Ola meu nome é hasan", "A leitura do texto está incorreto")
+        self.assertListEqual(map_result["doc1"][1], "Ola, meu nome é hasan", "A leitura do texto está incorreto")
         
 
 if __name__ == "__main__":
