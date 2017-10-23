@@ -40,9 +40,6 @@ class ParamType(EnumModel):
         return ParamTypeEnum
     
 
-
-
-
 class FeatureFactory(models.Model):
     '''
     Created on 13 de ago de 2017
@@ -56,9 +53,6 @@ class FeatureFactory(models.Model):
 
     class Meta:
         db_table = 'wqual_feature_factory'
-
-
-
 
 
 class Language(EnumModel):
@@ -84,7 +78,6 @@ class FeatureSet(models.Model):
     @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
     Conjunto de features configurado por um usuário
     '''
-    group = models.CharField(max_length=50)
     nam_feature_set = models.CharField(max_length=50)
     dsc_feature_set = models.CharField(max_length=255, blank=True, null=True)
     
@@ -92,12 +85,15 @@ class FeatureSet(models.Model):
     user = models.ForeignKey(User, models.PROTECT)
     
     def __str__(self):
-        return "{group}. {name}: {description} ".format(group=self.group, name=self.nam_feature_set, description=self.dsc_feature_set)
+        return "{name}: {description} ".format(name=self.nam_feature_set, description=self.dsc_feature_set)
     
     class Meta:
         db_table = 'wqual_feature_set'
-
-
+        unique_together = (('nam_feature_set', 'user'),)
+        indexes = [
+            models.Index(fields=['nam_feature_set', 'user']),
+        ]
+        
 class FeatureTimePerDocument(EnumModel):
     '''
     Created on 17 de ago de 2017
@@ -117,6 +113,7 @@ class FeatureVisibility(EnumModel):
     @staticmethod
     def get_enum_class():
         return FeatureVisibilityEnum
+    
 class UsedFeature(models.Model):
     '''
     Created on 13 de ago de 2017
