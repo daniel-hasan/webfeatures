@@ -3,26 +3,21 @@
 
 {% block title %}Feature Set Configuration{% endblock %}
 
-
 {% block content %}
+
+
+<p><a href="{% url "feature_set_insert" %}">Inserir</a></p>
 	
-	<table class="table table-bordered table-condensed">	
+	<table class="table table-bordered table-condensed">
 	{% for featSet in object_list %}	
-		{% ifequal featSet.group "g1" %}
-         	<tr> <td>{{ featSet.nam_feature_set }}</td> <td>{{ featSet.dsc_feature_set|safe }}</td>
-         	<td><a href="{% url "feature_set_edit" featSet.nam_feature_set%}">Editar</a></td></tr>
-        	{% else %}
-            	<tr class="table-success"><th colspan="3">{{ featSet.nam_feature_set }}</th></tr>
-     	{% endifequal %}	    
+		
+         	<tr> 
+	         	<td>{{ featSet.nam_feature_set }}</td> <td>{{ featSet.dsc_feature_set|safe }}</td>
+	         	<td><a href="{% url "feature_set_edit" featSet.nam_feature_set%}">Editar</a></td>
+	         	<td><a href="{% url "feature_set_delete" featSet.nam_feature_set%}">Deletar</a></td>
+         	<tr>
+        	    
 	{% endfor %}
 	</table>
 	
-	
-	
-	<!--<form action="" method="post">{% csrf_token %}
-    	{{ form.as_p }}
-    	<input type="submit" value="Update" />
-	</form>-->
-
-
 {% endblock %}

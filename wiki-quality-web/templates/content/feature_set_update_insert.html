@@ -1,0 +1,15 @@
+{% extends "../bases/base_main_site.html" %}
+
+
+{% block title %}Feature Set Update Insert{% endblock %}
+
+
+{% block content %}
+	
+	<form action="" method="post">{% csrf_token %}
+    	{{ form.as_p }}
+    	<input type="submit" value="Update" />
+	</form>
+	
+	
+{% endblock %}
