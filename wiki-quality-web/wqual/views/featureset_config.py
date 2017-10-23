@@ -53,9 +53,6 @@ class FeatureSetInsert(CreateView):
     Lista todos os conjunto de features criados.
     '''
     fields=["nam_feature_set","dsc_feature_set", "language"]
-    labels = {
-        "nam_feature_set": "Name"
-    }
     initial = { 'language': Language.objects.get(name=LanguageEnum.en.name) }
     
     model = FeatureSet
@@ -72,6 +69,10 @@ class FeatureSetInsert(CreateView):
     
     def get_success_url(self):
         return reverse('feature_set_list')
+    class Meta:
+        labels = {
+            'nam_feature_set': "Name",
+        }
       
 class FeatureSetEdit(UpdateView):
     '''
