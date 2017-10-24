@@ -35,7 +35,8 @@ class TestFeatureCalculator(unittest.TestCase):
                                          "SILVA Ola. Contando Olas. Conferencia dos Hello World", 
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.text_plain, 
-                                         FeatureTimePerDocumentEnum.MILLISECONDS,["de","do"])
+                                         FeatureTimePerDocumentEnum.MILLISECONDS,["de","do"],
+                                         case_sensitive=True)
         
         document = Document(1,"doc1","O texto nao precisa -necessariamente - ser o texto que sera testado")
         
@@ -47,11 +48,11 @@ class TestFeatureCalculator(unittest.TestCase):
         wcount.checkWord(document, "de")
         wcount.checkWord(document, "é")
         wcount.checkWord(document, "do")
-        int_result = wcount.feature_result(document)
+        int_result = wcount.compute_feature(document)
         self.assertEqual(int_result, 3, "Nao foi contabilizado o numero de palavras corretos no teste do primeiro documento")
         
         #teste quando o texto não possul palavra alguma
-        int_result = wcount.feature_result(document)
+        int_result = wcount.compute_feature(document)
         self.assertEqual(int_result, 0, "Nao foi contabilizado o numero de palavras corretos no teste do segundo documento")
         
         #teste quando possui maiusculas e minusculas (deve-se contabilizar não importando maiusculas e minusculas)
@@ -59,7 +60,7 @@ class TestFeatureCalculator(unittest.TestCase):
         wcount.checkWord(document, "DE")
         wcount.checkWord(document, "Do")
         wcount.checkWord(document, "ui")
-        int_result = wcount.feature_result(document)
+        int_result = wcount.compute_feature(document)
         self.assertEqual(int_result, 3, "Nao foi contabilizado o numero de palavras corretos no teste do terceiro documento")
 
         

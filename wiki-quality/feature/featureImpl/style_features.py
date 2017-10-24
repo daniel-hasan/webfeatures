@@ -39,12 +39,12 @@ class LargeSentenceCountFeature(WordBasedFeature):
     
     def checkWord(self,document,word):
         if word in FeatureCalculator.sentence_divisors:
-            large_sentence(int_word_counter)
+            self.large_sentence(self.int_word_counter)
         elif word not in FeatureCalculator.word_divisors:
             self.int_word_counter = self.int_word_counter + 1
             
     
-    def large_sentence(int_sentence_size):
+    def large_sentence(self,int_sentence_size):
         if(int_sentence_size >= self.int_size):
             self.int_large_sentence = self.int_large_sentence + 1
     
@@ -58,20 +58,26 @@ class WordCountFeature(WordBasedFeature):
     Parametros:
     setWordsToCount: Lista representando as palavras a serem contabilizadas
     '''
-    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document,setWordsToCount=set([])):
+    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document,setWordsToCount=None,case_sensitive=False):
         super(WordBasedFeature,self).__init__(name,description,reference,visibility,text_format,feature_time_per_document)    
+        if(setWordsToCount==None):
+            setWordsToCount = []
+        if(case_sensitive):
+            setWordsToCount = [word.lower() for word in setWordsToCount]
+        
+        self.case_sensitive = case_sensitive
         self.setWordsToCount = set(setWordsToCount)
         self.int_word_counter = 0
     
      
     def checkWord(self,document,word):
-        if word in self.setWordsToCount:
+        if word in self.setWordsToCount or (self.case_sensitive and word.lower() in self.setWordsToCount):
             self.int_word_counter = self.int_word_counter + 1
     
     def compute_feature(self,document):
-        yield self.int_word_counter
+        aux = self.int_word_counter
         self.int_word_counter = 0
-
+        return aux
                 
 class ParagraphCountFeature(ParagraphBasedFeature):
     '''
@@ -103,12 +109,12 @@ class LargeParagraphCountFeature(WordBasedFeature):
         
     def checkWord(self,document,word):
         if word in FeatureCalculator.paragraph_divisors:
-            int_large_paragraph(int_word_counter)
+            self.int_large_paragraph(self.int_word_counter)
         elif word not in FeatureCalculator.word_divisors:
             self.int_word_counter = self.int_word_counter + 1
         
     def large_paragraph(self,int_paragraph_size):
-        if(int_paragraph_size >= size):
+        if(int_paragraph_size >= self.size):
             self.int_large_paragraph = self.int_large_paragraph + 1
     
     def compute_feature(self,document):

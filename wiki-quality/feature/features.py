@@ -7,6 +7,8 @@ Created on 8 de ago de 2017
 from abc import abstractmethod
 from enum import Enum
 import os
+from os.path import join, isfile, isdir
+from posix import listdir
 
 
 class Document(object):
@@ -43,10 +45,14 @@ class DocSetFileReader(FeatureDocumentsReader):
     def __init__(self,file):
         self.file = file
     
+    '''
+        Erro de função não encontrada 
+    '''
+    
     def get_documents(self):
         int_count = 0
-        for str_file in listdir(mypath):
-            str_file_path = join(mypath, str_file) 
+        for str_file in listdir(self.file):
+            str_file_path = join(self.file, str_file) 
             if isfile(str_file_path) and not isdir(str_file_path):
                 with open(str_file) as file:
                     str_data = file.read()
@@ -89,8 +95,9 @@ class FeatureCalculatorManager(object):
         for doc in datReader.get_documents():
             arr_features_result = self.computeFeatureSet(doc, arr_features_to_extract)
             #Para cada um processamento do documentSet necessário,
-            # rodar todas as features que necessitam dele. 
-            
+            # rodar todas as features que necessitam dele.
+            print("RESULTADO DA FEATURE>>>>>>>>> "+str(arr_features_result)) 
+            docWriter.write_document(doc,arr_features_to_extract,arr_features_result)
             
         pass
     
@@ -119,12 +126,9 @@ class FeatureCalculatorManager(object):
         str_text = docText.str_text
         arr_feat_result = []
         
-        for feat in arr_features:
-            arr_feat_result.append(None)
+
             
-        for int_i,feat in enumerate(arr_features):
-            if(isinstance(feat, TextBasedFeature)):
-                arr_feat_result[int_i] = feat.compute_feature(docText)
+
         
         
         #armazo as word based features e sentence based feature
@@ -133,41 +137,56 @@ class FeatureCalculatorManager(object):
         paragraph_buffer = ""
         
         for str_char in str_text:#checar buffer vazio
-            if((word_buffer != "" and sentence_buffer != "") and paragraph_buffer != ""):
-                if(str_char in word_divisors):
-                    for int_i,feat in enumerate(arr_features):
-                        if(isinstance(feat, WordBasedFeature)):
-                            feat.checkWord(docText,word_buffer)
+            if(word_buffer != "" and str_char in FeatureCalculator.word_divisors):
+                for int_i,feat in enumerate(arr_features):
+                
+                    if(isinstance(feat, WordBasedFeature)):
+                        feat.checkWord(docText,word_buffer.strip())
+                        if(str_char != " "):
+                            feat.checkWord(docText,str_char)
                     word_buffer = ""
                 
                 #verifica fim de palavra
-                else:
-                    word_buffer = word_buffer + str_char
+            else:
+                word_buffer = word_buffer + str_char
                 #verifica fim de frase
-                
-                if(str_char in sentence_divisors):
+            
+            if(sentence_buffer != "" and str_char in FeatureCalculator.sentence_divisors):
                     for int_i,feat in enumerate(arr_features):
                         if(isinstance(feat, SentenceBasedFeature)):
                             feat.checkSentence(docText,sentence_buffer)
                     sentence_buffer = ""
-                else:
+            else:
                     sentence_buffer = sentence_buffer + str_char
-                
-                if(str_char in paragraph_divisor):
+            
+            if(paragraph_buffer != "" and str_char in FeatureCalculator.paragraph_divisor):
                     for int_i,feat in enumerate(arr_features):
-                        if(isinstance(feat, TextBasedFeature)):
+                        if(isinstance(feat, ParagraphBasedFeature)):
                             feat.checkParagraph(docText,paragraph_buffer)
                     paragraph_buffer = ""
-                else:
+            else:
                     paragraph_buffer = paragraph_buffer + str_char                    
                     
+            
+        #se necessario, le a ultima palavra/frase/paragrafo do buffer
+        paragraph_buffer = paragraph_buffer.strip()
+        word_buffer = word_buffer.strip()
+        sentence_buffer = sentence_buffer.strip()
+        for feat in arr_features:
+            if(len(word_buffer) > 0 and isinstance(feat, WordBasedFeature)):
+                feat.checkWord(docText, word_buffer)
                 
-        
+            if(len(sentence_buffer) > 0 and isinstance(feat, SentenceBasedFeature)):
+                feat.checkSentence(docText, sentence_buffer)
+            
+            if(len(paragraph_buffer) > 0 and isinstance(feat, ParagraphBasedFeature)):
+                feat.checkParagraph(docText, paragraph_buffer)
         #para todoas as WordBasedFeatue ou SentenceBased feature, rodar o feature_result
-        
-        
-        arr_feat_result[int_i] = feat.compute_feature(docText)
-        
+        for feat in arr_features:
+            arr_feat_result.append(None)
+        for int_i,feat in enumerate(arr_features):
+            arr_feat_result[int_i] = feat.compute_feature(docText)
+        return arr_feat_result
 
 class FeatureVisibilityEnum(Enum):
     '''
