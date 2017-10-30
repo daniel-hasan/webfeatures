@@ -20,7 +20,7 @@ class DocSetReaderForTest(FeatureDocumentsReader):
     @author: Daniel Hasan Dalip hasan@decom.cefetmg.br
     '''
     def get_documents(self):
-        yield Document(1,"doc1","Ola, meu nome é hasan.")
+        yield Document(1,"doc1","Ola, meu nome é hasan")
         yield Document(2,"doc2","ipi ipi ura")
         yield Document(3,"doc3","lalala")
 
@@ -137,10 +137,10 @@ class TestFeatureCalculator(unittest.TestCase):
                                                                     )
         map_result = obj_writer.result
         
-        self.assertListEqual(map_result["doc1"][0], ["Ola",",","meu","nome","é","hasan","."]
+        self.assertListEqual(map_result["doc1"][0], ["Ola",",","meu","nome","é","hasan"]
                                                      , "A leitura das palavras está incorreta"
                                                      )
-        self.assertEqual(map_result["doc1"][1], "Ola, meu nome é hasan.", "A leitura do texto está incorreto")
+        self.assertEqual(map_result["doc1"][1], "Ola, meu nome é hasan", "A leitura do texto está incorreto")
         
 
 if __name__ == "__main__":

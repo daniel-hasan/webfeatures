@@ -96,7 +96,6 @@ class FeatureCalculatorManager(object):
             arr_features_result = self.computeFeatureSet(doc, arr_features_to_extract)
             #Para cada um processamento do documentSet necessário,
             # rodar todas as features que necessitam dele.
-            print("RESULTADO DA FEATURE>>>>>>>>> "+str(arr_features_result)) 
             docWriter.write_document(doc,arr_features_to_extract,arr_features_result)
             
         pass
@@ -126,17 +125,12 @@ class FeatureCalculatorManager(object):
         str_text = docText.str_text
         arr_feat_result = []
         
-
-            
-
-        
-        
         #armazo as word based features e sentence based feature
         word_buffer = ""
         sentence_buffer = ""
         paragraph_buffer = ""
         
-        for str_char in str_text:#checar buffer vazio
+        for str_char in str_text:
             if(word_buffer != "" and str_char in FeatureCalculator.word_divisors):
                 for int_i,feat in enumerate(arr_features):
                 
@@ -146,10 +140,8 @@ class FeatureCalculatorManager(object):
                             feat.checkWord(docText,str_char)
                     word_buffer = ""
                 
-                #verifica fim de palavra
             else:
                 word_buffer = word_buffer + str_char
-                #verifica fim de frase
             
             if(sentence_buffer != "" and str_char in FeatureCalculator.sentence_divisors):
                     for int_i,feat in enumerate(arr_features):
@@ -158,6 +150,7 @@ class FeatureCalculatorManager(object):
                     sentence_buffer = ""
             else:
                     sentence_buffer = sentence_buffer + str_char
+            
             
             if(paragraph_buffer != "" and str_char in FeatureCalculator.paragraph_divisor):
                     for int_i,feat in enumerate(arr_features):
@@ -169,9 +162,11 @@ class FeatureCalculatorManager(object):
                     
             
         #se necessario, le a ultima palavra/frase/paragrafo do buffer
+        
         paragraph_buffer = paragraph_buffer.strip()
         word_buffer = word_buffer.strip()
         sentence_buffer = sentence_buffer.strip()
+        
         for feat in arr_features:
             if(len(word_buffer) > 0 and isinstance(feat, WordBasedFeature)):
                 feat.checkWord(docText, word_buffer)
@@ -181,7 +176,8 @@ class FeatureCalculatorManager(object):
             
             if(len(paragraph_buffer) > 0 and isinstance(feat, ParagraphBasedFeature)):
                 feat.checkParagraph(docText, paragraph_buffer)
-        #para todoas as WordBasedFeatue ou SentenceBased feature, rodar o feature_result
+        
+        #para todoas as WordBasedFeatue ou SentenceBased feature, rodar o compute_feature
         for feat in arr_features:
             arr_feat_result.append(None)
         for int_i,feat in enumerate(arr_features):
@@ -204,8 +200,8 @@ class FeatureCalculator(object):
         @author:  Daniel Hasan Dalip <hasan@decom.cefetmg.br>
     '''
     featureManager = FeatureCalculatorManager()
-    word_divisors = set([" ",",",".","!","?","!"])
-    sentence_divisors = set([".","!","?","!"])
+    word_divisors = set([" ",",",".","!","?"])
+    sentence_divisors = set([".","!","?"])
     paragraph_divisor = set(["\n", os.linesep])
     
     def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document):
