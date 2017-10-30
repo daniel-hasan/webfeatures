@@ -256,6 +256,7 @@ class TestFeatureCalculator(unittest.TestCase):
         sentcountlarge.checkWord(document, "hein")
         sentcountlarge.checkWord(document, " ")
         sentcountlarge.checkWord(document, " ")
+        self.assertEqual(sentcountlarge.int_word_counter, 8, "Deveria contar apenas ass palavras e nao os espacos =P")
         sentcountlarge.checkWord(document, "?")
         sentcountlarge.checkWord(document, " ")
         sentcountlarge.checkWord(document, "Frase")

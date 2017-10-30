@@ -53,6 +53,7 @@ class LargeSentenceCountFeature(WordBasedFeature):
     def compute_feature(self, document):
         aux =  self.int_large_sentence
         self.int_large_sentence = 0
+        self.int_word_counter = 0
         return aux
         
 class WordCountFeature(WordBasedFeature):
@@ -111,10 +112,10 @@ class LargeParagraphCountFeature(WordBasedFeature):
         super(WordBasedFeature,self).__init__(name,description,reference,visibility,text_format,feature_time_per_document)    
         self.int_large_paragraph = 0
         self.int_word_counter = 0
-        
+        self.size = size
     def checkWord(self,document,word):
         if word in FeatureCalculator.paragraph_divisor:
-            self.int_large_paragraph(self.int_word_counter)
+            self.large_paragraph(self.int_word_counter)
         elif word not in FeatureCalculator.word_divisors:
             self.int_word_counter = self.int_word_counter + 1
         

@@ -6,9 +6,7 @@ Testes de todas as classes abstratas de calculo das features
 
 import unittest
 
-from feature.features import FeatureDocumentsReader, FeatureVisibilityEnum, \
-    WordBasedFeature, TextBasedFeature, FeatureDocumentsWriter, Document, \
-    FeatureCalculator
+from feature.features import *
 from utils.basic_entities import FormatEnum, FeatureTimePerDocumentEnum
 
 
@@ -20,9 +18,9 @@ class DocSetReaderForTest(FeatureDocumentsReader):
     @author: Daniel Hasan Dalip hasan@decom.cefetmg.br
     '''
     def get_documents(self):
-        yield Document(1,"doc1","Ola, meu nome é hasan")
-        yield Document(2,"doc2","ipi ipi ura")
-        yield Document(3,"doc3","lalala")
+        yield Document(1,"doc1","Ola, meu nome é hasan.")
+        yield Document(2,"doc2","ipi ipi ura. Duas frases no texto.")
+        yield Document(3,"doc3","lalala.\nMeu teste tem tres paragrafos.\nEsse é o último.\n")
 
 class DocWriterForTest(FeatureDocumentsWriter):
     '''
@@ -55,34 +53,40 @@ class WordTestFeature(WordBasedFeature):
         arr_aux = self.arr_str_words
         self.arr_str_words = []      
         return arr_aux
-class TextTestFeature(TextBasedFeature):
-    '''
-    Classe para usar no teste que verifica se o WordBasedFeature está funcionando. 
-    '''
-    def compute_feature(self,document):
-        return document.str_text
-
     
-'''
-Essa classe seria para testar o SentenceBasedFeature está funcionadno - implementar
-o SentenceBasedFeature em features.py primeiro
 class SentenceTestFeature(SentenceBasedFeature):
-    
-    Classe para usar no teste que verifica se o WordBasedFeature está funcionando. 
-    
+    '''
+    Classe para usar no teste que verifica se o SentenceBasedFeature está funcionando. 
+    '''
+   
     def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document):
         super(SentenceBasedFeature,self).__init__(name,description,reference,visibility,text_format,feature_time_per_document)
-        self.arr_str_sentence = []  
+        self.arr_str_sentence = []
         
           
     def checkSentence(self,document,sentence):
         self.arr_str_sentence.append(sentence)
     
-    def feature_result(self,document):
+    def compute_feature(self,document):
         arr_aux = self.arr_str_sentence
         self.arr_str_sentence = []      
-        return arr_str_sentence    
-'''    
+        return arr_aux       
+    
+
+class ParagraphTestFeature(ParagraphBasedFeature):
+  
+    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document):
+        super(ParagraphBasedFeature,self).__init__(name,description,reference,visibility,text_format,feature_time_per_document)
+        self.arr_str_paragraph = []
+        
+          
+    def checkParagraph(self,document,paragraph):
+        self.arr_str_paragraph.append(paragraph)
+    
+    def compute_feature(self,document):
+        arr_aux = self.arr_str_paragraph
+        self.arr_str_paragraph = []      
+        return arr_aux    
 
 class TestFeatureCalculator(unittest.TestCase):
     
@@ -118,16 +122,17 @@ class TestFeatureCalculator(unittest.TestCase):
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.text_plain, 
                                          FeatureTimePerDocumentEnum.MILLISECONDS),
-                        TextTestFeature("outra feature legal", "Essa feature é divertitida", 
+                        SentenceTestFeature("outra feature legal", "Essa feature é divertitida", 
                                          "SILVA Ola. Contando Olas. Conferencia dos Hello World", 
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.text_plain, 
                                          FeatureTimePerDocumentEnum.MILLISECONDS),
-                        #SentenceTestFeature("outra feature legal sentence", "Essa feature é divertitida", 
-                        #                 "SILVA Ola. Contando Olas. Conferencia dos Hello World", 
-                        #                 FeatureVisibilityEnum.public, 
-                        #                 FormatEnum.text_plain, 
-                        #                 FeatureTimePerDocumentEnum.MILLISECONDS)
+                        
+                        ParagraphTestFeature("outra feature legal", "Essa feature é divertitida", 
+                                         "SILVA Ola. Contando Olas. Conferencia dos Hello World", 
+                                         FeatureVisibilityEnum.public, 
+                                         FormatEnum.text_plain, 
+                                         FeatureTimePerDocumentEnum.MILLISECONDS)
                         ]
         obj_writer = DocWriterForTest()
         FeatureCalculator.featureManager.computeFeatureSetDocuments(DocSetReaderForTest(),
@@ -137,7 +142,7 @@ class TestFeatureCalculator(unittest.TestCase):
                                                                     )
         map_result = obj_writer.result
         
-        self.assertListEqual(map_result["doc1"][0], ["Ola",",","meu","nome","é","hasan"]
+        self.assertListEqual(map_result["doc1"][0], ["Ola",",","meu","nome","é","hasan","."]
                                                      , "A leitura das palavras está incorreta"
                                                      )
         self.assertEqual(map_result["doc1"][1], "Ola, meu nome é hasan", "A leitura do texto está incorreto")
