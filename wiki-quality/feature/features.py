@@ -6,6 +6,10 @@ Created on 8 de ago de 2017
 '''
 from abc import abstractmethod
 from enum import Enum
+import os
+from os.path import join, isfile, isdir
+from posix import listdir
+
 
 class Document(object):
     def __init__(self,int_doc_id,str_doc_name,str_text):
@@ -35,8 +39,28 @@ class FeatureDocumentsReader(object):
             
             @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br> 
         '''
-        raise NotImplementedError("Voce deve criar uma subclasse e a mesma deve sobrepor este método")
+        
+
+class DocSetFileReader(FeatureDocumentsReader):
+    def __init__(self,file):
+        self.file = file
     
+    '''
+        Erro de função não encontrada 
+    '''
+    
+    def get_documents(self):
+        int_count = 0
+        for str_file in listdir(self.file):
+            str_file_path = join(self.file, str_file) 
+            if isfile(str_file_path) and not isdir(str_file_path):
+                with open(str_file) as file:
+                    str_data = file.read()
+                    yield Document(int_count, str_file,str_data)
+                    int_count = int_count+1
+                    
+                    
+
 class DocSetReaderDummy(FeatureDocumentsReader):
     def get_documents(self):
         yield Document(1,"doc1","Ola meu nome é hasan")
@@ -69,14 +93,10 @@ class FeatureCalculatorManager(object):
             # Rodar todos os docuemntos para todas as features que não
             # necessitam de algum metodo de preprocessamento de todo o conjunto de documento
         for doc in datReader.get_documents():
-            pass
-                
+            arr_features_result = self.computeFeatureSet(doc, arr_features_to_extract)
             #Para cada um processamento do documentSet necessário,
-            # rodar todas as features que necessitam dele. 
-            
-            #
-            
-            
+            # rodar todas as features que necessitam dele.
+            docWriter.write_document(doc,arr_features_to_extract,arr_features_result)
             
         pass
     
@@ -98,8 +118,73 @@ class FeatureCalculatorManager(object):
         Saída: arranjo para cada posicao de arrFeature, a resposta da feture correspondente
         
         @author:  
-        '''
-        pass
+        ''' 
+        
+        
+        #armazeno os text based features 
+        str_text = docText.str_text
+        arr_feat_result = []
+        
+        #armazo as word based features e sentence based feature
+        word_buffer = ""
+        sentence_buffer = ""
+        paragraph_buffer = ""
+        
+        for str_char in str_text:
+                
+            if(word_buffer != "" and str_char in FeatureCalculator.word_divisors):
+                for int_i,feat in enumerate(arr_features):
+                    if(isinstance(feat, WordBasedFeature)):
+                        feat.checkWord(docText,word_buffer.strip())
+                        if(str_char != " "):
+                            feat.checkWord(docText,str_char)
+                    word_buffer = ""
+                
+            else:
+                word_buffer = word_buffer + str_char
+            
+            sentence_buffer = sentence_buffer + str_char
+            if(str_char in FeatureCalculator.sentence_divisors):
+                    for int_i,feat in enumerate(arr_features):
+                        if(isinstance(feat, SentenceBasedFeature)):
+                            feat.checkSentence(docText,sentence_buffer)
+                    sentence_buffer = ""
+
+
+            
+            
+            if(paragraph_buffer != "" and str_char in FeatureCalculator.paragraph_divisor):
+                    for int_i,feat in enumerate(arr_features):
+                        if(isinstance(feat, ParagraphBasedFeature)):
+                            feat.checkParagraph(docText,paragraph_buffer)
+                    paragraph_buffer = ""
+            else:
+                    paragraph_buffer = paragraph_buffer + str_char                    
+                    
+            
+        #se necessario, le a ultima palavra/frase/paragrafo do buffer
+        
+        paragraph_buffer = paragraph_buffer.strip()
+        word_buffer = word_buffer.strip()
+        sentence_buffer = sentence_buffer.strip(" ")
+        
+        for feat in arr_features:
+            if(len(word_buffer) > 0 and isinstance(feat, WordBasedFeature)):
+                feat.checkWord(docText, word_buffer)
+                
+            if(len(sentence_buffer) > 0 and isinstance(feat, SentenceBasedFeature)):
+                feat.checkSentence(docText, sentence_buffer)
+            
+            if(len(paragraph_buffer) > 0 and isinstance(feat, ParagraphBasedFeature)):
+                feat.checkParagraph(docText, paragraph_buffer)
+        
+        #para todoas as WordBasedFeatue ou SentenceBased feature, rodar o compute_feature
+        for feat in arr_features:
+            arr_feat_result.append(None)
+        for int_i,feat in enumerate(arr_features):
+            arr_feat_result[int_i] = feat.compute_feature(docText)
+        return arr_feat_result
+
 class FeatureVisibilityEnum(Enum):
     '''
         Enum responsável pela visibilidade das features
@@ -116,6 +201,10 @@ class FeatureCalculator(object):
         @author:  Daniel Hasan Dalip <hasan@decom.cefetmg.br>
     '''
     featureManager = FeatureCalculatorManager()
+    word_divisors = set([" ",",",".","!","?"])
+    sentence_divisors = set([".","!","?"])
+    paragraph_divisor = set(["\n", os.linesep])
+    
     def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document):
         
         self.name = name
@@ -137,10 +226,30 @@ class TextBasedFeature(FeatureCalculator):
     analisar o texto por palavra para efetuar o calculo desta feature.
     @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
     '''
+    
     @abstractmethod
     def compute_feature(self,document):
         raise NotImplementedError
+    
+class ParagraphBasedFeature(FeatureCalculator):
+    
+    @abstractmethod
+    def checkParagraph(self,document,paragraph):
+        raise NotImplementedError
+    
+    @abstractmethod
+    def compute_feature(self,document):
+        raise NotImplementedError   
+    
+class SentenceBasedFeature(FeatureCalculator):
 
+    @abstractmethod
+    def checkSentence(self,document,sentence):
+        raise NotImplementedError
+    
+    @abstractmethod
+    def compute_feature(self,document):
+        raise NotImplementedError
 
 class WordBasedFeature(FeatureCalculator):
     '''
@@ -158,14 +267,21 @@ class WordBasedFeature(FeatureCalculator):
     
     
     @abstractmethod
-    def feature_result(self,document):
+    def compute_feature(self,document):
+        raise NotImplementedError
+            
+
+class TagBasedFeature(FeatureCalculator):
+    
+    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document):
+        super(FeatureCalculator,self).__init__(name,description,reference,visibility,text_format,feature_time_per_document)   
+    
+    def checkTag(self, document):
+        raise NotImplementedError
+    
+    def compute_feature(self, document):
         raise NotImplementedError
 
-
-
-
-            
-    
 class ParamTypeEnum(Enum):
     '''
         Tipo do valor de um parametro de uma feature.
