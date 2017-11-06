@@ -21,6 +21,7 @@ class DocSetReaderForTest(FeatureDocumentsReader):
         yield Document(1,"doc1","Ola, meu nome é hasan.")
         yield Document(2,"doc2","ipi ipi ura. Duas frases no texto.")
         yield Document(3,"doc3","lalala.\nMeu teste tem tres paragrafos.\nEsse é o último.\n")
+        yield Document(4,"doc4","lalala.\nMeu teste tem tres paragrafos.\nEsse é o último")
 
 class DocWriterForTest(FeatureDocumentsWriter):
     '''
@@ -65,6 +66,7 @@ class SentenceTestFeature(SentenceBasedFeature):
         
           
     def checkSentence(self,document,sentence):
+        #print("SENTENCA:  "+sentence)
         self.arr_str_sentence.append(sentence)
     
     def compute_feature(self,document):
@@ -145,9 +147,12 @@ class TestFeatureCalculator(unittest.TestCase):
         self.assertListEqual(map_result["doc1"][0], ["Ola",",","meu","nome","é","hasan","."]
                                                      , "A leitura das palavras está incorreta"
                                                      )
-        self.assertEqual(map_result["doc1"][1], "Ola, meu nome é hasan", "A leitura do texto está incorreto")
-        
-
+        self.assertListEqual(map_result["doc1"][1], ["Ola, meu nome é hasan."], "A leitura do texto está incorreto")
+        self.assertListEqual(map_result["doc1"][1], ["Ola, meu nome é hasan."], "A leitura do texto está incorreto")
+        self.assertListEqual(map_result["doc4"][1], ["lalala.","\nMeu teste tem tres paragrafos.","\nEsse é o último"], "A leitura do texto está incorreto")
+        self.assertListEqual(map_result["doc4"][2], ["lalala.","Meu teste tem tres paragrafos.","Esse é o último"], "A leitura do texto está incorreto")
+        self.assertListEqual(map_result["doc1"][2], ["Ola, meu nome é hasan."], "A leitura do texto está incorreto")
+    
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'TestFeatureCalculator.testName']
     unittest.main()

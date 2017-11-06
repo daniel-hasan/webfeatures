@@ -131,9 +131,9 @@ class FeatureCalculatorManager(object):
         paragraph_buffer = ""
         
         for str_char in str_text:
+                
             if(word_buffer != "" and str_char in FeatureCalculator.word_divisors):
                 for int_i,feat in enumerate(arr_features):
-                
                     if(isinstance(feat, WordBasedFeature)):
                         feat.checkWord(docText,word_buffer.strip())
                         if(str_char != " "):
@@ -143,13 +143,14 @@ class FeatureCalculatorManager(object):
             else:
                 word_buffer = word_buffer + str_char
             
-            if(sentence_buffer != "" and str_char in FeatureCalculator.sentence_divisors):
+            sentence_buffer = sentence_buffer + str_char
+            if(str_char in FeatureCalculator.sentence_divisors):
                     for int_i,feat in enumerate(arr_features):
                         if(isinstance(feat, SentenceBasedFeature)):
                             feat.checkSentence(docText,sentence_buffer)
                     sentence_buffer = ""
-            else:
-                    sentence_buffer = sentence_buffer + str_char
+
+
             
             
             if(paragraph_buffer != "" and str_char in FeatureCalculator.paragraph_divisor):
@@ -165,7 +166,7 @@ class FeatureCalculatorManager(object):
         
         paragraph_buffer = paragraph_buffer.strip()
         word_buffer = word_buffer.strip()
-        sentence_buffer = sentence_buffer.strip()
+        sentence_buffer = sentence_buffer.strip(" ")
         
         for feat in arr_features:
             if(len(word_buffer) > 0 and isinstance(feat, WordBasedFeature)):
@@ -269,7 +270,18 @@ class WordBasedFeature(FeatureCalculator):
     def compute_feature(self,document):
         raise NotImplementedError
             
+
+class TagBasedFeature(FeatureCalculator):
     
+    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document):
+        super(FeatureCalculator,self).__init__(name,description,reference,visibility,text_format,feature_time_per_document)   
+    
+    def checkTag(self, document):
+        raise NotImplementedError
+    
+    def compute_feature(self, document):
+        raise NotImplementedError
+
 class ParamTypeEnum(Enum):
     '''
         Tipo do valor de um parametro de uma feature.
