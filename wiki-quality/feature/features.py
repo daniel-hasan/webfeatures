@@ -9,6 +9,7 @@ from enum import Enum
 import os
 from os.path import join, isfile, isdir
 from posix import listdir
+from html.parser import HTMLParser
 
 
 class Document(object):
@@ -271,14 +272,21 @@ class WordBasedFeature(FeatureCalculator):
         raise NotImplementedError
             
 
-class TagBasedFeature(FeatureCalculator):
+class TagBasedFeature(FeatureCalculator, HTMLParser):
     
     def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document):
         super(FeatureCalculator,self).__init__(name,description,reference,visibility,text_format,feature_time_per_document)   
     
-    def checkTag(self, document):
-        raise NotImplementedError
+    def handle_starttag(self, strTag, arr_args):
+        pass
     
+    def handle_endtag(self, strTag):
+        pass
+    
+    def handle_data(self, strData):
+        pass
+    
+    @abstractmethod
     def compute_feature(self, document):
         raise NotImplementedError
 
