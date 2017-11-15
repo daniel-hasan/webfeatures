@@ -50,6 +50,7 @@ class EnumManager(models.Manager):
         Atualiza os enuns sempre quando esta classe de modelo
         for consultada pela primeira vez durante a execução do app.
         '''
+	print("PEGOU O QUERY SET: "+str(self.model.__class__.__name__))
         if(not hasattr(self.model, '__first_query') ):
             #print("Prima vez")
             setattr(self.model,"__first_query", False)
