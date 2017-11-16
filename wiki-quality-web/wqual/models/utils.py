@@ -28,6 +28,15 @@ class EnumQuerySet(models.query.QuerySet):
         Busca se um determinado enum existe no BD pelo seu nome.
         '''
         return self.filter(name=enum.name).exists()
+
+    def get_enum(self,enum):
+        '''
+        Created on 16 de nov de 2017
+        
+        @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
+        Retorna o enum 
+        '''
+        return self.get(name=enum.name)
     
     def insert_enum(self,enum):
         '''
