@@ -54,6 +54,26 @@ th {
 }
 
 td {
-	text-align: center;
+	text-align: left;
 	border-bottom: 1px solid rgb(224, 224, 224);
+}
+
+.tituloPublicacao {
+	width: 25%;
+}
+
+.ano {
+	width: 10%;
+}
+
+.autor-titulo {
+	width: 65%;
+}
+
+.title {
+	font-weight: bold;
+}
+
+.conferencia {
+	width: 25%;
 }

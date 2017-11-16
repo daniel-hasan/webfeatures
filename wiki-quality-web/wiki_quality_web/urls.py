@@ -15,6 +15,7 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
+
 from wqual import views
 
 
@@ -25,4 +26,6 @@ urlpatterns = [
     url(r'^extractFeatures$', views.DatasetListView.as_view(), name='extract_features'),
     url(r'^admin/', admin.site.urls),
     url(r'^publications$', views.PublicationList.as_view(), name='publications'),
+    url(r'^used_features.js$', views.UsedFeatureListView.as_view(), name='used_feature_js'),
+    url(r'^used_features.html', views.UsedFeatureListViewTeste.as_view(), name='used_features'),
 ]
