@@ -92,7 +92,7 @@ class FeatureSet(models.Model):
     user = models.ForeignKey(User, models.PROTECT)
     
     def __str__(self):
-        return "{group}. {name}: {description} ".format(group=self.group, name=self.nam_feature_set, description=self.dsc_feature_set)
+        return "{pk} {name}: {description} ".format(pk=str(self.pk), name=self.nam_feature_set, description=self.dsc_feature_set)
     
     class Meta:
         db_table = 'wqual_feature_set'
@@ -161,3 +161,4 @@ class FeatureConfigurableParam(models.Model):
     
     class Meta:
         db_table = 'wqual_feature_configurable_param'
+    
