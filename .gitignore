@@ -2,3 +2,5 @@
 /.metadata/
 .pydevproject
 .project
+*.py~
+*.*~
