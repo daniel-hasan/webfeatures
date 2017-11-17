@@ -1,6 +1,31 @@
-
 $( function() {
-		$('#id_nam_feature_set').addClass('form-control');
+	var dialog;
+		  
+	    dialog = $( "#add-form" ).dialog({
+	      autoOpen: false,
+	      height: 300,
+	      width: 600,
+	      modal: true,
+	    });
+	 
+	    $( "#insert" ).button().on( "click", function() {
+	      dialog.dialog( "open" );
+	    });
+	
+	    $( "#cancel" ).button().on( "click", function() {
+	      dialog.dialog( "close" );
+	    });
+	    
+	    $( "#add" ).button().on( "click", function() {
+	      dialog.dialog( "close" );
+	    });
+} );
+
+function cancelEditFeature(){
+	window.location.href = '{% url "feature_set_list" %}';
+}
+$( function() {
+	$('#id_nam_feature_set').addClass('form-control');
 	$('#id_dsc_feature_set').addClass('form-control');
 	$('#id_language').addClass('form-control');
 	
@@ -53,7 +78,7 @@ $( function() {
  
         $( "<a>" )
           .attr( "tabIndex", -1 )
-          .attr( "title", "Show All Items" )
+          .attr( "title", "Show All Languages" )
           .tooltip()
           .appendTo( this.wrapper )
           .button({
@@ -138,7 +163,7 @@ $( function() {
     
     $( function() {
 	    $( "#tabs" ).tabs();
-	  } );
-   
+	});   
+    
  } );
  
