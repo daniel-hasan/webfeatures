@@ -4,9 +4,11 @@
 
 {% block content %}
 
-
-
 <script src="{% static "js/featureSetConfigUpdate.js" %}"></script>
+
+<script>
+
+</script>
 
 <div id="tabs">
   <ul>
@@ -15,28 +17,50 @@
   </ul>
   <div id="tabs-1">
   	<div class = "col-md-6">	
-		<form action="" method="post">{% csrf_token %}
+  		{% if object.id %}
+  				<form action="{% url "feature_set_edit" object.nam_feature_set %}" method="post">{% csrf_token %}
+  			{% else %}
+  				<form action="{% url "feature_set_insert" %}" method="post">{% csrf_token %}
+  		{% endif %}
 				{% for field in form %}
 					<div class="form-group">
-	                    <span>{{ field.label }}:</span> 
-	                    <div>
+						{% ifequal field.label "Nam feature set" %}
+							<span>Name Feature Set:</span>
+						{% endifequal %}	
+						
+						{% ifequal field.label "Dsc feature set" %}
+							<span>Description Feature Set:</span>
+						{% endifequal %}
+						
+						{% ifequal field.label "Language" %}
+							<span>Language:</span>
+						{% endifequal %}
+						
+						<div>
 	                    	{{ field }}
 	                   </div>
 	                </div>
 	    		{% endfor %}
 	    		<button type="submit" class="btn btn-primary">Save</button>
-	    		<button type="submit" class="btn btn-danger">Cancel</button>
+	    		<input type="button" class="btn btn-danger" onclick="cancelEditFeature()" value = "Cancel" />
 		</form>
 	</div>
   </div>
   <div id="tabs-2">
-  	<a href="{% url "feature_set_insert" %}"><button id="insert" class="btn btn-primary">Add Feature</button></a>
+  	<a><button id="insert" class="btn btn-primary">Add Feature</button></a>
   </div>
 </div>
-<div id="formu">
-	ola mundo!
-</div>
 
+
+<div id="add-form" title="Add Feature Set">
+  <form action="" method="post">{% csrf_token %}
+	 <span class="ui-icon  ui-icon-search"></span>
+	 <input type="text" name="search" placeholder="search..."><br><br>
+				
+	 <button type="submit" id="add">Add</button>
+	 <button type="submit" id="cancel">Cancel</button>
+  </form>
+</div>
 
 
  
