@@ -7,11 +7,22 @@ Views relacionadas a configuração das features
 from django.forms.utils import ErrorList
 from  django.urls  import  reverse
 from django.urls.base import reverse_lazy
+
+from django import forms
+from django.core.exceptions import ValidationError
+from django.core.urlresolvers import reverse_lazy
+from django.forms.utils import ErrorList
+from  django.urls  import  reverse
+
 from django.views.generic.edit import UpdateView, CreateView, DeleteView
 from django.views.generic.list import ListView
 
 from utils.basic_entities import LanguageEnum
+
 from wqual.models.featureset_config import FeatureSet, Language, UsedFeature
+
+from wqual.models import FeatureSet
+from wqual.models.featureset_config import Language        
 
 
 class FormValidation(object):
@@ -44,8 +55,7 @@ class FeatureSetListView(ListView):
 
 class FeatureSetInsert(CreateView):
     '''
-    Created on 14 de ago de 2017
-    
+    Created on 14 de ago de 2017    
     @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
     Lista todos os conjunto de features criados.
     '''
@@ -89,6 +99,10 @@ class FeatureSetEdit(UpdateView):
     
     def get_object(self):
         return FeatureSet.objects.get(user=self.request.user,nam_feature_set=self.kwargs["nam_feature_set"])
+    
+    def get_success_url(self):
+        return reverse('feature_set_list')
+
      
 class UsedFeatureListView(ListView):
     '''
@@ -119,13 +133,14 @@ class UsedFeatureListViewTeste(ListView):
     def get_success_url(self):
         return reverse('feature_set_list')
     
+
 class FeatureSetDelete(DeleteView):
     model = FeatureSet
     template_name = "content/feature_set_delete.html"
     
-
     def get_object(self):
         return FeatureSet.objects.get(user=self.request.user,nam_feature_set=self.kwargs["nam_feature_set"])
      
     def get_success_url(self):
         return reverse_lazy('feature_set_list')
+    
