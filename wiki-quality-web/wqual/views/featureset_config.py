@@ -4,39 +4,15 @@ Created on 14 de ago de 2017
 @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
 Views relacionadas a configuração das features
 '''
-<<<<<<< HEAD
 from django.forms.utils import ErrorList
-from  django.urls  import  reverse
-from django.urls.base import reverse_lazy
-
-=======
->>>>>>> 9a6c66b798c5a465b06db7335edc2ca43d3e6647
-from django import forms
-from django.core.exceptions import ValidationError
-from django.core.urlresolvers import reverse_lazy
-from django.forms.utils import ErrorList
-from  django.urls  import  reverse
-<<<<<<< HEAD
-
-=======
->>>>>>> 9a6c66b798c5a465b06db7335edc2ca43d3e6647
-from django.views.generic.edit import UpdateView, CreateView, DeleteView
+from django.urls.base import reverse, reverse_lazy
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 
 from utils.basic_entities import LanguageEnum
-<<<<<<< HEAD
-
 from wqual.models.featureset_config import FeatureSet, Language, UsedFeature
 
-from wqual.models import FeatureSet
-from wqual.models.featureset_config import Language        
 
-
-=======
-from wqual.models import FeatureSet
-from wqual.models.featureset_config import Language        
-
->>>>>>> 9a6c66b798c5a465b06db7335edc2ca43d3e6647
 class FormValidation(object):
     def form_valid(self, view, form):
         form.instance.user = view.request.user
@@ -59,7 +35,7 @@ class FeatureSetListView(ListView):
     @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
     Lista todos os conjunto de features criados.
     '''
-    
+
     model = FeatureSet
     template_name = "content/feature_set_list.html"
     def get_queryset(self):
