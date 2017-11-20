@@ -50,6 +50,16 @@ class FeatureFactory(models.Model):
     '''
     nam_module = models.CharField( max_length=45)
     nam_factory_class = models.CharField( max_length=45) 
+    
+    def get_class(self):
+        '''
+        resgata a classe com um vocabulario dependente de linguagem a ser usa
+        @todo: Nem todos as linguas sao implementadas, deve-se lançar uma exceção e 
+        assim não criar a feature caso nao encontre a classe
+        ''' 
+        module = __import__( self.nam_module)
+        Klass = getattr(module,self.nam_factory_class)
+        return Klass
 
     class Meta:
         db_table = 'wqual_feature_factory'
