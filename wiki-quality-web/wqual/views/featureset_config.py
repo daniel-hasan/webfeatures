@@ -53,6 +53,7 @@ class FeatureSetListView(ListView):
     def get_queryset(self):
         return FeatureSet.objects.filter(user=self.request.user) if  self.request.user.is_authenticated() else []
 
+
 class FeatureSetInsert(CreateView):
     '''
     Created on 14 de ago de 2017    
@@ -60,6 +61,9 @@ class FeatureSetInsert(CreateView):
     Lista todos os conjunto de features criados.
     '''
     fields=["nam_feature_set","dsc_feature_set", "language"]
+    labels = {
+        "nam_feature_set": "Name"
+    }
     initial = { 'language': Language.objects.get(name=LanguageEnum.en.name) }
     
     model = FeatureSet

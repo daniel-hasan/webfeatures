@@ -1,15 +1,49 @@
 {% extends "../bases/base_main_site.html" %}
-
-
+{% load static %}
 {% block title %}Feature Set Update Insert{% endblock %}
 
-
 {% block content %}
-	
-	<form action="" method="post">{% csrf_token %}
-    	{{ form.as_p }}
-    	<input type="submit" value="Update" />
-	</form>
-	
-	
+
+<!-- 
+	Autor:​ ​ <Aline><Pinto>
+	Data​ ​ de​ ​ modificação:​ ​ <07>/<11>/<2017>
+​ ​ ​ ​ ​Objetivo​ ​ da​ ​ modificação:​ ​ {Adicionar o autocomplete do jQuery UI. O código do script que gera um select
+	com autocomplete foi retirado da página do framework. Entretanto ele não está sendo reconhecido na script js 
+	e não está gerando o botão do select. É algo a ser consertado.}
+-->
+
+<script src="{% static "js/featureSetConfigUpdate.js" %}"></script>
+
+<div id="tabs">
+  <ul>
+    <li><a href="#tabs-1">Description</a></li>
+    <li><a href="#tabs-2">Features Set</a></li>
+  </ul>
+  <div id="tabs-1">
+  	<div class = "col-md-6">	
+		<form action="" method="post">{% csrf_token %}
+				{% for field in form %}
+					<div class="form-group">
+	                    <span>{{ field.label }}:</span> 
+	                    <div>
+	                    	{{ field }}
+	                   </div>
+	                </div>
+	    		{% endfor %}
+	    		<button type="submit" class="btn btn-primary">Save</button>
+	    		<button type="submit" class="btn btn-danger">Cancel</button>
+		</form>
+	</div>
+  </div>
+  <div id="tabs-2">
+  	<a href="{% url "feature_set_insert" %}"><button id="insert" class="btn btn-primary">Add Feature</button></a>
+  </div>
+</div>
+<div id="formu">
+	ola mundo!
+</div>
+
+
+
+ 
 {% endblock %}
