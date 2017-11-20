@@ -85,7 +85,7 @@ class FeatureSet(models.Model):
     user = models.ForeignKey(User, models.PROTECT)
     
     def __str__(self):
-        return "{pk} {name}: {description} ".format(pk=str(self.pk), name=self.nam_feature_set, description=self.dsc_feature_set)
+        return "{name}: {description} ".format(name=self.nam_feature_set, description=self.dsc_feature_set)
 
     
     class Meta:
