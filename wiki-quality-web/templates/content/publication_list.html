@@ -1,42 +1,43 @@
 {% extends "../bases/base_main_site.html" %}
 
 
+
+{% block title %}Publications{% endblock %}
+
+
 {% block content %}
 
-	<table>
-		<thead>
-			<tr>
-				<th>Year</th>
-				<th>Authors and title</th>
-				<th>Conference</th>
-			</tr>
-		</thead>
-		<tbody>
-			{% for database in object_list %}
-			<tr>
-				<td classs="ano">{{ database.num_year }}</td>
-				<td class="autor-titulo">
-					{% for author in database.authors.all %}
-						{% if forloop.last %}
-							{{ author }}: 
-						{% else %}
-							{{ author }},
-						{% endif %}
-					{% endfor %}
-					<span class="title">
-						{{ database.nam_title }}.
-					</span>
+<table class="table table-bordered table-condensed">
+	<thead>	
+		<tr class="table-success">
+			<th>Title</th>
+			<th>Authors</th>
+			<th>Conference</th>
+			<th>Period</th>
+		</tr>
+	</thead>
+	{% for publication in object_list %}	
+	<tbody>	
+		<tr> 
+			<td>{{ publication.nam_title }}</td>
+			<td>
+				{% for author in publication.authors.all %}
+					{% if forloop.last %}
+						{{ author }}
+					{% else %}
+						{{ author }}
+					{% endif %}
++				{% endfor %}
 				</td>
-				<td class="conferencia"> {{ database.conference.nam_abbreviation }} </td>
-			</tr>
-			{% empty %}
-			<tr>
-				<td class="ano">-------------</td>
-				<td class="autor-titulo">----------------------</td>
-				<td class="conferencia">------------------------</td>
-			</tr>
-			{% endfor %}
-		</tbody>
-	</table>
+			<td>{{ publication.conference }}</td>
+			<td>{{ publication.num_year }}</td> 
+		</tr> 
+	</tbody>
+	{% endfor %}
+</table>
 
 {% endblock %}
+
+
+=======
+>>>>>>> 9a6c66b798c5a465b06db7335edc2ca43d3e6647
