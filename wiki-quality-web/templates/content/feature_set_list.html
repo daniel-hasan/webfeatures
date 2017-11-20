@@ -4,7 +4,10 @@
 
 {% block content %}
 
-	<table class="table table-bordered table-condensed">
+
+<p><a href="{% url "feature_set_insert" %}">Inserir</a></p>
+
+<table class="table table-bordered table-condensed">
 	<thead>
 	  <tr>
 	     <th>Name Feature Set</th>
@@ -23,6 +26,7 @@
          	<tr>        	    	
 	{% endfor %}
 	</table>
+
 {% endblock %}
 
 
