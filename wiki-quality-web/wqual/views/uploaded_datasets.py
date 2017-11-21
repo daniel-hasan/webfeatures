@@ -7,6 +7,7 @@ Views relacionadas a upload dos datasets
 from django.views.generic.list import ListView
 
 from wqual.models import Dataset
+from wqual.models.uploaded_datasets import Status, StatusEnum
 
 
 class DatasetListView(ListView):
@@ -21,6 +22,7 @@ class DatasetListView(ListView):
     template_name = "content/dataset_list.html"
     
     def get_queryset(self):
+        obj = Status.objects.get_enum(StatusEnum.PROCESSING)
         return Dataset.objects.filter(user=self.request.user) if  self.request.user.is_authenticated() else []
     
     
