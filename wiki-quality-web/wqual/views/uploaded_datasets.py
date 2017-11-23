@@ -4,10 +4,12 @@ Created on 14 de ago de 2017
 @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
 Views relacionadas a upload dos datasets
 '''
+from datetime import datetime
 from django.views.generic.edit import CreateView
 
 from wqual.models import Dataset
 from wqual.models.uploaded_datasets import Status, StatusEnum
+
 
 class DatasetCreateView(CreateView):
     '''
@@ -26,7 +28,7 @@ class DatasetCreateView(CreateView):
         form.instance.user = self.request.user
         form.instance.nam_dataset = self.request.FILES['nam_dataset']
         form.instance.status = Status.objects.get_enum(StatusEnum.PROCESSING)
-        form.instance.dat_submitted = self.request.FILES['dat_submitted']
+        form.instance.dat_submitted = datetime.now()
         return super(CreateView, self).form_valid(form)
 
     #def get_queryset(self):
