@@ -56,7 +56,6 @@ class FeatureSetInsert(CreateView):
     form_validator = FormValidation()
 
     def form_valid(self, form):
-        
         bol_valid = FeatureSetInsert.form_validator.form_valid(self, form)
         return super(CreateView, self).form_valid(form) if bol_valid else super(CreateView, self).form_invalid(form)
      

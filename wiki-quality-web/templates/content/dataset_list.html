@@ -2,7 +2,24 @@
 
 
 {% block content %}
-
+	<form method="post">
+		{% csrf_token %}
+		{% for field in form %}
+			<div>
+				{% ifequal field.label "Format" %}
+					<span>Format Dataset:</span>
+				{% endifequal %}
+				
+				{% ifequal field.label "Feature set" %}
+					<span>Feature Set Dataset: </span>
+				{% endifequal %}
+				
+				<div>
+					{{ field }}
+				</div>
+			</div>
+		{% endfor %}
+	</form>
 	<table>
 			<thead>
 	    		<tr>
@@ -18,8 +35,8 @@
 		{% for database in object_list %}
 	   			<tr>
 	    			<td>{{ database.nam_dataset }}</td>
-	    			<td>{{ database.status.name }}</td>
-	    			<td>{{ database.dat_submitted }}</td>
+%	    			<td>{{ database.dat_submitted }}</td>
+
 	    			<td>{{ database.dat_valid_until }}</td>
 	    			<td>{{ database.feature_set }}</td>
 	    			<td>{{ database.format.name }}</td>
