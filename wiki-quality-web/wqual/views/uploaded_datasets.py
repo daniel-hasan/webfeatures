@@ -25,9 +25,14 @@ class DatasetCreateView(CreateView):
     def form_valid(self, form):
         form.instance.user = self.request.user
         form.instance.nam_dataset = self.request.FILES['nam_dataset']
-        form.instance.status = self.request.status
+        form.instance.status = Status.objects.get_enum(StatusEnum.PROCESSING)
         form.instance.dat_submitted = self.request.FILES['dat_submitted']
         return super(CreateView, self).form_valid(form)
+
+    #def get_queryset(self):
+    #    obj = Status.objects.get_enum(StatusEnum.PROCESSING)
+    #    return Dataset.objects.filter(user=self.request.user) if  self.request.user.is_authenticated() else []
+
     
     def get_context_data(self, **kwargs):
         context = super(DatasetCreateView, self).get_context_data(**kwargs)
