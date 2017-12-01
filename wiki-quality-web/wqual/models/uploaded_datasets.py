@@ -115,6 +115,16 @@ class DocumentResult(models.Model):
     Resultado obtido do documento
     '''
     dsc_result = models.TextField()
-    
     document = models.OneToOneField(Document, models.PROTECT)
+    
+     
+    @property
+    def dsc_result(self):
+        return lzma.decompress(self.dsc_result).decode("utf-8")
+        
+    @dsc_result.setter
+    def dsc_result(self, dsc_result):
+        dsc_to_compress = bytearray()
+        dsc_to_compress.extend(map(ord, dsc_result))
+        self.dsc_result = lzma.compress(dsc_to_compress)
     
