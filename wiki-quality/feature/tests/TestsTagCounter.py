@@ -37,9 +37,20 @@ class TestTagCounter(unittest.TestCase):
         
         document = Document(1,"doc1","O texto nao precisa -necessariamente - ser o texto que sera testado")
         
-        tcount.feed("<head>Teste</head><body><p>Paragrafo</body>")
+        tcount.checkTag(document, "head")
+        '''feed vai pegar somente o nome da tag, sem <>'''
+        tcount.checkTag(document,"Teste")
+        tcount.checkTag(document,"body")
+        tcount.checkTag(document,"p")
         int_result = tcount.compute_feature(document)
         self.assertEqual(int_result, 2, "Nao foi contabilizado o numero de palavras corretos no teste do terceiro documento")
+        
+        tcount2.checkTag(document, "head")
+        tcount2.checkTag(document,"Teste")
+        tcount2.checkTag(document,"body")
+        tcount2.checkTag(document,"p")
+        int_result = tcount2.compute_feature(document)
+        self.assertEqual(int_result, 1, "Nao foi contabilizado o numero de palavras corretos no teste do terceiro documento")
 
         
 if __name__ == "__main__":
