@@ -82,7 +82,25 @@ class WordCountFeature(WordBasedFeature):
         aux = self.int_word_counter
         self.int_word_counter = 0
         return aux
-                
+
+class TagCountFeature(TagBasedFeature):
+    
+    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document,setTagsToCount=None):
+        super(TagBasedFeature,self).__init__(name,description,reference,visibility,text_format,feature_time_per_document)    
+        if(setTagsToCount==None):
+            setTagsToCount = []
+        self.setTagsToCount = set(setTagsToCount)
+        self.int_tag_counter = 0
+    
+    def checkTag(self, document, tag):
+        if tag in self.setTagsToCount:
+            self.int_tag_counter = self.int_tag_counter + 1
+  
+    def compute_feature(self, document):
+        aux = self.int_tag_counter
+        self.int_tag_counter = 0
+        return aux
+        
 class ParagraphCountFeature(ParagraphBasedFeature):
     '''
     Contabiliza o número de paragrafos de um texto
@@ -113,6 +131,7 @@ class LargeParagraphCountFeature(WordBasedFeature):
         self.int_large_paragraph = 0
         self.int_word_counter = 0
         self.size = size
+        
     def checkWord(self,document,word):
         if word in FeatureCalculator.paragraph_divisor:
             self.large_paragraph(self.int_word_counter)
@@ -128,3 +147,4 @@ class LargeParagraphCountFeature(WordBasedFeature):
         aux = self.int_large_paragraph
         self.int_large_paragraph = 0
         return aux
+
