@@ -92,17 +92,10 @@ class TagCountFeature(TagBasedFeature):
         self.setTagsToCount = set(setTagsToCount)
         self.int_tag_counter = 0
     
-    def handle_starttag(self, document, strTag, arr_args):
-        if strTag in self.setTagsToCount:
+    def checkTag(self, document, tag):
+        if tag in self.setTagsToCount:
             self.int_tag_counter = self.int_tag_counter + 1
-    
-    def handle_endtag(self, document, strTag):
-        if strTag in self.setTagsToCount:
-            self.int_tag_counter = self.int_tag_counter + 1
-    
-    def handle_data(self, document):
-        pass
-    
+  
     def compute_feature(self, document):
         aux = self.int_tag_counter
         self.int_tag_counter = 0
@@ -138,6 +131,7 @@ class LargeParagraphCountFeature(WordBasedFeature):
         self.int_large_paragraph = 0
         self.int_word_counter = 0
         self.size = size
+        
     def checkWord(self,document,word):
         if word in FeatureCalculator.paragraph_divisor:
             self.large_paragraph(self.int_word_counter)

@@ -10,6 +10,7 @@ import os
 from os.path import join, isfile, isdir
 from posix import listdir
 from html.parser import HTMLParser
+from utils.basic_entities import FormatEnum
 
 
 class Document(object):
@@ -77,7 +78,23 @@ class DocSetReaderDummy(FeatureDocumentsReader):
 #        module = __import__( "feature" )
 #        Klass = getattr(module,self.feature_class)
 #        return Klass(**self.arr_feature_arguments)
-    
+
+class ParserTags(HTMLParser):
+    def __init__(self, arr_features, document):
+        HTMLParser.__init__(self)
+        self.document = document
+        self.arr_features = [feat for feat in arr_features if isinstance(feat, TagBasedFeature)]
+        
+    def handle_data(self,str_data):
+        for feat in self.arr_features:
+            feat.handle_data(str_data)
+
+    def handle_starttag(self, tag, attrs):
+        for feat in self.arr_features:
+            feat.handle_starttag(tag)
+            TagBasedFeature.checkTag(self.document, tag)
+ 
+ 
 class FeatureCalculatorManager(object):
 
     def computeFeatureSetDocuments(self,datReader,docWriter,arr_features_to_extract,format):
@@ -94,7 +111,7 @@ class FeatureCalculatorManager(object):
             # Rodar todos os docuemntos para todas as features que não
             # necessitam de algum metodo de preprocessamento de todo o conjunto de documento
         for doc in datReader.get_documents():
-            arr_features_result = self.computeFeatureSet(doc, arr_features_to_extract)
+            arr_features_result = self.computeFeatureSet(doc, arr_features_to_extract,format)
             #Para cada um processamento do documentSet necessário,
             # rodar todas as features que necessitam dele.
             docWriter.write_document(doc,arr_features_to_extract,arr_features_result)
@@ -103,7 +120,7 @@ class FeatureCalculatorManager(object):
     
     
     
-    def computeFeatureSet(self,docText,arr_features):
+    def computeFeatureSet(self,docText,arr_features,format):
         '''
         Analisa o texto e calcula todas as features do array.
         Primeiro é calculada as features do formato HTML, depois, textplain. 
@@ -121,11 +138,20 @@ class FeatureCalculatorManager(object):
         @author:  
         ''' 
         
+        str_text = docText.str_text
+        
+        if format is FormatEnum.HTML:
+            parser = ParserTags(arr_features)
+            str_text = docText.read()
+            parser.feed(str_text)
+            str_text = parser.handle_data(str_text)
+            #para cada feature tag based rodar o compute feature para obter o resultado final
+            #for arr_features:
+            #    HTMLParser.feed(str_text)
+        
         
         #armazeno os text based features 
-        str_text = docText.str_text
-        arr_feat_result = []
-        
+        arr_feat_result = [] 
         #armazo as word based features e sentence based feature
         word_buffer = ""
         sentence_buffer = ""
@@ -272,19 +298,13 @@ class WordBasedFeature(FeatureCalculator):
         raise NotImplementedError
             
 
-class TagBasedFeature(FeatureCalculator, HTMLParser):
+class TagBasedFeature(FeatureCalculator):
     
     def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document):
-        super(FeatureCalculator,self).__init__(name,description,reference,visibility,text_format,feature_time_per_document)   
+        super(FeatureCalculator,self).__init__(name,description,reference,visibility,text_format,feature_time_per_document) 
     
-    def handle_starttag(self, strTag, arr_args):
-        pass
-    
-    def handle_endtag(self, strTag):
-        pass
-    
-    def handle_data(self, strData):
-        pass
+    def checkTag(self,document,tag):
+        raise NotImplemented
     
     @abstractmethod
     def compute_feature(self, document):
