@@ -13,7 +13,7 @@ pipelines:
         services:
           - mysql
         script: # Modify the commands below to build your repository.
-          - pip install django
+          - pip install django==1.11.4
           - pip install mysqlclient
           - pip install plainbox
           - pip install django-bootstrap4
