@@ -42,6 +42,11 @@
 	    			<td>{{ dataset.dat_valid_until }}</td>
 	    			<td>{{ dataset.feature_set }}</td>
 	    			<td>{{ dataset.format.name }}</td>
+					<td>
+						<form action="{% url "dataset_delete" Dataset.nam_dataset%}" method="post">{% csrf_token %}
+	         				<button class="btn btn-danger" id="delete">Delete</button>
+	         			</form>
+					</td>
 	    		</tr>
 		{% empty %}
 		<tr>
