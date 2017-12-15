@@ -39,7 +39,7 @@ div.navbar-header>a.navbar-brand:hover {
 	color: white;
 }
 
-<<<<<<< HEAD
+
 table {
 	margin-left: 15px;
 }
@@ -57,6 +57,10 @@ th {
 td {
 	text-align: left;
 	border-bottom: 1px solid rgb(224, 224, 224);
+}
+
+h1 {
+	font-size: 22px;
 }
 
 .tituloPublicacao {
@@ -102,3 +106,58 @@ td {
 #tabs-1 {
 	height: 270px;
 }
+
+
+/****************************** Dataset ******************************/
+.form {
+	margin-right: 2%;
+	margin-left: 2.5%;
+	padding-left: 2.5%;
+	padding-bottom: 1.5%;
+	background-color: rgb(239, 239, 239);
+}
+
+.pre-form-h1 {
+	margin-bottom: 0%;
+	background-color: rgb(239, 239, 239);
+	margin-right: 2%;
+	margin-left: 2.5%;
+	padding-left: 2.5%;
+	padding-bottom: 0.25%;
+}
+
+@media (max-width: 752px) {
+	#id_feature_set {
+		width: 50%;
+	}
+	.form {
+		margin-bottom: 2.5%;
+		width: 95%;
+	}
+	.pre-form-h1 {
+		width: 95%;
+	}
+}
+
+@media (min-width: 753px) {
+	.form {
+		float: left;
+		width: 35%;
+	}	
+}
+
+#id_feature_set, #id_format {
+	width: 50%;
+}
+
+.submit_button {
+	margin-top: 1.5%;
+	background-color: #ffd27f;
+	border: 1px solid #ffd27f;
+	border-radius: 5px;
+	display: block;
+	margin-right: auto;
+	margin-left: 15%;
+	color: white;
+}
+/***************************** Fim dataset *****************************/

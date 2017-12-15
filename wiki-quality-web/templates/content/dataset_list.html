@@ -1,11 +1,12 @@
 {% extends "../bases/base_main_site.html" %}
 
-
 {% block content %}
-	<form method="post">
+	<h1 class="pre-form-h1">Insert a new feature</h1>
+	<form enctype="multipart/form-data" method="post" name='file_dataset' class="form">
 		{% csrf_token %}
-		{% for field in form %}
-			<div>
+		<input name="file_dataset" type="file">
+	{% for field in form %}
+			<div class="form-elements">
 				{% ifequal field.label "Format" %}
 					<span>Format Dataset:</span>
 				{% endifequal %}
@@ -19,8 +20,9 @@
 				</div>
 			</div>
 		{% endfor %}
+		<button type="submit" class="submit_button">Submit</button>
 	</form>
-	<table>
+	<table class="dataset-list">
 			<thead>
 	    		<tr>
 	    			<th>Name</th>
@@ -32,16 +34,15 @@
 	    		</tr>
 	    	</thead>
 	    	<tbody>
-		{% for database in object_list %}
+		{% for dataset in object_list %}
 	   			<tr>
-	    			<td>{{ database.nam_dataset }}</td>
-%	    			<td>{{ database.dat_submitted }}</td>
-
-	    			<td>{{ database.dat_valid_until }}</td>
-	    			<td>{{ database.feature_set }}</td>
-	    			<td>{{ database.format.name }}</td>
+	    			<td>{{ dataset.nam_dataset }}</td>
+	    			<td>{{ dataset.status }}</td>
+	    			<td>{{ dataset.dat_submitted }}</td>
+	    			<td>{{ dataset.dat_valid_until }}</td>
+	    			<td>{{ dataset.feature_set }}</td>
+	    			<td>{{ dataset.format.name }}</td>
 	    		</tr>
-	    
 		{% empty %}
 		<tr>
 			<td>-----</td>
