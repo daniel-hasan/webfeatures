@@ -43,7 +43,7 @@
 	    			<td>{{ dataset.feature_set }}</td>
 	    			<td>{{ dataset.format.name }}</td>
 					<td>
-						<form action="{% url "dataset_delete" Dataset.nam_dataset%}" method="post">{% csrf_token %}
+						<form action="{% url "dataset_delete" dataset.nam_dataset%}" method="post">{% csrf_token %}
 	         				<button class="btn btn-danger" id="delete">Delete</button>
 	         			</form>
 					</td>
