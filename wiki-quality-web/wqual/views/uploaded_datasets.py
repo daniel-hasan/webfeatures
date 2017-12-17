@@ -14,7 +14,7 @@ from django.views.generic.list import ListView
 import lzma
 from utils.uncompress_data import *
 from wqual.models import Dataset
-from wqual.models.uploaded_datasets import Status, StatusEnum, DocumentText, \
+from wqual.models.uploaded_datasets import Format, Status, StatusEnum, DocumentText, \
     Document
 
 
@@ -47,6 +47,9 @@ class DatasetCreateView(CreateView, ListView):
         return context    
         
     def form_valid(self, form):
+        if form.feature_set.Format == 'HTML':
+            if form.Format.value == 'text_plain':
+                messages.warning(form, "If you wish to send, it won't be possible to extract the features that extract information from the HTML.")
         form.instance.user = self.request.user
         form.instance.nam_dataset = self.request.FILES['file_dataset'].name
         form.instance.status = Status.objects.get_enum(StatusEnum.PROCESSING)
