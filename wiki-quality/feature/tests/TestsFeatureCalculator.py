@@ -105,7 +105,7 @@ class TestFeatureCalculator(unittest.TestCase):
             Implemente esse método para eliminar algo feito no teste
         '''
         pass
-
+    
 
     def testLeitura(self):
         '''

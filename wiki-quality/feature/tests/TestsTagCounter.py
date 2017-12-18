@@ -4,7 +4,7 @@ Testes da contagem de tags em HTML
 @author: Beatriz Souza da Silva beatrizsouza_dasilva@hotmail.com
 '''
 import unittest
-from feature.featureImpl.style_features import TagCountFeature
+from feature.featureImpl.structure_features import TagCountFeature
 from feature.features import FeatureVisibilityEnum, Document, TagBasedFeature
 from utils.basic_entities import FormatEnum, FeatureTimePerDocumentEnum
 

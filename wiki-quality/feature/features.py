@@ -41,6 +41,7 @@ class FeatureDocumentsReader(object):
             
             @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br> 
         '''
+        pass
         
 
 class DocSetFileReader(FeatureDocumentsReader):
@@ -87,14 +88,16 @@ class ParserTags(HTMLParser):
         
     def handle_data(self,str_data):
         for feat in self.arr_features:
-            feat.handle_data(str_data)
+            var = feat.handle_data(str_data)
+            print(var)
 
     def handle_starttag(self, tag, attrs):
         for feat in self.arr_features:
-            feat.handle_starttag(tag)
+            var  = feat.handle_starttag(tag)
             TagBasedFeature.checkTag(self.document, tag)
+            print(var)
  
- 
+
 class FeatureCalculatorManager(object):
 
     def computeFeatureSetDocuments(self,datReader,docWriter,arr_features_to_extract,format):

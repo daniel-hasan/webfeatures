@@ -37,8 +37,26 @@ class FeatureFactory(object):
         raise NotImplemented
     
 class StructureFeatureFactory(FeatureFactory):
+    
     def createFeatures(self):
-        pass
+        
+        arrFeatures = [TagCountFeature("Section Count", "Count the number of HTML h1 sections in the text", "reference", 
+                                         FeatureVisibilityEnum.public, 
+                                         FormatEnum.HTML, 
+                                         FeatureTimePerDocumentEnum.MILLISECONDS,["h1"])]
+        
+        featTagCount = TagCountFeature("Tag Count", "Count the number of HTML p sections in the text", "reference", 
+                                         FeatureVisibilityEnum.public, 
+                                         FormatEnum.HTML, 
+                                         FeatureTimePerDocumentEnum.MILLISECONDS,["p"])
+        
+        arrFeatures.append(featTagCount)
+        
+        featTagCount = TagCountFeature("Tag Count", "Count the number of HTML div sections in the text", "reference", 
+                                         FeatureVisibilityEnum.public, 
+                                         FormatEnum.HTML, 
+                                         FeatureTimePerDocumentEnum.MILLISECONDS,["div"])
+        arrFeatures.append(featTagCount)
     
 class StyleFeatureFactory(FeatureFactory):
     def createFeatures(self):
@@ -55,7 +73,7 @@ class StyleFeatureFactory(FeatureFactory):
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.text_plain, FeatureTimePerDocumentEnum.MILLISECONDS)
         
-        featLargeSentenceCount = LargeSentenceCountFeature("Largest Phrases Count","Count the number of phrases larger than a specified threshold.",
+        featLargeSentenceCount = LargeSentenceCountFeature("Larges Phrases Count","Count the number of phrases larger than a specified threshold.",
                                                            "reference",FeatureVisibilityEnum.public,FormatEnum.text_plain,
                                                            FeatureTimePerDocumentEnum.MICROSECONDS,10)
         
@@ -68,7 +86,7 @@ class StyleFeatureFactory(FeatureFactory):
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.text_plain, FeatureTimePerDocumentEnum.MILLISECONDS)
         
-        featLargeParagraphCount = LargeParagraphCountFeature("Largest Paragraph Count","Count the number of paragraphs larger than a specified threshold",
+        featLargeParagraphCount = LargeParagraphCountFeature("Larges Paragraph Count","Count the number of paragraphs larger than a specified threshold",
                                          "reference",
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.text_plain, FeatureTimePerDocumentEnum.MILLISECONDS,16)
@@ -77,16 +95,12 @@ class StyleFeatureFactory(FeatureFactory):
                                                                       "The paragraph need to have (at least) this length (in words) in order to be considered a large paragraph.",
                                                                       16,ParamTypeEnum.int))
         
-        featTagCount = TagCountFeature("Tag Count", "Count the number of incidents of HTML tags passed by parameter in the text", "reference", 
-                                         FeatureVisibilityEnum.public, 
-                                         FormatEnum.HTML, 
-                                         FeatureTimePerDocumentEnum.MILLISECONDS,["head","body"])
+        
         
         arrFeatures.append(featSentenceCount)
         arrFeatures.append(featLargeSentenceCount)
         arrFeatures.append(featParagraphCount)
         arrFeatures.append(featLargeParagraphCount)
-        arrFeatures.append(featTagCount)
         
         return  arrFeatures
         
