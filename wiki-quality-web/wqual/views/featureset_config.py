@@ -118,7 +118,8 @@ class UsedFeatureListViewTeste(ListView):
    
     @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
     Lista todos os conjunto de features criados.
-    '''
+    '''        
+ 
    
     model = UsedFeature
     template_name = "content/used_features.html"

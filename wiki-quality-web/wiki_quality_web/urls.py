@@ -25,6 +25,7 @@ urlpatterns = [
     url(r'^featureSetConfig/(?P<nam_feature_set>.*)/delete/$', views.FeatureSetDelete.as_view(), name='feature_set_delete'),
     url(r'^featureSetConfig/(?P<nam_feature_set>.*)$', views.FeatureSetEdit.as_view(), name='feature_set_edit'),
     url(r'^featureSetConfig$', views.FeatureSetListView.as_view(), name='feature_set_list'),
+    url(r'^extractFeatures/(?P<nam_dataset>.*)/delete/$', views.DatasetDelete.as_view(), name='dataset_delete'),
     url(r'^extractFeatures$', views.DatasetCreateView.as_view(), name='extract_features'),
     url(r'^admin/', admin.site.urls),
     url(r'^publications$', views.PublicationList.as_view(), name='publications'),
