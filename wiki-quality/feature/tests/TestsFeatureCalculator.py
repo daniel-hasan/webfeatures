@@ -44,7 +44,7 @@ class WordTestFeature(WordBasedFeature):
     '''
     def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document):
         super(WordBasedFeature,self).__init__(name,description,reference,visibility,text_format,feature_time_per_document)
-        self.arr_str_words = []  
+        self.arr_str_words = [] 
         
           
     def checkWord(self,document,word):

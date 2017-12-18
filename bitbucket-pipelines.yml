@@ -18,6 +18,7 @@ pipelines:
           - pip install plainbox
           - echo "from wiki_quality_web.settings.bitbucket_pipeline_build import *">wiki-quality-web/wiki_quality_web/settings/__init__.py
           - python wiki-quality-web/manage.py test wqual.tests --failfast
+          #- python wiki-quality-web/manage.py test scheduler.test_docs_io --failfast
 definitions:
   services:
     mysql:
