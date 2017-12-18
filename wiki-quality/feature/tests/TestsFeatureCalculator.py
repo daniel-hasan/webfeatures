@@ -42,9 +42,10 @@ class WordTestFeature(WordBasedFeature):
     '''
     Classe para usar no teste que verifica se o WordBasedFeature está funcionando. 
     '''
-    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document):
+    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document,set_json=None):
         super(WordBasedFeature,self).__init__(name,description,reference,visibility,text_format,feature_time_per_document)
         self.arr_str_words = []  
+        self.set_json = set_json
         
           
     def checkWord(self,document,word):
