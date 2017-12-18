@@ -17,11 +17,12 @@ import lzma
 
 from utils.uncompress_data import *
 from wqual.models import Dataset
+from wqual.models.exceptions import FileSizeException
 from wqual.models.uploaded_datasets import Format, Status, StatusEnum, DocumentText, \
     Document
 
 
-class DatasetCreateView(CreateView, ListView):
+class DatasetCreateView(CreateView):
     '''
     Created on 14 de ago de 2017
     
@@ -59,13 +60,19 @@ class DatasetCreateView(CreateView, ListView):
         form.instance.dat_submitted = datetime.now()
         
         #save (tratar a exceção: e adicionar erro na lista de erro e retonrar form_invalid se houver exceção)
-        #if form.instance.save_compressed_file(self.request.FILES['file_dataset']) == 'False':
-        #    errors = form._errors.setdefault("file_size", ErrorList())
-        #    errors.append(u"O tamanho do arquivo ultrapassa o limite.")
-        #    return super(CreateView, self).form_invalid
-        #else:
-        form.instance.save_compressed_file(self.request.FILES['file_dataset'])
-        return super(CreateView, self).form_valid(form)
+        try:
+            form.instance.save_compressed_file(self.request.FILES['file_dataset'])
+
+        except FileSizeException as e:
+            errors = form._errors.setdefault("feature_set", ErrorList())
+            errors.append(u"nam_feature_set já existe. Ação não permitida")           
+            print("Lancouuu")
+            return super(CreateView, self).form_invalid(form)
+        #return super(CreateView, self).form_valid(form)
+        errors = form._errors.setdefault("feature_set", ErrorList())
+        errors.append(u"O tamanho do arquivo ultrapassa o limite.")
+        print("Lancouuu")
+        return super(CreateView, self).form_invalid(form)
     
     def get_success_url(self):
         return reverse('extract_features')  
@@ -89,6 +96,7 @@ class DatasetDelete(DeleteView):
         template_name = "content/dataset_list.html"#colocar o nome de um template aqui.
         
         def get_object(self):
+            
             return Dataset.objects.get(user=self.request.user,nam_dataset=self.kwargs["nam_dataset"])
         
         def get_success_url(self):

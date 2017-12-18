@@ -15,6 +15,7 @@ import lzma
 from utils.basic_entities import FormatEnum
 from utils.uncompress_data import CompressedFile
 from wqual.models import FeatureSet
+from wqual.models.exceptions import FileSizeException
 from wqual.models.utils import EnumModel, EnumManager
 
 
@@ -84,20 +85,25 @@ class Dataset(models.Model):
             #inserção
             #save
             objFileZip = CompressedFile.get_compressed_file(comp_file_pointer)
-            self.save()
+            
+            int_limit = 1
+            for name,int_file_size in objFileZip.get_each_file_size():
+                #O valor usado na comparação equivale a 500KB = 0,5MB.
+                #Deve-se estabelecer um tamanho máximo para um arquivo para depois adicionar esta variável no settings.py.
+                print("Tamanho: "+str(int_file_size))
+                if int_file_size > int_limit:
+                    
+                    raise FileSizeException("The file "+name+" exceeds the limit of "+str(int_limit)+" bytes")
+                
+            self.save()   
             for name,strFileTxt in objFileZip.read_each_file():
                 objDocumento = Document(nam_file=name,dataset=self)
                 objDocumento.save()
                 objDocumentoTexto = DocumentText(document=objDocumento,dsc_text=strFileTxt)
                 objDocumentoTexto.save()
-                
-                #O valor usado na comparação equivale a 500KB = 0,5MB.
-                #Deve-se estabelecer um tamanho máximo para um arquivo para depois adicionar esta variável no settings.py.
-                #if objDocumentoTexto._size > 524288:
-                #    return False
-                #else:
                 self.document_set.add(objDocumento,bulk=False)
-                #    return True
+                
+
                 
                 
 class ResultValityPerUserGroup(models.Model):
