@@ -90,9 +90,16 @@ class Dataset(models.Model):
                 objDocumento.save()
                 objDocumentoTexto = DocumentText(document=objDocumento,dsc_text=strFileTxt)
                 objDocumentoTexto.save()
+                
+                #O valor usado na comparação equivale a 500KB = 0,5MB.
+                #Deve-se estabelecer um tamanho máximo para um arquivo para depois adicionar esta variável no settings.py.
+                #if objDocumentoTexto._size > 524288:
+                #    return False
+                #else:
                 self.document_set.add(objDocumento,bulk=False)
-
-
+                #    return True
+                
+                
 class ResultValityPerUserGroup(models.Model):
     '''
     Created on 16 de ago de 2017
