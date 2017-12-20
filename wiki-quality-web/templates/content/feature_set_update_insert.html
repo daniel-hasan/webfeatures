@@ -1,13 +1,15 @@
 {% extends "../bases/base_main_site.html" %}
 {% load static %}
 {% block title %}Feature Set Update Insert{% endblock %}
-
+  
 {% block content %}
 
 <script src="{% static "js/featureSetConfigUpdate.js" %}"></script>
 
 <script>
-
+	function cancelEditFeature(){
+		window.location.href = '{% url "feature_set_list" %}';
+	}
 </script>
 
 <div id="tabs">
@@ -41,8 +43,8 @@
 	                   </div>
 	                </div>
 	    		{% endfor %}
-	    		<button type="submit" class="btn btn-primary">Save</button>
-	    		<input type="button" class="btn btn-danger" onclick="cancelEditFeature()" value = "Cancel" />
+	    		<button type="submit" class="ui-button ui-widget ui-corner-all">Save</button>
+	    		<input type="button" class="ui-button ui-widget ui-corner-all" onclick="cancelEditFeature()" value = "Cancel" />
 		</form>
 	</div>
   </div>

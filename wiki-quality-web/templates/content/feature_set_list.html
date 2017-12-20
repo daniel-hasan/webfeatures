@@ -5,30 +5,28 @@
 
 {% block content %}
 
-
-<p><a href="{% url "feature_set_insert" %}">Inserir</a></p>
-
-
-
-<table class="table table-bordered table-condensed">
+<table class="table table-bordered">
 	<thead>
 	  <tr>
 	     <th>Name Feature Set</th>
 	     <th>Description Feature Set</th>
-	     <th colspan="2"><a href="{% url "feature_set_insert" %}"><button id="insert" class="btn btn-primary">Insert</button></a></th>
+	     <th colspan="2"><a href="{% url "feature_set_insert" %}"><button id="insert" class="ui-button ui-widget ui-corner-all">Insert</button></a></th>
 	  </tr>
 	 </thead>
 	{% for featSet in object_list %}			
          	<tr> 
 	         	<td>{{ featSet.nam_feature_set }}</td> <td>{{ featSet.dsc_feature_set|safe }}</td>
-	         	<td><a href="{% url "feature_set_edit" featSet.nam_feature_set%}"><button class="btn btn-primary">Edit</button></a></td>
+	         	<td><a href="{% url "feature_set_edit" featSet.nam_feature_set%}"><button class="ui-button ui-widget ui-corner-all">Edit</button></a></td>
 	         	<td><form action="{% url "feature_set_delete" featSet.nam_feature_set%}" method="post">{% csrf_token %}
-	         				<button class="btn btn-danger" id="delete">Delete</button>
+	         				<button id="delete" class="ui-button ui-widget ui-corner-all">Delete</button>
 	         		</form>
 	         	</td>
          	<tr>        	    	
 	{% endfor %}
-	</table>
+</table>
+
+<script>
+</script>
 
 {% endblock %}
 

@@ -23,6 +23,7 @@ function insereFeature(feature) {
 	let HTMLEl_temp_ul_pai = document.createElement('ul');
 
 	//Cria os elementos filhos, onde serão armazenadas as características da feature.
+	let teste = document.createElement('li');
 	let HTMLEl_temp_li_feature = document.createElement('li');
 	let HTMLEl_temp_li_feature_time_to_extract = document.createElement('li');
 	let HTMLEl_temp_li_feature_visibility = document.createElement('li');
@@ -31,6 +32,7 @@ function insereFeature(feature) {
 	let HTMLEl_temp_button = document.createElement('button');
 
 	//Coloca o innerHTML de cada filho como o valor de cada uma das características da feature.
+	teste = "teste";
 	HTMLEl_temp_li_feature.innerHTML = feature.feature;
 	HTMLEl_temp_li_feature_time_to_extract.innerHTML = feature.feature_time_to_extract;
 	HTMLEl_temp_li_feature_visibility.innerHTML = feature.feature_visibility;
