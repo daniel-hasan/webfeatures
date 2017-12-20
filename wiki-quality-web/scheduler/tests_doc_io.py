@@ -64,7 +64,7 @@ class TestDocIO(TestCase):
         d = DatasetModelDocReader(dataset=self.objDataset)
 
         for i in range(10):
-             DocumentText.objects.create(dsc_text = "Insira um texto aqui", document =self.arrDocs[i])
+            DocumentText.objects.create(dsc_text = "Insira um texto aqui", document =self.arrDocs[i])
         
         for doc in d.get_documents():
             bol_encontrou = False

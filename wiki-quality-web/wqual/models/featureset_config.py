@@ -9,11 +9,12 @@ from __future__ import unicode_literals
 
 from django.contrib.auth.models import User
 from django.db import models
-
+import json
 from feature.features import ParamTypeEnum, FeatureVisibilityEnum
 from utils.basic_entities import LanguageEnum, FeatureTimePerDocumentEnum
+from wqual.models.utils import Format
 from wqual.models.utils import EnumManager, EnumModel
-
+from utils.feature_utils import get_class_by_name
 
 class Feature(models.Model):
     '''
@@ -27,6 +28,8 @@ class Feature(models.Model):
     nam_module = models.CharField( max_length=45)
     nam_feature_class = models.CharField(max_length=255)
 
+    def get_feature_class(self):
+        return get_class_by_name(self.nam_module+"."+self.nam_feature_class)
 
 class ParamType(EnumModel):
     '''
@@ -133,12 +136,32 @@ class UsedFeature(models.Model):
     @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
     Relação das features usadas por um usuário
     '''
+    ord_feature = models.IntegerField()
+
+    
     feature_set = models.ForeignKey(FeatureSet, models.PROTECT)
     feature = models.ForeignKey(Feature, models.PROTECT)
     feature_time_to_extract = models.ForeignKey(FeatureTimePerDocument,models.PROTECT)
     feature_visibility = models.ForeignKey(FeatureVisibility,models.PROTECT)
-    
-    
+    text_format = models.ForeignKey(Format,models.PROTECT)
+
+    def get_feature_instance(self):
+        FeatureClass = self.feature.get_feature_class()
+        param = {
+            "visibility": self.feature_visibility.getEnum(),
+            "text_format": self.text_format.getEnum(),
+            "feature_time_per_document": self.feature_time_to_extract.getEnum()
+        }
+        for arg in UsedFeature.usedfeatureargval_set.all():
+            if arg.type_argument == UsedFeatureArgVal.INT:
+                param[arg.nam_argument] = int(arg.val_argument)
+            elif arg.type_argument == UsedFeatureArgVal.JSON:
+                param[arg.nam_argument] = json.loads(arg.val_argument)
+            else:
+                param[arg.nam_argument] = arg.val_argument
+
+        obj = FeatureClass(**params)
+        return obj
     class Meta:
         db_table = 'wqual_used_feature'
 
@@ -149,9 +172,16 @@ class UsedFeatureArgVal(models.Model):
     @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
     Argumentos (i.e. parametros) usados para instanciar esta feature 
     '''
+    INT = "int"
+    STRING = "string"
+    JSON = "json"
+    TIPOS_DADOS = [(INT,"int"),(STRING,"string"),(JSON,"json")]
+
     nam_argument = models.CharField(max_length=45)
     val_argument = models.CharField(max_length=45)
+    type_argument = models.CharField(max_length=10,choices=TIPOS_DADOS,default=STRING)
     
+    is_configurable = models.BooleanField(default=False)
     used_feature = models.ForeignKey(UsedFeature, models.PROTECT)
      
 class FeatureConfigurableParam(models.Model):

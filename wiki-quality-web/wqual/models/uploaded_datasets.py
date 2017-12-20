@@ -10,10 +10,10 @@ As tabelas relacionadas com o resultado desta extração também está neste arq
 from enum import IntEnum, Enum
 from django.contrib.auth.models import User, Group
 from django.db import models
-
-from utils.basic_entities import FormatEnum
-from wqual.models import FeatureSet
+from wqual.models import FeatureSet, Format
 from wqual.models.utils import EnumModel, EnumManager
+
+
 
 
 class StatusEnum(Enum):
@@ -23,9 +23,11 @@ class StatusEnum(Enum):
     @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
 Tipos de status da extração de features de um determinado dataset
     '''
+    SUBMITTED = "Submitted"
     PROCESSING = "Processing"
     COMPLETE = "Completed"
     NOT_AVALIABLE = "The time to download the result has expired"
+
 
 class Status(EnumModel):
     '''
@@ -40,17 +42,7 @@ class Status(EnumModel):
         return StatusEnum
     
 
-class Format(EnumModel):
-    '''
-    Created on 14 de ago de 2017
-    
-    @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
-    Armazena os possíveis formatos de arquivo (de acordo com o enum FormatEnum)
-    '''
-    
-    @staticmethod
-    def get_enum_class():
-        return FormatEnum
+
     
 
         
