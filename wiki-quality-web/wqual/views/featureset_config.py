@@ -10,7 +10,8 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 
 from utils.basic_entities import LanguageEnum
-from wqual.models.featureset_config import FeatureSet, Language, UsedFeature
+from wqual.models.featureset_config import FeatureSet, Language, UsedFeature, \
+    UsedFeatureArgVal
 
 
 class FormValidation(object):
@@ -111,7 +112,15 @@ class UsedFeatureListView(ListView):
     model = UsedFeature
     template_name = "content/used_features.js"
     def get_queryset(self):
-        return UsedFeature.objects.filter(feature_set__pk=9)
+        arr_used_features = UsedFeatureArgVal.objects\
+                                        .filter(used_feature__feature_set__id=9, 
+                                                nam_argument__in=["name","description"])\
+                                       .values("used_feature_id","nam_argument","val_argument")                                                
+                                        #.values("nam_argument","val_argument","used_feature__is_configured")
+        #agrupa por used_feature_id
+        map_used_features = {}
+        
+        return arr_used_features
 
 class UsedFeatureListViewTeste(ListView):
     '''
