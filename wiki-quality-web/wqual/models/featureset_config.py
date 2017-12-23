@@ -99,7 +99,6 @@ class FeatureSet(models.Model):
     language = models.ForeignKey(Language, models.PROTECT)  
     user = models.ForeignKey(User, models.PROTECT)
     
-    objects = FeatureSetManager()
     
     def __str__(self):
         return "{name}: {description} ".format(name=self.nam_feature_set, description=self.dsc_feature_set)
