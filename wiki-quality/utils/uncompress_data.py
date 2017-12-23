@@ -10,6 +10,7 @@ class CompressedFile(object):
     magic = None
     file_type = None
     mime_type = None
+    proper_extension = None
     extension_ready = False
     
     @classmethod

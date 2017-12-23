@@ -6,13 +6,13 @@ Created on 8 de ago de 2017
 Classes que podem ser uteis nos modelos do app wqual
 '''
 from abc import abstractstaticmethod
- 
 from django.db import models
 from django.db.models.deletion import ProtectedError
 
+from utils.basic_entities import FormatEnum
 
 
-
+#from wqual.models.utils import EnumModel
 class EnumQuerySet(models.query.QuerySet):
     def get(self, **kwargs):
         try:
@@ -176,3 +176,14 @@ class EnumModel(models.Model):
     class Meta:
         abstract = True
 
+class Format(EnumModel):
+    '''
+    Created on 14 de ago de 2017
+    
+    @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
+    Armazena os possíveis formatos de arquivo (de acordo com o enum FormatEnum)
+    '''
+    
+    @staticmethod
+    def get_enum_class():
+        return FormatEnum
