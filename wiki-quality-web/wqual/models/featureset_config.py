@@ -81,6 +81,16 @@ class Language(EnumModel):
     def __str__(self):
         return "[{code}] {language}".format(code=self.name,language=self.value)      
       
+class FeatureSetManager(models.Manager):
+        '''
+    Created on 23 de dez de 2017
+
+    @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
+    Métodos que auxiliares para consultas/inserção/exclusão de feature sets
+    '''
+    
+    def get_featureset_with_html_features(self):
+        self.filter()
 class FeatureSet(models.Model):
     '''
     Created on 13 de ago de 2017
@@ -93,6 +103,8 @@ class FeatureSet(models.Model):
     
     language = models.ForeignKey(Language, models.PROTECT)  
     user = models.ForeignKey(User, models.PROTECT)
+    
+    objects = FeatureSetManager()
     
     def __str__(self):
         return "{name}: {description} ".format(name=self.nam_feature_set, description=self.dsc_feature_set)
