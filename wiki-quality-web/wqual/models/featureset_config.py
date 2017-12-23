@@ -85,16 +85,7 @@ class Language(EnumModel):
     def __str__(self):
         return "[{code}] {language}".format(code=self.name,language=self.value)      
       
-class FeatureSetManager(models.Manager):
-    '''
-    Created on 23 de dez de 2017
 
-    @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
-    Métodos que auxiliares para consultas/inserção/exclusão de feature sets
-    '''
-     
-    def get_featureset_with_html_features(self):
-        pass
 class FeatureSet(models.Model):
     '''
     Created on 13 de ago de 2017
@@ -142,7 +133,12 @@ class FeatureVisibility(EnumModel):
     def get_enum_class():
         return FeatureVisibilityEnum
 class UsedFeatureManager(models.Manager):
-    
+    '''
+    Created on 23 de dez de 2017
+
+    @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
+    Métodos que auxiliares para consultas/inserção/exclusão de feature sets
+    '''
     def get_html_features_name_grouped_by_featureset(self):
         arrUsedFeatures = UsedFeature.objects.prefetch_related("usedfeatureargval_set").filter(text_format__name=FormatEnum.HTML.name)
         mapFeaturesGroup = {}
