@@ -39,7 +39,6 @@ div.navbar-header>a.navbar-brand:hover {
 	color: white;
 }
 
-
 table {
 	margin-left: 15px;
 }
@@ -83,8 +82,6 @@ h1 {
 	width: 25%;
 }
 
-
-
 .custom-combobox {
 	position: relative;
 	display: inline-block;
@@ -106,6 +103,7 @@ h1 {
 #tabs-1 {
 	height: 270px;
 }
+
 
 
 /****************************** Dataset ******************************/
@@ -152,3 +150,29 @@ section {
 	color: white;
 }
 /***************************** Fim dataset *****************************/
+
+/*
+	Versão: <feat-Dlinha-002>
+	Data de modificação: <13>/<11>/<2017>
+	Autor(<feat-Dlinha-001>): <Aline><Pinto>
+    AutorM(<feat-Dlinha-002>): <Aline><Pinto>
+
+	Arquivo: <wikiQuality.css>
+    Objetivo: {Trocar o css padrão do Tabs jQuery UI.
+    * O css aqui não tem prioridade sobre o css do jQuery UI.
+    }
+*/
+
+
+.ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active, a.ui-button:active, .ui-button:active, .ui-button.ui-state-active:hover {
+    border: 1px solid #c5c5c5;
+    background: white;
+    font-weight: normal;
+}
+	
+.ui-state-active a, .ui-state-active a:link, .ui-state-active a:visited {
+    color: #454545;
+    text-decoration: none;
+}
+	
+

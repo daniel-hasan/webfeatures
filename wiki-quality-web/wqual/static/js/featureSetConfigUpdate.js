@@ -21,9 +21,6 @@ $( function() {
 	    });
 } );
 
-function cancelEditFeature(){
-	window.location.href = '{% url "feature_set_list" %}';
-}
 $( function() {
 	$('#id_nam_feature_set').addClass('form-control');
 	$('#id_dsc_feature_set').addClass('form-control');
