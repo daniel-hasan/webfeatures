@@ -6,7 +6,7 @@
 		<form enctype="multipart/form-data" method="post" name='file_dataset' class="form">
 			{% csrf_token %}
 			<input name="file_dataset" type="file">
-		{% for field in form %}
+			{% for field in form %}
 				<div class="form-elements">
 					{% ifequal field.label "Format" %}
 						<span>Format Dataset:</span>
@@ -15,52 +15,56 @@
 					{% ifequal field.label "Feature set" %}
 						<span>Feature Set Dataset: </span>
 					{% endifequal %}
-				
-					<div>
-						{{ field }}
-					</div>
 				</div>
+				<div>
+					{{ field }}
+				</div>
+				{{ field.errors }}
 			{% endfor %}
 			<button type="submit" class="submit_button">Submit</button>
 		</form>
 	</section>
 	<table class="dataset-list">
-			<thead>
-	    		<tr>
-	    			<th>Name</th>
-	    			<th>Status</th>
-	    			<th>Submitted date</th>
-	    			<th>Valid until</th>
-	    			<th>Feature Set</th>
-	    			<th>Text Format</th>
-	    		</tr>
-	    	</thead>
-	    	<tbody>
-		{% for dataset in dataset_list|dictsortreversed:"dat_submitted" %}
-	   			<tr>
-	    			<td>{{ dataset.nam_dataset }}</td>
-	    			<td>{{ dataset.status }}</td>
-	    			<td>{{ dataset.dat_submitted }}</td>
-	    			<td>{{ dataset.dat_valid_until }}</td>
-	    			<td>{{ dataset.feature_set }}</td>
-	    			<td>{{ dataset.format.name }}</td>
+		<thead>
+    		<tr>
+    			<th>Name</th>
+    			<th>Status</th>
+    			<th>Submitted date</th>
+    			<th>Valid until</th>
+    			<th>Feature Set</th>
+    			<th>Text Format</th>
+    		</tr>
+    	</thead>
+    	<tbody>
+			{% for dataset in dataset_list|dictsortreversed:"dat_submitted" %}
+   				<tr>
+    				<td>{{ dataset.nam_dataset }}</td>
+    				<td>{{ dataset.status }}</td>
+    				<td>{{ dataset.dat_submitted }}</td>
+  	  				<td>{{ dataset.dat_valid_until }}</td>
+    				<td>{{ dataset.feature_set }}</td>
+    				<td>{{ dataset.format.name }}</td>
 					<td>
 						<form action="{% url "dataset_delete" dataset.nam_dataset%}" method="post">
 							{% csrf_token %}
-	         				<button class="btn btn-danger" id="delete">Delete</button>
-	         			</form>
+         					<button class="btn btn-danger" id="delete">Delete</button>
+         				</form>
 					</td>
-	    		</tr>
-		{% empty %}
-		<tr>
-			<td>-----</td>
-			<td>--------</td>
-			<td>-----------------</td>
-			<td>------------</td>
-			<td>-------------</td>
-			<td>--------------</td>
-		</tr>
-	{% endfor %}
+    			</tr>
+				{% empty %}
+				<tr>
+					<td>-----</td>
+					<td>--------</td>
+					<td>-----------------</td>
+					<td>------------</td>
+					<td>-------------</td>
+					<td>--------------</td>
+				</tr>
+				{% endfor %}
 			</tbody>
 	</table>
+	<script>
+		let mapFeatHTMLperFeatSet = {1: ["feature HTML1"],
+									 3: ["feature HTML 3","feature HTML 1"]};
+	</script>
 {% endblock %}

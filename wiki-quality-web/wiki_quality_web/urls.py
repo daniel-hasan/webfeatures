@@ -13,8 +13,9 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.conf.urls import url
 from django.contrib import admin
+
+from django.conf.urls import url
 
 from wqual import views
 
@@ -31,4 +32,5 @@ urlpatterns = [
     url(r'^publications$', views.PublicationList.as_view(), name='publications'),
     url(r'^used_features.js$', views.UsedFeatureListView.as_view(), name='used_feature_js'),
     url(r'^used_features.html', views.UsedFeatureListViewTeste.as_view(), name='used_features'),
+    url(r'^/'), views.authentication),
 ]

@@ -80,11 +80,7 @@ class Dataset(models.Model):
             
             int_limit = 1
             for name,int_file_size in objFileZip.get_each_file_size():
-                #O valor usado na comparação equivale a 500KB = 0,5MB.
-                #Deve-se estabelecer um tamanho máximo para um arquivo para depois adicionar esta variável no settings.py.
-                print("Tamanho: "+str(int_file_size))
                 if int_file_size > int_limit:
-                    
                     raise FileSizeException("The file "+name+" exceeds the limit of "+str(int_limit)+" bytes")
                 
             self.save()   

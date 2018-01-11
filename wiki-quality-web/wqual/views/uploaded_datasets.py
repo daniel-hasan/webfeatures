@@ -8,16 +8,20 @@ from datetime import datetime
 from django import forms
 from django.contrib import messages
 from django.core.files.storage import FileSystemStorage
-from django.db.models.fields.files import FileField
 from django.forms.utils import ErrorList
-from django.urls.base import reverse
-from django.views.generic.edit import CreateView, DeleteView
 from django.views.generic.list import ListView
 import lzma
+import os
+
+from django.db.models.fields.files import FileField
+from django.template import context
+from django.urls.base import reverse
+from django.views.generic.edit import CreateView, DeleteView
 
 from utils.uncompress_data import *
 from wqual.models import Dataset
 from wqual.models.exceptions import FileSizeException
+from wqual.models.featureset_config import UsedFeature
 from wqual.models.uploaded_datasets import Format, Status, StatusEnum, DocumentText, \
     Document
 
@@ -46,33 +50,26 @@ class DatasetCreateView(CreateView):
             dataset_file.save()
             
     def get_context_data(self, **kwargs):
+        context['map_feathtml'] = UsedFeature.objects.get_html_features_name_grouped_by_featureset()
         context = super(DatasetCreateView, self).get_context_data(**kwargs)
-        context['dataset_list'] = Dataset.objects.filter(user=self.request.user) if self.request.user.is_authenticated() else []
+        context['dataset_list'] = Dataset.objects.filter(user=self.request.user) if self.request.user.is_authenticated else []
         return context    
         
     def form_valid(self, form):
-        #if Format(form.form.instance.format) == 'HTML':
-        #    if form.data.format.value == 'text_plain':
-        #       messages.warning(form, "If you wish to send, it won't be possible to extract the features that extract information from the HTML.")
         form.instance.user = self.request.user
         form.instance.nam_dataset = self.request.FILES['file_dataset'].name
         form.instance.status = Status.objects.get_enum(StatusEnum.PROCESSING)
         form.instance.dat_submitted = datetime.now()
         
-        #save (tratar a exceção: e adicionar erro na lista de erro e retonrar form_invalid se houver exceção)
+        #save (tratar a exceção: e adicionar erro na lista de erro e retornar form_invalid se houver exceção)
         try:
             form.instance.save_compressed_file(self.request.FILES['file_dataset'])
 
         except FileSizeException as e:
             errors = form._errors.setdefault("feature_set", ErrorList())
-            errors.append(u"nam_feature_set já existe. Ação não permitida")           
-            print("Lancouuu")
+            errors.append(u"Ação não permitida. O tamanho do arquivo ultrapassa o limite.")           
             return super(CreateView, self).form_invalid(form)
-        #return super(CreateView, self).form_valid(form)
-        errors = form._errors.setdefault("feature_set", ErrorList())
-        errors.append(u"O tamanho do arquivo ultrapassa o limite.")
-        print("Lancouuu")
-        return super(CreateView, self).form_invalid(form)
+        return super(CreateView, self).form_valid(form)
     
     def get_success_url(self):
         return reverse('extract_features')  
@@ -93,11 +90,10 @@ class DatasetDelete(DeleteView):
         '''
         
         model = Dataset
-        template_name = "content/dataset_list.html"#colocar o nome de um template aqui.
+        template_name = "content/dataset_list.html"
         
         def get_object(self):
-            
-            return Dataset.objects.get(user=self.request.user,nam_dataset=self.kwargs["nam_dataset"])
+            return Dataset.objects.get(user=self.request.user,nam_dataset=self.kwargs["nam_dataset"],file=self.request['file_dataset'])
         
         def get_success_url(self):
             return reverse('extract_features')
