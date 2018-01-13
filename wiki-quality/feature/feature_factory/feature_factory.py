@@ -122,11 +122,7 @@ class WordsFeatureFactory(FeatureFactory):
     def prepositions(self):
         
         dirPrepositions = self.BASE_DIR+"/partOfSpeech/"+self.objLanguage.name+"/prepositions.txt"
-        listPrepositions = []
-        
-        with open(dirPrepositions) as file:
-            for linha in file:
-                listPrepositions.append(file.readLine())
+        listPrepositions = dirPrepositions.readlines()
         
         featPrepositionsCount = WordBasedFeature("Preposition Count","Count the number of prepositions in the text."
                                                  "Based on file style.c from path diction-1.11.tar.gz of http://ftp.gnu.org/gnu/diction/",

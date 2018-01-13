@@ -1,2 +1,2 @@
-from feature.featureImpl.structure_features import *
-from feature.featureImpl.style_features import *
+from feature.language_dependent_words.featureImpl.structure_features import *
+from feature.language_dependent_words.featureImpl.style_features import *

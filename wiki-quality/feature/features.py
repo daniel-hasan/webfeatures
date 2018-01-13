@@ -10,7 +10,8 @@ import os
 from os.path import join, isfile, isdir
 from posix import listdir
 from html.parser import HTMLParser
-from utils.basic_entities import FormatEnum
+from utils.basic_entities import FormatEnum, FeatureTimePerDocumentEnum
+from feature.language_dependent_words.featureImpl.structure_features import TagCountFeature
 
 
 class Document(object):
@@ -81,22 +82,23 @@ class DocSetReaderDummy(FeatureDocumentsReader):
 #        return Klass(**self.arr_feature_arguments)
 
 class ParserTags(HTMLParser):
-    def __init__(self, arr_features, document):
+    def __init__(self, document):
         HTMLParser.__init__(self)
         self.document = document
-        self.arr_features = [feat for feat in arr_features if isinstance(feat, TagBasedFeature)]
+        self.checkingTags = TagCountFeature("Tag Check", "Checking tags at document", "reference", 
+                                         FeatureVisibilityEnum.public, FormatEnum.HTML, 
+                                         FeatureTimePerDocumentEnum.MILLISECONDS)
         
     def handle_data(self,str_data):
-        for feat in self.arr_features:
-            var = feat.handle_data(str_data)
-            print(var)
+        print(str_data)
 
     def handle_starttag(self, tag, attrs):
-        for feat in self.arr_features:
-            var  = feat.handle_starttag(tag)
-            TagBasedFeature.checkTag(self.document, tag)
-            print(var)
- 
+        self.checkingTags.checkTag(self.document, tag)
+        print(tag)
+    
+    def handle_endtag(self, tag, attrs):
+        self.checkingTags.checkTag(self.document, tag)
+        print(tag)
 
 class FeatureCalculatorManager(object):
 
@@ -144,12 +146,14 @@ class FeatureCalculatorManager(object):
         str_text = docText.str_text
         
         if format is FormatEnum.HTML:
-            parser = ParserTags(arr_features)
-            parser.feed(str_text)
-            
             for feat in arr_features:
                 if isinstance(feat, TagBasedFeature):
+                    parser = ParserTags(feat)
+                    parser.feed(str_text)
                     feat.compute_feature(docText)
+            
+            
+            
                 
             str_text = parser.handle_data(str_text)
             
