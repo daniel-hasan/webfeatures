@@ -145,9 +145,14 @@ class FeatureCalculatorManager(object):
         
         if format is FormatEnum.HTML:
             parser = ParserTags(arr_features)
-            str_text = docText.read()
             parser.feed(str_text)
+            
+            for feat in arr_features:
+                if isinstance(feat, TagBasedFeature):
+                    feat.compute_feature(docText)
+                
             str_text = parser.handle_data(str_text)
+            
             #para cada feature tag based rodar o compute feature para obter o resultado final
             #for arr_features:
             #    HTMLParser.feed(str_text)

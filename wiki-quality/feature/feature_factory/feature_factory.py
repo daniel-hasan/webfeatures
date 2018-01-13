@@ -7,9 +7,11 @@ Created on 8 de ago de 2017
 from abc import abstractmethod
 
 from feature import ConfigurableParam, ParamTypeEnum
-from feature.featureImpl import *
+from feature.language_dependent_words.featureImpl.style_features import *
+from feature.language_dependent_words.featureImpl.structure_features import *
 from feature.features import  FeatureVisibilityEnum
 from utils.basic_entities import FormatEnum, FeatureTimePerDocumentEnum
+from django.contrib.sessions.backends import file
 
 
 class FeatureFactory(object):
@@ -66,7 +68,7 @@ class StyleFeatureFactory(FeatureFactory):
             language: objeto da classe utils.Language
         '''
         PosClassLang = self.class_language_dependent("PartOfSpeech")
-        arrFeatures = [WordCountFeature("Preposition Count","Count the number of prepositions in the text.",FeatureVisibilityEnum.public,
+        arrFeatures = [WordCountFeature("Preposition Count","Count the number of prepositions in the text.","reference",FeatureVisibilityEnum.public,
                                         FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,setWordsToCount=PosClassLang.PREPOSITION)]
         
         featSentenceCount = SentenceCountFeature("Phrases Count","Count the number of phrases in the text.","reference",
@@ -104,3 +106,33 @@ class StyleFeatureFactory(FeatureFactory):
         
         return  arrFeatures
         
+
+class WordsFeatureFactory(FeatureFactory):
+    
+    def __init__(self,objLanguage):
+        super(FeatureFactory,self).__init__()
+        self.BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        self.BASE_DIR = os.path.abspath(os.path.join(self.BASE_DIR,os.pardir))
+        
+    @abstractmethod
+    def createFeatures(self):
+        
+        self.prepositions()
+        
+    def prepositions(self):
+        
+        dirPrepositions = self.BASE_DIR+"/partOfSpeech/"+self.objLanguage.name+"/prepositions.txt"
+        listPrepositions = []
+        
+        with open(dirPrepositions) as file:
+            for linha in file:
+                listPrepositions.append(file.readLine())
+        
+        featPrepositionsCount = WordBasedFeature("Preposition Count","Count the number of prepositions in the text."
+                                                 "Based on file style.c from path diction-1.11.tar.gz of http://ftp.gnu.org/gnu/diction/",
+                                                 FeatureVisibilityEnum.public, FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,listPrepositions)
+        
+            
+        
+        
+    
