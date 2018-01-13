@@ -2,7 +2,7 @@
 
 {% block content %}
 	<section>
-		<h1>Insert a new feature</h1>
+		<h1>Upload a compressed file</h1>
 		<form enctype="multipart/form-data" method="post" name='file_dataset' class="form">
 			{% csrf_token %}
 			<input name="file_dataset" type="file">
@@ -20,7 +20,7 @@
 					{{ field }}
 				</div>
 				{{ field.errors }}
-			{% endfor %}
+			{% endfor %}						
 			<button type="submit" class="submit_button">Submit</button>
 		</form>
 	</section>
@@ -60,11 +60,25 @@
 					<td>-------------</td>
 					<td>--------------</td>
 				</tr>
-				{% endfor %}
-			</tbody>
+			{% endfor %}
+		</tbody>
 	</table>
-	<script>
-		let mapFeatHTMLperFeatSet = {1: ["feature HTML1"],
+	<!-- <script>
+		//let mapFeatHTMLperFeatSet = {1: ["feature HTML1"],
 									 3: ["feature HTML 3","feature HTML 1"]};
-	</script>
+		
+		//Obtém o único botão do tipo submit da página.
+		//let submit_button = document.querySelector(.submit_button);
+		
+		///Ao clicar no botão, 
+		//submit_button.addEventListener('click', function() {
+			//{% for id_featset, arr_feat_names in map_feathtml %}
+				//{% for nam_feature in arr_feat_names %}
+					//{% if id_featset == 1 %}
+						
+					//{% endif %}
+				//{% endfor %}
+			//{% endfor %}
+		//})
+	</script> -->
 {% endblock %}

@@ -8,6 +8,12 @@ from wiki_quality_web import settings
 
 
 class LoginView(View):
+    '''
+    Created on 12 de jan de 2018
+    
+    @author: Raphael Luiz
+    '''
+        
     def post(self, request):
         username = request.POST['username']
         password = request.POST['password']
@@ -17,17 +23,17 @@ class LoginView(View):
             if user.is_active:
                 login(request, user)
                 
-                return HttpResponseRedirect('/form')
+                return HttpResponseRedirect('/')
             else:
                 return HttpResponse("Inactive user.")
         else:
-            return HttpResponseRedirect(settings.LOGIN_URL)
+            return HttpResponseRedirect('/')
         
         return render(request, "index.html")
     
 class LogoutView(View):
     def get(self, request):
         logout(request)
-        return HttpResponseRedirect(settings.LOGIN_URL)
+        return HttpResponseRedirect('/')
     
     

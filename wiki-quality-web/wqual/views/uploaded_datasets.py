@@ -50,8 +50,8 @@ class DatasetCreateView(CreateView):
             dataset_file.save()
             
     def get_context_data(self, **kwargs):
-        context['map_feathtml'] = UsedFeature.objects.get_html_features_name_grouped_by_featureset()
         context = super(DatasetCreateView, self).get_context_data(**kwargs)
+        #context['map_feathtml'] = UsedFeature.objects.get_html_features_name_grouped_by_featureset()
         context['dataset_list'] = Dataset.objects.filter(user=self.request.user) if self.request.user.is_authenticated else []
         return context    
         
