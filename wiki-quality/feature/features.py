@@ -10,8 +10,9 @@ import os
 from os.path import join, isfile, isdir
 from posix import listdir
 from html.parser import HTMLParser
-from utils.basic_entities import FormatEnum, FeatureTimePerDocumentEnum
+from utils.basic_entities import FormatEnum
 from feature.language_dependent_words.featureImpl.structure_features import TagCountFeature
+
 
 
 class Document(object):
@@ -82,22 +83,22 @@ class DocSetReaderDummy(FeatureDocumentsReader):
 #        return Klass(**self.arr_feature_arguments)
 
 class ParserTags(HTMLParser):
-    def __init__(self, document):
+    def __init__(self, feat, document):
         HTMLParser.__init__(self)
         self.document = document
-        self.checkingTags = TagCountFeature("Tag Check", "Checking tags at document", "reference", 
-                                         FeatureVisibilityEnum.public, FormatEnum.HTML, 
-                                         FeatureTimePerDocumentEnum.MILLISECONDS)
+        self.feat = feat
         
     def handle_data(self,str_data):
         print(str_data)
 
     def handle_starttag(self, tag, attrs):
-        self.checkingTags.checkTag(self.document, tag)
+        if isinstance(self.feat, TagCountFeature):
+            self.feat.checkTag(self.document, tag)
         print(tag)
     
     def handle_endtag(self, tag, attrs):
-        self.checkingTags.checkTag(self.document, tag)
+        if isinstance(self.feat, TagCountFeature):
+            self.feat.checkTag(self.document, tag)
         print(tag)
 
 class FeatureCalculatorManager(object):

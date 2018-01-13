@@ -54,11 +54,16 @@ class TestTagCounter(unittest.TestCase):
         self.assertEqual(int_result, 1, "Nao foi contabilizado o numero de palavras corretos no teste do terceiro documento")
 
 class TestParserTags(unittest.TestCase):
-    def teste(self):
+    def testParser(self):
+        tcount = TagCountFeature("contagem de tags", "Feature que conta tags em HTML", "HTML", 
+                                         FeatureVisibilityEnum.public, 
+                                         FormatEnum.HTML, 
+                                         FeatureTimePerDocumentEnum.MILLISECONDS,["head","body"])
         document = Document(1,"doc1","O texto nao precisa -necessariamente - ser o texto que sera testado")
-        parser = ParserTags(document)
-        parser.feed("<head></head><body>Dados de teste</body><p>Parágrafo")
+        parser = ParserTags(tcount,document)
+        parser.feed("<head></head><body>Dados de teste</body><p>Parágrafo</p>")
 
+    
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'TestFeatureCalculator.testName']
     unittest.main()
