@@ -34,6 +34,6 @@ urlpatterns = [
     url(r'^publications$', views.PublicationList.as_view(), name='publications'),
     url(r'^used_features.js$', views.UsedFeatureListView.as_view(), name='used_feature_js'),
     url(r'^used_features.html', views.UsedFeatureListViewTeste.as_view(), name='used_features'),
-    url(r'^login/$', auth_views.login, {'template_name': 'content/login.html'}, name='login'),
+    url(r'^$', auth_views.login, {'template_name': 'content/home.html'}, name="home"),
     url(r'^authentication$', views.LoginView.as_view(), name='authentication'),
 ]

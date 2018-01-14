@@ -1,7 +1,7 @@
 {% extends "../bases/base_main_site.html" %}
 
 {% block content %}
-	<section>
+	<section class="dataset-section">
 		<h1>Upload a compressed file</h1>
 		<form enctype="multipart/form-data" method="post" name='file_dataset' class="form">
 			{% csrf_token %}

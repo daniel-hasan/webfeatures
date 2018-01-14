@@ -12,6 +12,7 @@ class LoginView(View):
     Created on 12 de jan de 2018
     
     @author: Raphael Luiz
+    Verifica se o usuário e a senha são válidos.
     '''
         
     def post(self, request):
@@ -23,8 +24,10 @@ class LoginView(View):
             if user.is_active:
                 login(request, user)
                 
+                #Se o usuário existir, ele é redirecionado para esta URL.
                 return HttpResponseRedirect('/')
             else:
+                #Senão a página é recarregada.
                 return HttpResponse("Inactive user.")
         else:
             return HttpResponseRedirect('/')
@@ -32,6 +35,12 @@ class LoginView(View):
         return render(request, "index.html")
     
 class LogoutView(View):
+    '''
+    Created on 12 de jan de 2018
+    
+    @author: Raphael Luiz
+    '''
+    
     def get(self, request):
         logout(request)
         return HttpResponseRedirect('/')
