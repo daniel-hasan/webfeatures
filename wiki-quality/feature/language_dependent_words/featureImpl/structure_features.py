@@ -5,7 +5,8 @@ Features de estrutura (como numero de seções, citações etc.)
 @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>  
 '''
 
-from feature.features import *
+from feature.features import TagBasedFeature
+
 
 class TagCountFeature(TagBasedFeature):
     

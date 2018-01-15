@@ -145,17 +145,20 @@ class FeatureCalculatorManager(object):
         ''' 
         
         str_text = docText.str_text
+        arr_feat_result = []
+        
+        for feat in arr_features:
+            arr_feat_result.append(None)
         
         if format is FormatEnum.HTML:
+            aux = 0
             for feat in arr_features:
                 if isinstance(feat, TagBasedFeature):
                     parser = ParserTags(feat)
                     parser.feed(str_text)
-                    feat.compute_feature(docText)
-            
-            
-            
-                
+                    arr_feat_result[aux] = feat.compute_feature(docText)
+                aux = aux + 1
+                            
             str_text = parser.handle_data(str_text)
             
             #para cada feature tag based rodar o compute feature para obter o resultado final
@@ -163,8 +166,7 @@ class FeatureCalculatorManager(object):
             #    HTMLParser.feed(str_text)
         
         
-        #armazeno os text based features 
-        arr_feat_result = [] 
+        
         #armazo as word based features e sentence based feature
         word_buffer = ""
         sentence_buffer = ""
@@ -219,10 +221,15 @@ class FeatureCalculatorManager(object):
                 feat.checkParagraph(docText, paragraph_buffer)
         
         #para todoas as WordBasedFeatue ou SentenceBased feature, rodar o compute_feature
+        
+        aux = 0
         for feat in arr_features:
-            arr_feat_result.append(None)
-        for int_i,feat in enumerate(arr_features):
-            arr_feat_result[int_i] = feat.compute_feature(docText)
+            if isinstance(feat, TagBasedFeature):
+                pass
+            else:
+                arr_feat_result[aux] = feat.compute_feature(docText)
+            aux = aux + 1
+            
         return arr_feat_result
 
 class FeatureVisibilityEnum(Enum):
