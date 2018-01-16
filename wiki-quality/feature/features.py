@@ -26,6 +26,10 @@ class FeatureDocumentsWriter(object):
     def write_document(self,document, arr_feats_used, arr_feats_result):
         raise NotImplementedError("Voce deve criar uma subclasse e a mesma deve sobrepor este método")
     
+    @abstractmethod
+    def write_header(self, arr_features_used):
+        raise NotImplementedError
+    
 class FeatureDocumentsReader(object):
     '''
             Classe abstrata para a leitura dos textos 
@@ -144,6 +148,8 @@ class FeatureCalculatorManager(object):
         @author:  
         ''' 
         
+        FeatureDocumentsWriter.write_header(arr_features)
+        
         str_text = docText.str_text
         arr_feat_result = []
         
@@ -161,11 +167,6 @@ class FeatureCalculatorManager(object):
                             
             str_text = parser.handle_data(str_text)
             
-            #para cada feature tag based rodar o compute feature para obter o resultado final
-            #for arr_features:
-            #    HTMLParser.feed(str_text)
-        
-        
         
         #armazo as word based features e sentence based feature
         word_buffer = ""

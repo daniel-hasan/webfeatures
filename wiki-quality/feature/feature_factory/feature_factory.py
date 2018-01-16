@@ -42,19 +42,19 @@ class StructureFeatureFactory(FeatureFactory):
     
     def createFeatures(self):
         
-        arrFeatures = [TagCountFeature("Section Count", "Count the number of HTML h1 sections in the text", "reference", 
+        arrFeatures = [TagCountFeature("Section h1 Count", "Count the number of HTML h1 sections in the text", "reference", 
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.HTML, 
                                          FeatureTimePerDocumentEnum.MILLISECONDS,["h1"])]
         
-        featTagCount = TagCountFeature("Tag Count", "Count the number of HTML p sections in the text", "reference", 
+        featTagCount = TagCountFeature("Section p Count", "Count the number of HTML p sections in the text", "reference", 
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.HTML, 
                                          FeatureTimePerDocumentEnum.MILLISECONDS,["p"])
         
         arrFeatures.append(featTagCount)
         
-        featTagCount = TagCountFeature("Tag Count", "Count the number of HTML div sections in the text", "reference", 
+        featTagCount = TagCountFeature("Section div Count", "Count the number of HTML div sections in the text", "reference", 
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.HTML, 
                                          FeatureTimePerDocumentEnum.MILLISECONDS,["div"])
@@ -68,14 +68,14 @@ class StyleFeatureFactory(FeatureFactory):
             language: objeto da classe utils.Language
         '''
         PosClassLang = self.class_language_dependent("PartOfSpeech")
-        arrFeatures = [WordCountFeature("Preposition Count","Count the number of prepositions in the text.","reference",FeatureVisibilityEnum.public,
-                                        FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,setWordsToCount=PosClassLang.PREPOSITION)]
         
-        featSentenceCount = SentenceCountFeature("Phrases Count","Count the number of phrases in the text.","reference",
+        arrFeatures = []
+        
+        featSentenceCount = SentenceCountFeature("Phrase Count","Count the number of phrases in the text.","reference",
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.text_plain, FeatureTimePerDocumentEnum.MILLISECONDS)
         
-        featLargeSentenceCount = LargeSentenceCountFeature("Larges Phrases Count","Count the number of phrases larger than a specified threshold.",
+        featLargeSentenceCount = LargeSentenceCountFeature("Large Phrase Count","Count the number of phrases larger than a specified threshold.",
                                                            "reference",FeatureVisibilityEnum.public,FormatEnum.text_plain,
                                                            FeatureTimePerDocumentEnum.MICROSECONDS,10)
         
@@ -88,7 +88,7 @@ class StyleFeatureFactory(FeatureFactory):
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.text_plain, FeatureTimePerDocumentEnum.MILLISECONDS)
         
-        featLargeParagraphCount = LargeParagraphCountFeature("Larges Paragraph Count","Count the number of paragraphs larger than a specified threshold",
+        featLargeParagraphCount = LargeParagraphCountFeature("Large Paragraph Count","Count the number of paragraphs larger than a specified threshold",
                                          "reference",
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.text_plain, FeatureTimePerDocumentEnum.MILLISECONDS,16)
@@ -113,13 +113,12 @@ class WordsFeatureFactory(FeatureFactory):
         super(FeatureFactory,self).__init__()
         self.BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         self.BASE_DIR = os.path.abspath(os.path.join(self.BASE_DIR,os.pardir))
+        print(self.BASE_DIR)
         
     @abstractmethod
     def createFeatures(self):
         
-        self.prepositions()
-        
-    def prepositions(self):
+        arrFeatures = []
         
         dirPrepositions = self.BASE_DIR+"/partOfSpeech/"+self.objLanguage.name+"/prepositions.txt"
         listPrepositions = dirPrepositions.readlines()
@@ -127,8 +126,88 @@ class WordsFeatureFactory(FeatureFactory):
         featPrepositionsCount = WordBasedFeature("Preposition Count","Count the number of prepositions in the text."
                                                  "Based on file style.c from path diction-1.11.tar.gz of http://ftp.gnu.org/gnu/diction/",
                                                  FeatureVisibilityEnum.public, FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,listPrepositions)
+
         
+        dirPronouns = self.BASE_DIR+"/partOfSpeech/"+self.objLanguage.name+"/pronouns.txt"
+        listPronouns = dirPronouns.readlines()
+        
+        featPronounsCount = WordBasedFeature("Pronoun Count","Count the number of pronouns in the text."
+                                                 "Based on file style.c from path diction-1.11.tar.gz of http://ftp.gnu.org/gnu/diction/",
+                                                 FeatureVisibilityEnum.public, FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,listPronouns)
             
+        dirVerbs = self.BASE_DIR+"/partOfSpeech/"+self.objLanguage.name+"/toBeVerbs.txt"
+        listVerbs = dirVerbs.readlines()
         
+        featToBeVerbsCount = WordBasedFeature("To Be Verb Count","Count the number of To Be verbs in the text."
+                                                 "Based on file style.c from path diction-1.11.tar.gz of http://ftp.gnu.org/gnu/diction/",
+                                                 FeatureVisibilityEnum.public, FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,listVerbs)
         
+        dirArticles = self.BASE_DIR+"/partOfSpeech/"+self.objLanguage.name+"/articles.txt"
+        listArticles = dirArticles.readlines()
+        
+        featArticlesCount = WordBasedFeature("Article Count","Count the number of articles in the text."
+                                                 "Based on file style.c from path diction-1.11.tar.gz of http://ftp.gnu.org/gnu/diction/",
+                                                 FeatureVisibilityEnum.public, FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,listArticles)
+        
+        dirAuxVerbs = self.BASE_DIR+"/partOfSpeech/"+self.objLanguage.name+"/auxVerbs.txt"
+        listAuxVerbs = dirAuxVerbs.readlines()
+        
+        featAuxVerbsCount = WordBasedFeature("Auxiliary Verb Count","Count the number of auxiliary verbs in the text."
+                                                 "Based on file style.c from path diction-1.11.tar.gz of http://ftp.gnu.org/gnu/diction/",
+                                                 FeatureVisibilityEnum.public, FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,listAuxVerbs)
+        
+        dirIndPronouns = self.BASE_DIR+"/partOfSpeech/"+self.objLanguage.name+"/indefinitePronouns.txt"
+        listIndPronouns = dirIndPronouns.readlines()
+        
+        featIndPronounsCount = WordBasedFeature("Indefinite Pronoun Count","Count the number of indefinite pronouns in the text."
+                                                 "Based on file style.c from path diction-1.11.tar.gz of http://ftp.gnu.org/gnu/diction/",
+                                                 FeatureVisibilityEnum.public, FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,listIndPronouns)
     
+        dirRelPronouns = self.BASE_DIR+"/partOfSpeech/"+self.objLanguage.name+"/relativePronouns.txt"
+        listRelPronouns = dirRelPronouns.readlines()
+        
+        featRelPronounsCount = WordBasedFeature("Relative Pronoun Count","Count the number of relative pronouns in the text."
+                                                 "Based on file style.c from path diction-1.11.tar.gz of http://ftp.gnu.org/gnu/diction/",
+                                                 FeatureVisibilityEnum.public, FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,listRelPronouns)
+        
+        dirIntPronouns = self.BASE_DIR+"/partOfSpeech/"+self.objLanguage.name+"/interrogativePronouns.txt"
+        listIntPronouns = dirIntPronouns.readlines()
+        
+        featIntPronounsCount = WordBasedFeature("Interrogative Pronoun Count","Count the number of interrogative pronouns in the text."
+                                                 "Based on file style.c from path diction-1.11.tar.gz of http://ftp.gnu.org/gnu/diction/",
+                                                 FeatureVisibilityEnum.public, FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,listIntPronouns)
+        
+        dirCoordConjunctions = self.BASE_DIR+"/partOfSpeech/"+self.objLanguage.name+"/coordinatingConjunctions.txt"
+        listCoordConjunctions = dirCoordConjunctions.readlines()
+        
+        featCoordConjunctionsCount = WordBasedFeature("Coordinating Conjunction Count","Count the number of coordinating conjunctions in the text."
+                                                 "Based on file style.c from path diction-1.11.tar.gz of http://ftp.gnu.org/gnu/diction/",
+                                                 FeatureVisibilityEnum.public, FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,listCoordConjunctions)
+    
+        dirSubConjunctions = self.BASE_DIR+"/partOfSpeech/"+self.objLanguage.name+"/subordinatingConjunctions.txt"
+        listSubConjunctions = dirSubConjunctions.readlines()
+        
+        featSubConjunctionsCount = WordBasedFeature("Subordinating Conjunction Count","Count the number of subordinating conjunctions in the text."
+                                                 "Based on file style.c from path diction-1.11.tar.gz of http://ftp.gnu.org/gnu/diction/",
+                                                 FeatureVisibilityEnum.public, FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,listSubConjunctions)
+           
+        dirCorConjunctions = self.BASE_DIR+"/partOfSpeech/"+self.objLanguage.name+"/correlativeConjunctions.txt"
+        listCorConjunctions = dirCorConjunctions.readlines()
+        
+        featCorConjunctionsCount = WordBasedFeature("Correlative Conjunction Count","Count the number of correlative conjunctions in the text."
+                                                 "Based on file style.c from path diction-1.11.tar.gz of http://ftp.gnu.org/gnu/diction/",
+                                                 FeatureVisibilityEnum.public, FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,listCorConjunctions)
+        
+        arrFeatures.append(featArticlesCount)
+        arrFeatures.append(featAuxVerbsCount)
+        arrFeatures.append(featCoordConjunctionsCount)
+        arrFeatures.append(featCorConjunctionsCount)
+        arrFeatures.append(featIndPronounsCount)
+        arrFeatures.append(featIntPronounsCount)
+        arrFeatures.append(featPrepositionsCount)
+        arrFeatures.append(featPronounsCount)
+        arrFeatures.append(featRelPronounsCount)
+        arrFeatures.append(featSubConjunctionsCount)
+        arrFeatures.append(featToBeVerbsCount)
+        
+        return arrFeatures
