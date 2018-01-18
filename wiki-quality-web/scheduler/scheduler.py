@@ -11,7 +11,6 @@ from wqual.models.featureset_config import UsedFeature
 from wqual.models.uploaded_datasets import StatusEnum, Status
 
 class Scheduler (object):
-
 	@abstractmethod
 	def get_next(self):
 		pass

@@ -7,11 +7,16 @@ Tabelas relacionadas com o upload de datasets para a futura
 extração de features. 
 As tabelas relacionadas com o resultado desta extração também está neste arquivo.
 '''
+
+import lzma
+
 from enum import IntEnum, Enum
 from django.contrib.auth.models import User, Group
 from django.db import models
 from wqual.models import FeatureSet, Format
 from wqual.models.utils import EnumModel, EnumManager
+
+
 
 
 
@@ -64,6 +69,11 @@ class Dataset(models.Model):
     user = models.ForeignKey(User, models.PROTECT)
     status = models.ForeignKey(Status, models.PROTECT)
 
+    '''
+    start_dat_processing = models.DateTimeField(blank=True)
+    end_dat_processing = models.DateTimeField(blank=True)
+    '''
+
 
 class ResultValityPerUserGroup(models.Model):
     '''
@@ -106,17 +116,24 @@ class DocumentResult(models.Model):
     @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
     Resultado obtido do documento
     '''
+
     dsc_result = models.TextField()
     document = models.OneToOneField(Document, models.PROTECT)
     
-     
+    '''
+    @author: Priscilla
+    O metodo get (@property dsc_result) compacta o texto dsc_result como lzma
+    '''
     @property
     def dsc_result(self):
         return lzma.decompress(self.dsc_result).decode("utf-8")
-        
+
     @dsc_result.setter
     def dsc_result(self, dsc_result):
-        dsc_to_compress = bytearray()
-        dsc_to_compress.extend(map(ord, dsc_result))
+        print(dsc_result)
+        a=''.join(dsc_result)
+        print(a)
+        dsc_to_compress = str.encode(a)
         self.dsc_result = lzma.compress(dsc_to_compress)
+    
     

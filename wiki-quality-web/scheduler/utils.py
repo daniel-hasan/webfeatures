@@ -1,3 +1,9 @@
+'''
+Created on 
+@author: Priscilla
+
+'''
+
 import json
 
 from feature.features import Document as DocumentFeature, FeatureDocumentsReader, FeatureDocumentsWriter
