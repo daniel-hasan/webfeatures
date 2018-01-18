@@ -28,6 +28,6 @@ urlpatterns = [
     url(r'^extractFeatures$', views.DatasetListView.as_view(), name='extract_features'),
     url(r'^admin/', admin.site.urls),
     url(r'^publications$', views.PublicationList.as_view(), name='publications'),
-    url(r'^used_features.js$', views.UsedFeatureListView.as_view(), name='used_feature_js'),
-    url(r'^used_features.html', views.UsedFeatureListViewTeste.as_view(), name='used_features'),
+    url(r'^usedFeatures/(?P<nam_feature_set>.*)$', views.UsedFeatureListView.as_view(), name='usedFeatures.js'),
+    url(r'^usedFeaturesInsert$', views.UsedFeatureListViewTeste.as_view(), name='used_features'),
 ]

@@ -110,17 +110,26 @@ class UsedFeatureListView(ListView):
     '''
    
     model = UsedFeature
+    
     template_name = "content/used_features.js"
     def get_queryset(self):
-        arr_used_features = UsedFeatureArgVal.objects\
-                                        .filter(used_feature__feature_set__id=9, 
-                                                nam_argument__in=["name","description"])\
-                                       .values("used_feature_id","nam_argument","val_argument")                                                
-                                        #.values("nam_argument","val_argument","used_feature__is_configured")
-        #agrupa por used_feature_id
-        map_used_features = {}
+        obj_Feature_Set = FeatureSet.objects.get(user=self.request.user,nam_feature_set=self.kwargs["nam_feature_set"])
+        arr_used_features_set = UsedFeature.objects.filter(feature_set__pk = obj_Feature_Set.id)
+        arr_used_features = UsedFeatureArgVal.objects.filter(used_feature__feature_set__id = obj_Feature_Set.id,  nam_argument__in=["name","description"])\
+                                  .values("used_feature_id","nam_argument","val_argument", "is_configurable", "used_feature__feature_set__nam_feature_set", "used_feature__feature_set__dsc_feature_set")                                                
+        #return arr_used_features 
+       
+        map_used_feat_per_id = {}
         
-        return arr_used_features
+        for mapused in arr_used_features:
+            id_feature = mapused['used_feature_id']
+            
+            if id_feature not in map_used_feat_per_id:
+                map_used_feat_per_id[id_feature] = []
+            map_used_feat_per_id[id_feature].append(mapused)
+
+        return map_used_feat_per_id
+    
 
 class UsedFeatureListViewTeste(ListView):
     '''
@@ -131,9 +140,13 @@ class UsedFeatureListViewTeste(ListView):
     '''
    
     model = UsedFeature
-    template_name = "content/used_features.html"
+    template_name = "content/used_feature.js"
     def get_queryset(self):
-        return UsedFeature.objects.filter(feature_set__pk=9)    
+       # obj_Feature_Set = FeatureSet.objects.get(user = self.request.user,nam_feature_set = self.kwargs["nam_feature_set"])
+       # arr_used_features_set = UsedFeature.objects.filter(feature_set__pk = obj_Feature_Set )
+       # return arr_used_features_set 
+        obj_Feature_Set = UsedFeature.objects.all().order_by('ord_feature')
+        return obj_Feature_Set    
 
     def get_success_url(self):
         return reverse('feature_set_list')

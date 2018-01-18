@@ -50,12 +50,16 @@
 	</div>
   </div>
   <div id="tabs-2">
-  	<a><button id="insert" class="btn btn-primary">Add Feature</button></a>
-  	<div id='div'></div>
-    <script src="{% url "used_feature_js" %}"></script> 
+  	<a><button id="insert">Add Feature</button></a>
+  	<br><br>
+  	<ul id='div'></ul>
+  	{% if object.id %}
+  		<script src="{% url "usedFeatures.js" object.nam_feature_set %}"></script>
+  	{% else %}
+  		<script src="{% url "used_features" %}"></script>
+  	{% endif %}
   </div>
 </div>
-
 
 <div id="add-form" title="Add Feature Set">
   <form action="" method="post">{% csrf_token %}
@@ -67,6 +71,11 @@
   </form>
 </div>
 
+<div id="is-configurable-form" title="Configure Feature">
+  <form action="" method="post">{% csrf_token %}
+	 
+  </form>
+</div>
 
  
 

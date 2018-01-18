@@ -98,7 +98,7 @@ class FeatureSet(models.Model):
     user = models.ForeignKey(User, models.PROTECT)
     
     def __str__(self):
-        return "{name}: {description} ".format(name=self.nam_feature_set, description=self.dsc_feature_set)
+        return "{name} ||| {description} ".format(name=self.nam_feature_set, description=self.dsc_feature_set)
 
     
     class Meta:
@@ -160,7 +160,7 @@ class UsedFeature(models.Model):
             else:
                 param[arg.nam_argument] = arg.val_argument
 
-        obj = FeatureClass(**params)
+        obj = FeatureClass(**param)
         return obj
     class Meta:
         db_table = 'wqual_used_feature'

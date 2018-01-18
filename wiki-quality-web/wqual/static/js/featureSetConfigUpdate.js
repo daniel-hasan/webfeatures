@@ -1,7 +1,7 @@
 $( function() {
 	var dialog;
 		  
-	    dialog = $( "#add-form" ).dialog({
+	    dialog = $( "#is-configurable-form" ).dialog({
 	      autoOpen: false,
 	      height: 300,
 	      width: 600,

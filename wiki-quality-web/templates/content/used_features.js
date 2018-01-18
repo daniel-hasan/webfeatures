@@ -1,62 +1,97 @@
-//Cria uma classe para organizar as features.
 class Feature {
-    constructor(feature_set, feature, feature_time_to_extract, feature_visibility) {
-        this.feature_set = feature_set;
-        this.feature = feature;
-        this.feature_time_to_extract = feature_time_to_extract;
-        this.feature_visibility = feature_visibility;
+    constructor(name, description, is_configurable, arrParams) {
+        this.name = name; 
+        this.description = description;
+        this.is_configurable = is_configurable;
+        this.arrParams = arrParams;
     }
 };
 
-//Cria um novo array onde serão armazenadas as features.
+let name = "";
+let description = "";
+let is_configurable = false;
+let arrParams = [];
 let arrFeatures = new Array();
 
-//Coloca as features existentes dentro do arrFeatures.
+{% for key, arr_args in object_list.items %}
+{% for arg in arr_args %}
+
+	
+
+	{% ifequal arg['nam_argument'] "name" %}
+		name = {{ arg['val_argument'] }};		
+	{% endif %}
+
+
+{% endfor %}
+{% endfor %}
+
 {% for feature in object_list %}
-    arrFeatures.push(new Feature("{{ feature.feature_set }}","{{ feature.feature }}", "{{ feature.feature_time_to_extract }}", "{{ feature.feature_visibility }}"));
+	name = "";
+	description = "";
+	arrParams = [];
+	is_configurable = false;
+	
+	teste = 
+	name = "{{ feature.used_feature__feature_set__nam_feature_set }}";
+	description = "{{ feature.used_feature__feature_set__dsc_feature_set }}";
+	is_configurable = "{{ feature.is_configurable }}";
+	
+	arrParams.push({'nam_argument' : "{{ feature.nam_argument }}",'val_argument' : "{{ feature.val_argument }}"});
+	arrFeatures.push(new Feature(name, description, is_configurable, arrParams));		
 {% endfor %}
 
 function insereFeature(feature) {
-    //Obtém elemento (div) que servirá de base para a criação do elemento pai onde serão colocados os elementos filhos (características da feature).
-    let HTMLEl_temp_div = document.querySelector('#div');
+	let HTMLEl_temp_ul_pai = document.querySelector('#div');
+	let HTMLEl_temp_li_feature_set = document.createElement('li');
+	let HTMLEl_temp_button = document.createElement('button');
+	let HTMLEl_temp_button_is_configurable = document.createElement('button');
 
-    //Cria o elemento pai.
-    let HTMLEl_temp_ul_pai = document.createElement('ul');
-
-    //Cria os elementos filhos, onde serão armazenadas as características da feature.
-    let HTMLEl_temp_li_feature_set = document.createElement('li');
-    let HTMLEl_temp_li_feature = document.createElement('li');
-    let HTMLEl_temp_li_feature_time_to_extract = document.createElement('li');
-    let HTMLEl_temp_li_feature_visibility = document.createElement('li');
-
-    //Cria um botão que será adicionado após os elementos e que, quando clicado, removerá o elemento pai e todos os filhos.
-    let HTMLEl_temp_button = document.createElement('button');
-
-    //Coloca o innerHTML de cada filho como o valor de cada uma das características da feature.
-    HTMLEl_temp_li_feature_set.innerHTML = feature.feature_set;
-    HTMLEl_temp_li_feature.innerHTML = feature.feature;
-    HTMLEl_temp_li_feature_time_to_extract.innerHTML = feature.feature_time_to_extract;
-    HTMLEl_temp_li_feature_visibility.innerHTML = feature.feature_visibility;
-
-    //Coloca o inneHTML do botão como "Remove feature".
-    HTMLEl_temp_button.innerHTML = "Remove feature";
-
-    //Adiciona uma classe ao botão criado.
-    HTMLEl_temp_button.setAttribute('class', 'button-remove-feature');
-
-    //Adiciona o pai.
-    HTMLEl_temp_div.appendChild(HTMLEl_temp_ul_pai);
-
-    //Adiciona os filhos.
-    HTMLEl_temp_ul_pai.appendChild(HTMLEl_temp_li_feature_set);
-    HTMLEl_temp_ul_pai.appendChild(HTMLEl_temp_li_feature);
-    HTMLEl_temp_ul_pai.appendChild(HTMLEl_temp_li_feature_time_to_extract);
-    HTMLEl_temp_ul_pai.appendChild(HTMLEl_temp_li_feature_visibility);
-    HTMLEl_temp_ul_pai.appendChild(HTMLEl_temp_button);
+	HTMLEl_temp_li_feature_set.id = 'li'
+	
+	HTMLEl_temp_li_feature_set.innerHTML = feature.name;
+	HTMLEl_temp_li_feature_set.title = feature.description;
+	
+	HTMLEl_temp_button.innerHTML = '';
+	HTMLEl_temp_button.setAttribute('class', 'button-remove-feature');
+	HTMLEl_temp_button_is_configurable.setAttribute('class', 'isConfigurable');
     
+
+	$( function() {
+		$('.button-remove-feature').button( {
+	        icon: "ui-icon-closethick",
+	        iconPosition: "bottom"
+	    });
+	
+		$('.isConfigurable').button( {
+		   icon: "ui-icon-gear",
+		   iconPosition: "bottom"
+		});
+		
+		$("#div").sortable();
+		
+		let dialogg;
+		  
+	    dialogg = $( "#is-configurable-form" ).dialog({
+	      autoOpen: false,
+	      height: 300,
+	      width: 600,
+	      modal: true,
+	    });
+		
+		$( ".isConfigurable" ).button().on( "click", function() {
+	      dialogg.dialog( "open" );
+	    });
+	});
+
+	if(feature.is_configurable == 'True'){
+		HTMLEl_temp_li_feature_set.appendChild(HTMLEl_temp_button_is_configurable);
+	}
+	
+	HTMLEl_temp_li_feature_set.appendChild(HTMLEl_temp_button);
+	HTMLEl_temp_ul_pai.appendChild(HTMLEl_temp_li_feature_set);
 }
 
-//Cria uma função para remover a feature.
 function remove_feature(e) {
     //Obtém o elemento pai do button, que será o ul criado anteriormente (HTMLEl_temp_ul_pai).
     ul_pai = e.currentTarget.parentNode;
@@ -77,3 +112,5 @@ for(let cont =  0; cont < Arr_button.length; cont++) {
         remove_feature(e);
 });
 }
+
+
