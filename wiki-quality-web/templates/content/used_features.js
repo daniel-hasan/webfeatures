@@ -14,16 +14,16 @@ let arrParams = [];
 let arrFeatures = new Array();
 
 {% for key, arr_args in object_list.items %}
-{% for arg in arr_args %}
-
+	{% for arg in arr_args %}
 	
-
-	{% ifequal arg['nam_argument'] "name" %}
-		name = {{ arg['val_argument'] }};		
-	{% endif %}
-
-
-{% endfor %}
+		
+	
+		{% ifequal arg.nam_argument "name" %}
+			name = {{ arg.val_argument }};		
+		{% endifequal %}
+	
+	
+	{% endfor %}
 {% endfor %}
 
 {% for feature in object_list %}

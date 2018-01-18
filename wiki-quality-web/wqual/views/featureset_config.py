@@ -113,6 +113,13 @@ class UsedFeatureListView(ListView):
     
     template_name = "content/used_features.js"
     def get_queryset(self):
+        return {1:[{"used_feature_id":1,"nam_argument":"name","val_argument":"lalala","is_configurable":False},
+                   {"used_feature_id":1,"nam_argument":"description","val_argument":"xuxu","is_configurable":False},
+                   {"used_feature_id":1,"nam_argument":"llalala","val_argument":"eeeeee","is_configurable":True}],
+                2:[{"used_feature_id":2,"nam_argument":"name","val_argument":"l3lele","is_configurable":False},
+                   {"used_feature_id":2,"nam_argument":"description","val_argument":"xaxa","is_configurable":False},
+                   {"used_feature_id":2,"nam_argument":"llalala","val_argument":"eeeeee","is_configurable":True}]}
+        '''
         obj_Feature_Set = FeatureSet.objects.get(user=self.request.user,nam_feature_set=self.kwargs["nam_feature_set"])
         arr_used_features_set = UsedFeature.objects.filter(feature_set__pk = obj_Feature_Set.id)
         arr_used_features = UsedFeatureArgVal.objects.filter(used_feature__feature_set__id = obj_Feature_Set.id,  nam_argument__in=["name","description"])\
@@ -129,7 +136,7 @@ class UsedFeatureListView(ListView):
             map_used_feat_per_id[id_feature].append(mapused)
 
         return map_used_feat_per_id
-    
+        '''
 
 class UsedFeatureListViewTeste(ListView):
     '''
