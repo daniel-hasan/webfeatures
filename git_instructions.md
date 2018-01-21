@@ -50,7 +50,7 @@ menos erros ocorrerão quando for fazer o merge **para o** branch `master`. Para
 git checkout feat-daniel-hasan-5
 git merge master
 ```
-  - Caso haja conflito, corrija-os. Veja a seção que fala sobre [solução de conflitos](#markdown-header-solução-de-conflitos)
+  - Caso haja conflito, corrija-os. Veja a seção que fala sobre [solução de conflitos](#markdown-header-solucao-de-conflitos)
 
 
 ## Finalizando funcionalidade - Enviando-as ao branch Master
