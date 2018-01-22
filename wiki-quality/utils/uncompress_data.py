@@ -11,7 +11,17 @@ class CompressedFile(object):
     file_type = None
     mime_type = None
     proper_extension = None
-
+    extension_ready = False
+    
+    @classmethod
+    def get_known_compress_classes(self):
+        arrStrNames = [SubClassCompressedFile for SubClassCompressedFile in CompressedFile.__subclasses__() if SubClassCompressedFile.extension_ready]
+        return arrStrNames
+    @classmethod
+    def get_known_compress_extensions(self):
+        arrStrNames = [SubClassCompressedFile.file_type for SubClassCompressedFile in CompressedFile.get_known_compress_classes()]
+        return arrStrNames
+    
     def __init__(self, file_pointer):
         # f is an open file or file like object
         self.file_pointer = file_pointer
@@ -24,22 +34,38 @@ class CompressedFile(object):
     def get_compressed_file(self,file_pointer):
         start_of_file = file_pointer.read(1024)
         file_pointer.seek(0)
-        for cls in (ZIPFile, BZ2File, GZFile):
+        for cls in CompressedFile.get_known_compress_classes():
             if cls.is_magic(start_of_file):
                 return cls(file_pointer)
-    
-        return None
+        
+        raise UncompatibleTypeError(file_pointer)
 
     def open(self):
         return None
 
+class UncompressError(Exception):
+    """Basic exception for errors raised by comprression"""
+    def __init__(self, file, msg=None):
+        if msg is None:
+            # Set some default useful error message
+            msg = "Erro ao compactar/descompactar o arquivo %s" % file.name
+        super(UncompressError, self).__init__(msg)
+        self.file = file
 
-
-
+class UncompatibleTypeError(Exception):
+    """Basic exception for errors raised by comprression"""
+    def __init__(self, file, msg=None):
+        if msg is None:
+            # Set some default useful error message
+            arrCompFormats = CompressedFile.get_known_compress_extensions()
+            msg = "O arquivo '%s' não é um tipo de arquivo válido. É possível descompactar o(s) seguinte(s) formato(s): %s " %(file.name,", ".join(arrCompFormats))
+        super(UncompatibleTypeError, self).__init__(msg)
+        self.file = file
 class ZIPFile (CompressedFile):
     magic = '\x50\x4b\x03\x04'
     file_type = 'zip'
     mime_type = 'compressed/zip'
+    extension_ready = True
     
     def __init__(self,file_pointer):
         super().__init__(file_pointer)
@@ -74,11 +100,20 @@ class GZFile (CompressedFile):
 
 
 if __name__ == '__main__':
-    filename = "/home/hasan/teste.zip"
+    #filename = "/home/profhasan/test_compress.zip"
+    filename = "/home/profhasan/doc_station.pdf"
     with open(filename,"rb") as f:
         objFileZip = CompressedFile.get_compressed_file(f)
         
+        #navega buscando o tamanho de cada arquivo
         for name,size in objFileZip.get_each_file_size():
             print("Name: "+name+" size: "+str(size))
-    
-    
+            
+        for name,strFileTxt in objFileZip.read_each_file():
+            print("")
+            print("-------------------------------------")
+            print("Conteudo do arquivo '%s': "+name)
+            print(strFileTxt)
+            print("-------------------------------------")
+            
+        

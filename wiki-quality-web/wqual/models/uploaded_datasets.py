@@ -8,13 +8,14 @@ extração de features.
 As tabelas relacionadas com o resultado desta extração também está neste arquivo.
 '''
 
-import lzma
-
 from enum import IntEnum, Enum
 from django.contrib.auth.models import User, Group
 from django.db import models
+import lzma
+from utils.uncompress_data import CompressedFile
+from wqual.models.exceptions import FileSizeException
 from wqual.models import FeatureSet, Format
-from wqual.models.utils import EnumModel, EnumManager
+from wqual.models.utils import EnumModel, EnumManager, CompressedTextField
 
 
 
@@ -62,17 +63,44 @@ class Dataset(models.Model):
     dat_submitted = models.DateTimeField()
     dat_valid_until = models.DateTimeField(blank=True, null=True)
     
+    #não aceitou o campo em branco
+    #start_dat_processing = models.DateTimeField(blank=True)
+    #end_dat_processing = models.DateTimeField(blank=True)
     
     format = models.ForeignKey(Format, models.PROTECT)    
     
     feature_set = models.ForeignKey(FeatureSet, models.PROTECT)
     user = models.ForeignKey(User, models.PROTECT)
     status = models.ForeignKey(Status, models.PROTECT)
+    
+    def save_compressed_file(self,comp_file_pointer):
+            #validacao ser feita aqui
+            
+            #se um dos arquivos for maior que XX, 
+            #lancar uma excecao falando que o tamanho foi maior
+            
+            
+            #inserção
+            #save
+            objFileZip = CompressedFile.get_compressed_file(comp_file_pointer)
+            
+            int_limit = 1
+            for name,int_file_size in objFileZip.get_each_file_size():
+                if int_file_size > int_limit:
+                    raise FileSizeException("The file "+name+" exceeds the limit of "+str(int_limit)+" bytes")
+                
+            self.save()   
+            for name,strFileTxt in objFileZip.read_each_file():
+                objDocumento = Document(nam_file=name,dataset=self)
+                objDocumento.save()
+                objDocumentoTexto = DocumentText(document=objDocumento,dsc_text=strFileTxt)
+                objDocumentoTexto.save()
+                self.document_set.add(objDocumento,bulk=False)
+                
 
-    '''
-    start_dat_processing = models.DateTimeField(blank=True)
-    end_dat_processing = models.DateTimeField(blank=True)
-    '''
+   
+    
+   
 
 
 class ResultValityPerUserGroup(models.Model):
@@ -116,13 +144,9 @@ class DocumentResult(models.Model):
     @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
     Resultado obtido do documento
     '''
-
-    dsc_result = models.TextField()
+    dsc_result = CompressedTextField()
     document = models.OneToOneField(Document, models.PROTECT)
     
-    '''
-    @author: Priscilla
-    O metodo get (@property dsc_result) compacta o texto dsc_result como lzma
     '''
     @property
     def dsc_result(self):
@@ -130,10 +154,8 @@ class DocumentResult(models.Model):
 
     @dsc_result.setter
     def dsc_result(self, dsc_result):
-        print(dsc_result)
-        a=''.join(dsc_result)
-        print(a)
-        dsc_to_compress = str.encode(a)
-        self.dsc_result = lzma.compress(dsc_to_compress)
-    
+        self.dsc_to_compress = bytes(dsc_result, 'utf-8')        
+        self.__dsc_result = lzma.compress(self.dsc_to_compress)
+        
+    '''
     

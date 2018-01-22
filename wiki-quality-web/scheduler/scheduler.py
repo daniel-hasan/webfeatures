@@ -1,4 +1,7 @@
-
+'''
+Created on 15 de dez de 2017
+@author: Priscilla Raiane <priscilla.rm.carmo@gmail.com>
+'''
 
 
 from abc import abstractmethod
@@ -10,7 +13,8 @@ from scheduler.utils import DatasetModelDocReader, DatasetModelDocWriter
 from wqual.models.featureset_config import UsedFeature
 from wqual.models.uploaded_datasets import StatusEnum, Status
 
-class Scheduler (object):
+class Scheduler(object):
+
 	@abstractmethod
 	def get_next(self):
 		pass
@@ -30,14 +34,14 @@ class Scheduler (object):
 			
 			with transaction.atomic():
 				dataset = self.get_next()
-				if dataset:
+				#if dataset: o get_next esta atualizando a data deixar m qual??
 					#atualizar o status do dataset para processing 
-					dataset.status = Status.objects.get_enum(StatusEnum.PROCESSING)
-					dataset.save()
+					#dataset.status = Status.objects.get_enum(StatusEnum.PROCESSING)
+					#dataset.save()
 			
 			if dataset:
+				print("if")
 				
-				#obter as features usadas?
 				arr_feats_used = self.get_arr_features()
 				
 				doc_read = DatasetModelDocReader(dataset)
@@ -49,6 +53,8 @@ class Scheduler (object):
 				
 				dataset.status = Status.objects.get_enum(StatusEnum.COMPLETE)
 			else:
+				print("else")
 				time.sleep(int_wait_minutes);
 				break
+
 

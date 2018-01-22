@@ -7,8 +7,7 @@ Created on 8 de ago de 2017
 from abc import abstractmethod
 
 from feature import ConfigurableParam, ParamTypeEnum
-from feature.featureImpl import WordCountFeature, \
-    LargeSentenceCountFeature
+from feature.featureImpl import *
 from feature.features import  FeatureVisibilityEnum
 from utils.basic_entities import FormatEnum, FeatureTimePerDocumentEnum
 
@@ -49,13 +48,45 @@ class StyleFeatureFactory(FeatureFactory):
             language: objeto da classe utils.Language
         '''
         PosClassLang = self.class_language_dependent("PartOfSpeech")
-        arrFeatures = [WordCountFeature("Preposition Count","Count the number of prepositions in the text",FeatureVisibilityEnum.public,FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,setWordsToCount=PosClassLang.PREPOSITION)]
+        arrFeatures = [WordCountFeature("Preposition Count","Count the number of prepositions in the text.",FeatureVisibilityEnum.public,
+                                        FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,setWordsToCount=PosClassLang.PREPOSITION)]
         
-        featLargeSentenceCount = LargeSentenceCountFeature("Largest Phrase Count","Count the number of phrases larger than a specified threshold",FeatureVisibilityEnum.public,FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,10)
+        featSentenceCount = SentenceCountFeature("Phrases Count","Count the number of phrases in the text.","reference",
+                                         FeatureVisibilityEnum.public, 
+                                         FormatEnum.text_plain, FeatureTimePerDocumentEnum.MILLISECONDS)
+        
+        featLargeSentenceCount = LargeSentenceCountFeature("Largest Phrases Count","Count the number of phrases larger than a specified threshold.",
+                                                           "reference",FeatureVisibilityEnum.public,FormatEnum.text_plain,
+                                                           FeatureTimePerDocumentEnum.MICROSECONDS,10)
+        
         featLargeSentenceCount.addConfigurableParam(ConfigurableParam("int_sentence_size","Sentence Size",
-                                                                      "The sentence need to have (at least) this length (in words) in order to be considered a large phrase",
+                                                                      "The sentence need to have (at least) this length (in words) in order to be considered a large phrase.",
                                                                       10,ParamTypeEnum.int))
+        
+        featParagraphCount = ParagraphCountFeature("Paragraph Count","Count the number of paragraph at text",
+                                         "reference",
+                                         FeatureVisibilityEnum.public, 
+                                         FormatEnum.text_plain, FeatureTimePerDocumentEnum.MILLISECONDS)
+        
+        featLargeParagraphCount = LargeParagraphCountFeature("Largest Paragraph Count","Count the number of paragraphs larger than a specified threshold",
+                                         "reference",
+                                         FeatureVisibilityEnum.public, 
+                                         FormatEnum.text_plain, FeatureTimePerDocumentEnum.MILLISECONDS,16)
+        
+        featLargeSentenceCount.addConfigurableParam(ConfigurableParam("int_paragraph_size","Paragraph Size",
+                                                                      "The paragraph need to have (at least) this length (in words) in order to be considered a large paragraph.",
+                                                                      16,ParamTypeEnum.int))
+        
+        featTagCount = TagCountFeature("Tag Count", "Count the number of incidents of HTML tags passed by parameter in the text", "reference", 
+                                         FeatureVisibilityEnum.public, 
+                                         FormatEnum.HTML, 
+                                         FeatureTimePerDocumentEnum.MILLISECONDS,["head","body"])
+        
+        arrFeatures.append(featSentenceCount)
         arrFeatures.append(featLargeSentenceCount)
+        arrFeatures.append(featParagraphCount)
+        arrFeatures.append(featLargeParagraphCount)
+        arrFeatures.append(featTagCount)
         
         return  arrFeatures
         
