@@ -23,5 +23,4 @@ class SignUpView(CreateView):
             return redirect('home')
         else:
             form = UserCreationForm()
-            return render_to_response('content/signup.html', {'form': form})
-        return render(request, 'content/signup.html', {'form': form})
+        return render_to_response('content/signup.html', {'form': form})
