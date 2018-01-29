@@ -63,22 +63,27 @@
 			{% endfor %}
 		</tbody>
 	</table>
-	<!-- <script>
-		//let mapFeatHTMLperFeatSet = {1: ["feature HTML1"],
-									 3: ["feature HTML 3","feature HTML 1"]};
+	<!-- <script type="text/javascript">
+		let mapFeatHTMLperFeatSet = {1: ["feature HTML1"], 2: ["feature HTML2"], 3: ["feature HTML3"]};
 		
 		//Obtém o único botão do tipo submit da página.
-		//let submit_button = document.querySelector(.submit_button);
+		let submit_button = document.querySelector('.submit_button');
 		
-		///Ao clicar no botão, 
-		//submit_button.addEventListener('click', function() {
-			//{% for id_featset, arr_feat_names in map_feathtml %}
-				//{% for nam_feature in arr_feat_names %}
-					//{% if id_featset == 1 %}
-						
-					//{% endif %}
-				//{% endfor %}
-			//{% endfor %}
-		//})
-	</script> -->
+		//Ao clicar no botão, 
+		submit_button.addEventListener('click', function() {
+			{% for id_featset, arr_feat_names in map_feathtml.items %}
+			console.log({{id_featset}});
+			console.log({{arr_feat_names}});
+				let ArrayFeatNames = Object.getPrototypeOf({{ arr_feat_names }});
+				console.log(ArrayFeatNames);
+				//Se o id do feature set for igual a 1 (text_plain), 
+				{% for nam_feature in arr_feat_names %} {
+					//{% ifequal id_featset 1 %}
+						console.log({{ nam_feature }});
+					//{% endifequal %}
+				alert('Não funcionou');
+				{% endfor %}
+			{% endfor %}
+		})
+	</script>-->
 {% endblock %}

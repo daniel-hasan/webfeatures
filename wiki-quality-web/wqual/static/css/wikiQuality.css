@@ -175,8 +175,8 @@ h1 {
     text-decoration: none;
 }
 
-/***************************** Início home.html *****************************/
-.home_main {
+/***************************** Início home.html e signup.html *****************************/
+.home_sign-up_main {
 	display: block;
 	margin-left: auto;
 	margin-right: auto;
@@ -184,10 +184,10 @@ h1 {
 	width: 400px;
 }
 
-.login_input {
+.login_sign-up_input {
 	font-size: 18px;
 	font-style: italic;
-	width: 400px;
+	width: 92%;
 	border-radius: 3px;
 	border: none;
 	display: block;
@@ -196,7 +196,7 @@ h1 {
 	padding: 14px;
 }
 
-.home_h1 {
+.home_sign-up_h1 {
 	font-family: 'Fredericka the Great', cursive;
 	font-weight: 400;
 	font-size: 60px;
@@ -205,15 +205,32 @@ h1 {
 	margin: 10px;
 }
 
-.login_button {
-	width: 75px;
-	height: 25px;
-	border-radius: 5px;
-	border: 1px solid blue;
-	background-color: blue;
-	color: white;
+.login_sign-up_button {
+	border: 2px solid rgb(0, 11, 99);
+	background-color: rgb(0, 11, 99);
+	height: 29px;
 }
 
+.login_sign-up_button:hover {
+	background-color: rgb(46, 44, 96);
+	border: 2px solid rgb(46, 44, 96);
+}
+
+.link_sign-up, .login_sign-up_button {
+	color: white;
+	font-size: 18px;
+	border-radius: 5px;
+	text-align: center;
+	margin: 0px;
+	margin-top: 5px;
+	width: 100%;
+}
+
+.help_text {
+	font-size: 14px;
+}
+/***************************** Fim do home.html e signup.html *****************************/
+/***************************** Início do home.html *****************************/
 .home_main_p {
 	font-size: 18px;
 	text-align: center;
@@ -234,4 +251,46 @@ h1 {
 .home-section {
 	border: 1px solid black;
 }
+
+.link_sign-up:hover {
+	background-color: rgb(35, 61, 255);
+	border: 2px solid rgb(35, 61, 255);
+}
+
+.link_sign-up {
+	height: 25px;
+	text-decoration: none;
+	display: block;
+	background-color: rgb(0, 29, 255);
+	border: 2px solid rgb(0, 29, 255);
+}
 /***************************** Fim do home.html *****************************/
+/***************************** Início do signup.html *****************************/
+.help_text ul li {
+	list-style-type: none;
+	text-align: left;
+	padding-bottom: 10px;
+}
+
+.help_text ul {
+	padding: 0px;
+	margin: 0px;
+}
+
+.help_text>ul>li:last-child {
+	padding-bottom: 0px;
+}
+
+.help_text {
+	margin: 0px;
+	padding: 10px;
+}
+
+.balão-de-ajuda {
+	background-color: rgba(139, 169, 188, 0.3);
+	color: rgb(33, 132, 196);
+	position: absolute;
+	border: 2px solid rgb(105, 156, 188);
+	opacity: 0.5;
+}
+/***************************** Fim do signup.html *****************************/
