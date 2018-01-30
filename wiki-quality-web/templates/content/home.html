@@ -1,4 +1,36 @@
-{% extends "../bases/base_main_site.html" %}
-	    {% block content %}
-	    	oioioi
-	    {% endblock %}
+<!DOCTYPE html>
+{% load static %}
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Login</title>
+		<link rel="stylesheet" href="{% static "css/wikiQuality.css" %}">
+		<link href="https://fonts.googleapis.com/css?family=Fredericka+the+Great" rel="stylesheet"> 
+	</head>
+	<body>
+		<main class="home_sign-up_main">
+			<h1 class="home_sign-up_h1">WikiQuality</h1>
+			{% if not user.is_authenticated %}
+ 				 <form action="{% url "authentication" %}" method="post">
+ 			 		{% csrf_token %}
+ 			 		{% for field in form %}
+ 			 			{{ field.errors }}
+ 			 			{% ifequal field.label "Username" %}
+ 			 				<input class="login_sign-up_input" for="id_username" name="username" type="text" placeholder="Username">
+ 			 			{% endifequal %}
+ 			 			{% ifequal field.label "Password" %}
+ 			 				<input class="login_sign-up_input" for="id_password" name="password" type="password" placeholder="Password">
+	 			 		{% endifequal %}
+	 		 		{% endfor %}
+    				<button class="login_sign-up_button" type="submit">Log in</button>
+    				<a class="link_sign-up" href="{% url 'signup' %}">Create an account</a>
+ 				</form>
+ 			{% else %}
+ 				<section class="home-section">
+	 				<h2 class="home_main_h2">Error</h2>
+	 				<p class="home_main_p">There's a user authenticated right now, please logout first</p>
+	 			</section>
+ 			{% endif %}
+ 		</main>
+ 	</body>
+ </html>

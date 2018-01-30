@@ -10,7 +10,8 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 
 from utils.basic_entities import LanguageEnum
-from wqual.models.featureset_config import FeatureSet, Language, UsedFeature
+from wqual.models.featureset_config import FeatureSet, Language, UsedFeature, \
+    UsedFeatureArgVal
 
 
 class FormValidation(object):
@@ -49,14 +50,13 @@ class FeatureSetInsert(CreateView):
     Lista todos os conjunto de features criados.
     '''
     fields=["nam_feature_set","dsc_feature_set", "language"]
-    initial = { 'language': Language.objects.get(name=LanguageEnum.en.name) }
+    #initial = { 'language': Language.objects.get(name=LanguageEnum.en.name) }
     
     model = FeatureSet
     template_name = "content/feature_set_update_insert.html"
     form_validator = FormValidation()
 
     def form_valid(self, form):
-        
         bol_valid = FeatureSetInsert.form_validator.form_valid(self, form)
         return super(CreateView, self).form_valid(form) if bol_valid else super(CreateView, self).form_invalid(form)
      
@@ -81,7 +81,7 @@ class FeatureSetEdit(UpdateView):
     Lista todos os conjunto de features criados.
     '''
     fields=["nam_feature_set","dsc_feature_set", "language"]
-    initial = { 'language': Language.objects.get(name=LanguageEnum.en.name) }
+    #initial = { 'language': Language.objects.get(name=LanguageEnum.en.name) }
     form_validator = FormValidation()
     model = FeatureSet
 
@@ -111,7 +111,15 @@ class UsedFeatureListView(ListView):
     model = UsedFeature
     template_name = "content/used_features.js"
     def get_queryset(self):
-        return UsedFeature.objects.filter(feature_set__pk=9)
+        arr_used_features = UsedFeatureArgVal.objects\
+                                        .filter(used_feature__feature_set__id=9, 
+                                                nam_argument__in=["name","description"])\
+                                       .values("used_feature_id","nam_argument","val_argument")                                                
+                                        #.values("nam_argument","val_argument","used_feature__is_configured")
+        #agrupa por used_feature_id
+        map_used_features = {}
+        
+        return arr_used_features
 
 class UsedFeatureListViewTeste(ListView):
     '''
@@ -119,7 +127,8 @@ class UsedFeatureListViewTeste(ListView):
    
     @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
     Lista todos os conjunto de features criados.
-    '''
+    '''        
+ 
    
     model = UsedFeature
     template_name = "content/used_features.html"
