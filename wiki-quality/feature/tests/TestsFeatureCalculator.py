@@ -22,8 +22,8 @@ class DocSetReaderForTest(FeatureDocumentsReader):
         yield Document(2,"doc2","ipi ipi ura. Duas frases no texto.")
         yield Document(3,"doc3","lalala.\nMeu teste tem tres paragrafos.\nEsse é o último.\n")
         yield Document(4,"doc4","lalala.\nMeu teste tem tres paragrafos.\nEsse é o último")
-        yield Document(5,"doc5","<p>Ola, meu nome é hasan.<p>")
-        yield Document(6,"doc6","<head></head><body><p>Ola,</p><p>meu nome é hasan.</p></body>")
+        yield Document(5,"doc5","<p>Ola        ,      meu nome é hasan.</p>")
+        yield Document(6,"doc6","<head></head><body><p>Meu</p><p>teste de palavras.</p></body>")
 
 class DocWriterForTest(FeatureDocumentsWriter):
     '''
@@ -169,7 +169,7 @@ class TestFeatureCalculator(unittest.TestCase):
         FeatureCalculator.featureManager.computeFeatureSetDocuments(DocSetReaderForTest(),
                                                                     obj_writer,
                                                                     arr_features,
-                                                                    FormatEnum.text_plain
+                                                                    FormatEnum.HTML
                                                                     )
         map_result = obj_writer.result
         
@@ -183,7 +183,7 @@ class TestFeatureCalculator(unittest.TestCase):
         
         '''Testam se o HTML está sendo limpo'''
         self.assertListEqual(map_result["doc5"][3], ["Ola",",","meu","nome","é","hasan","."],"A leitura das palavras está incorreta")
-        self.assertListEqual(map_result["doc6"][3], ["Meu","teste","de","palavras"], "A leitura do texto está incorreto")
+        self.assertListEqual(map_result["doc6"][3], ["Meu","teste","de","palavras","."], "A leitura do texto está incorreto")
         
         '''Testam o checkTag'''
         self.assertListEqual(map_result["doc5"][4], ["p","p"],"A leitura das tags está incorreta")

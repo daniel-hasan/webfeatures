@@ -1,7 +1,1 @@
-for
-and
-but
-or
-yet
-nor
-so
+for,and,but,or,yet,nor,so

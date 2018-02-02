@@ -11,7 +11,8 @@ from os.path import join, isfile, isdir
 from posix import listdir
 from html.parser import HTMLParser
 from utils.basic_entities import FormatEnum
-from feature.language_dependent_words.featureImpl.structure_features import TagCountFeature
+import re
+
 
 
 
@@ -28,7 +29,8 @@ class FeatureDocumentsWriter(object):
     
     @abstractmethod
     def write_header(self, arr_features_used):
-        raise NotImplementedError
+        '''raise NotImplementedError'''
+        pass
     
 class FeatureDocumentsReader(object):
     '''
@@ -93,17 +95,13 @@ class ParserTags(HTMLParser):
         self.feat = feat
         
     def handle_data(self,str_data):
-        print(str_data)
+        pass
 
     def handle_starttag(self, tag, attrs):
-        if isinstance(self.feat, TagCountFeature):
-            self.feat.checkTag(self.document, tag)
-        print(tag)
+        self.feat.checkTag(self.document, tag)
     
-    def handle_endtag(self, tag, attrs):
-        if isinstance(self.feat, TagCountFeature):
-            self.feat.checkTag(self.document, tag)
-        print(tag)
+    def handle_endtag(self, tag):
+        self.feat.checkTag(self.document, tag)
 
 class FeatureCalculatorManager(object):
 
@@ -120,11 +118,15 @@ class FeatureCalculatorManager(object):
 
             # Rodar todos os docuemntos para todas as features que não
             # necessitam de algum metodo de preprocessamento de todo o conjunto de documento
+        
+        docWriter.write_header(arr_features_to_extract)
+        
         for doc in datReader.get_documents():
             arr_features_result = self.computeFeatureSet(doc, arr_features_to_extract,format)
             #Para cada um processamento do documentSet necessário,
             # rodar todas as features que necessitam dele.
             docWriter.write_document(doc,arr_features_to_extract,arr_features_result)
+            
             
         pass
     
@@ -148,7 +150,6 @@ class FeatureCalculatorManager(object):
         @author:  
         ''' 
         
-        FeatureDocumentsWriter.write_header(arr_features)
         
         str_text = docText.str_text
         arr_feat_result = []
@@ -160,12 +161,13 @@ class FeatureCalculatorManager(object):
             aux = 0
             for feat in arr_features:
                 if isinstance(feat, TagBasedFeature):
-                    parser = ParserTags(feat)
+                    parser = ParserTags(feat, docText)
                     parser.feed(str_text)
                     arr_feat_result[aux] = feat.compute_feature(docText)
                 aux = aux + 1
                             
-            str_text = parser.handle_data(str_text)
+            #str_text = parser.str_plain_text
+            str_text = re.sub("<[^>]+>", " ", str_text)
             
         
         #armazo as word based features e sentence based feature
@@ -174,13 +176,14 @@ class FeatureCalculatorManager(object):
         paragraph_buffer = ""
         
         for str_char in str_text:
-                
-            if(word_buffer != "" and str_char in FeatureCalculator.word_divisors):
-                for int_i,feat in enumerate(arr_features):
+            
+            word_proc = word_buffer.strip()
+            if(len(word_proc) > 0 and str_char in FeatureCalculator.word_divisors):
+                for feat in arr_features:
                     if(isinstance(feat, WordBasedFeature)):
-                        feat.checkWord(docText,word_buffer.strip())
+                        feat.checkWord(docText, word_proc)
                         if(str_char != " "):
-                            feat.checkWord(docText,str_char)
+                            feat.checkWord(docText, str_char)
                     word_buffer = ""
                 
             else:
@@ -188,7 +191,7 @@ class FeatureCalculatorManager(object):
             
             sentence_buffer = sentence_buffer + str_char
             if(str_char in FeatureCalculator.sentence_divisors):
-                    for int_i,feat in enumerate(arr_features):
+                    for feat in arr_features:
                         if(isinstance(feat, SentenceBasedFeature)):
                             feat.checkSentence(docText,sentence_buffer)
                     sentence_buffer = ""
@@ -197,7 +200,7 @@ class FeatureCalculatorManager(object):
             
             
             if(paragraph_buffer != "" and str_char in FeatureCalculator.paragraph_divisor):
-                    for int_i,feat in enumerate(arr_features):
+                    for feat in arr_features:
                         if(isinstance(feat, ParagraphBasedFeature)):
                             feat.checkParagraph(docText,paragraph_buffer)
                     paragraph_buffer = ""

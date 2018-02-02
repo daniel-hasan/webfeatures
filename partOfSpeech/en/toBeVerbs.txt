@@ -1,7 +1,1 @@
-be
-being
-was
-were
-been
-are
-is
+be,being,was,were,been,are,is

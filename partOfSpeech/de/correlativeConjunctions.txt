@@ -1,10 +1,1 @@
-sowohl
-als auch
-nicht nur
-sondern auch
-weder
-noch
-entweder
-oder
-zwar
-aber
+sowohl,als auch,nicht nur,sondern auch,weder,noch,entweder,oder,zwar,aber

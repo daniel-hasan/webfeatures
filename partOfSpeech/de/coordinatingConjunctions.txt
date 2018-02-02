@@ -1,11 +1,1 @@
-und
-oder
-aber
-sondern
-doch
-nur
-bloß
-denn
-weder
-noch
-sowie
+und,oder,aber,sondern,doch,nur,bloß,denn,weder,noch,sowie

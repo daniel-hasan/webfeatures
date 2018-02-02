@@ -111,103 +111,35 @@ class WordsFeatureFactory(FeatureFactory):
     
     def __init__(self,objLanguage):
         super(FeatureFactory,self).__init__()
-        self.BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        self.objLanguage = objLanguage
+        self.BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
         self.BASE_DIR = os.path.abspath(os.path.join(self.BASE_DIR,os.pardir))
         print(self.BASE_DIR)
+    
+    
+    def getTestClasseGramatical(self, str_classe):
         
-    @abstractmethod
+        fileClasseGramatical = self.BASE_DIR+"/partOfSpeech/"+self.objLanguage.name+"/" + str_classe + ".txt"
+        with open(fileClasseGramatical) as file:
+            listPrepositions = file.read().split(",")
+        
+        return listPrepositions
+    
     def createFeatures(self):
         
         arrFeatures = []
         
-        dirPrepositions = self.BASE_DIR+"/partOfSpeech/"+self.objLanguage.name+"/prepositions.txt"
-        listPrepositions = dirPrepositions.readlines()
+        part_of_speech = ["articles","auxiliaryVerbs","coordinatingConjunctions","correlativeConjunctions",
+                          "indefinitePronouns","interrogativePronouns","prepositions","pronouns",
+                          "relativePronouns","subordinatingConjunctions","toBeVerbs"]
         
-        featPrepositionsCount = WordBasedFeature("Preposition Count","Count the number of prepositions in the text."
+        for classe in part_of_speech:
+            dirClasses = self.BASE_DIR + "/partOfSpeech/" + self.objLanguage.name + "/" + classe + ".txt"
+            with open(dirClasses) as file:
+                listWords = file.read().split(",")
+                arrFeatures.append(WordBasedFeature(str(classe).title() + "Count","Count the number of "+ classe +" in the text.",
                                                  "Based on file style.c from path diction-1.11.tar.gz of http://ftp.gnu.org/gnu/diction/",
-                                                 FeatureVisibilityEnum.public, FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,listPrepositions)
+                                                 FeatureVisibilityEnum.public, 
+                                                 FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,listWords))
 
-        
-        dirPronouns = self.BASE_DIR+"/partOfSpeech/"+self.objLanguage.name+"/pronouns.txt"
-        listPronouns = dirPronouns.readlines()
-        
-        featPronounsCount = WordBasedFeature("Pronoun Count","Count the number of pronouns in the text."
-                                                 "Based on file style.c from path diction-1.11.tar.gz of http://ftp.gnu.org/gnu/diction/",
-                                                 FeatureVisibilityEnum.public, FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,listPronouns)
-            
-        dirVerbs = self.BASE_DIR+"/partOfSpeech/"+self.objLanguage.name+"/toBeVerbs.txt"
-        listVerbs = dirVerbs.readlines()
-        
-        featToBeVerbsCount = WordBasedFeature("To Be Verb Count","Count the number of To Be verbs in the text."
-                                                 "Based on file style.c from path diction-1.11.tar.gz of http://ftp.gnu.org/gnu/diction/",
-                                                 FeatureVisibilityEnum.public, FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,listVerbs)
-        
-        dirArticles = self.BASE_DIR+"/partOfSpeech/"+self.objLanguage.name+"/articles.txt"
-        listArticles = dirArticles.readlines()
-        
-        featArticlesCount = WordBasedFeature("Article Count","Count the number of articles in the text."
-                                                 "Based on file style.c from path diction-1.11.tar.gz of http://ftp.gnu.org/gnu/diction/",
-                                                 FeatureVisibilityEnum.public, FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,listArticles)
-        
-        dirAuxVerbs = self.BASE_DIR+"/partOfSpeech/"+self.objLanguage.name+"/auxVerbs.txt"
-        listAuxVerbs = dirAuxVerbs.readlines()
-        
-        featAuxVerbsCount = WordBasedFeature("Auxiliary Verb Count","Count the number of auxiliary verbs in the text."
-                                                 "Based on file style.c from path diction-1.11.tar.gz of http://ftp.gnu.org/gnu/diction/",
-                                                 FeatureVisibilityEnum.public, FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,listAuxVerbs)
-        
-        dirIndPronouns = self.BASE_DIR+"/partOfSpeech/"+self.objLanguage.name+"/indefinitePronouns.txt"
-        listIndPronouns = dirIndPronouns.readlines()
-        
-        featIndPronounsCount = WordBasedFeature("Indefinite Pronoun Count","Count the number of indefinite pronouns in the text."
-                                                 "Based on file style.c from path diction-1.11.tar.gz of http://ftp.gnu.org/gnu/diction/",
-                                                 FeatureVisibilityEnum.public, FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,listIndPronouns)
-    
-        dirRelPronouns = self.BASE_DIR+"/partOfSpeech/"+self.objLanguage.name+"/relativePronouns.txt"
-        listRelPronouns = dirRelPronouns.readlines()
-        
-        featRelPronounsCount = WordBasedFeature("Relative Pronoun Count","Count the number of relative pronouns in the text."
-                                                 "Based on file style.c from path diction-1.11.tar.gz of http://ftp.gnu.org/gnu/diction/",
-                                                 FeatureVisibilityEnum.public, FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,listRelPronouns)
-        
-        dirIntPronouns = self.BASE_DIR+"/partOfSpeech/"+self.objLanguage.name+"/interrogativePronouns.txt"
-        listIntPronouns = dirIntPronouns.readlines()
-        
-        featIntPronounsCount = WordBasedFeature("Interrogative Pronoun Count","Count the number of interrogative pronouns in the text."
-                                                 "Based on file style.c from path diction-1.11.tar.gz of http://ftp.gnu.org/gnu/diction/",
-                                                 FeatureVisibilityEnum.public, FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,listIntPronouns)
-        
-        dirCoordConjunctions = self.BASE_DIR+"/partOfSpeech/"+self.objLanguage.name+"/coordinatingConjunctions.txt"
-        listCoordConjunctions = dirCoordConjunctions.readlines()
-        
-        featCoordConjunctionsCount = WordBasedFeature("Coordinating Conjunction Count","Count the number of coordinating conjunctions in the text."
-                                                 "Based on file style.c from path diction-1.11.tar.gz of http://ftp.gnu.org/gnu/diction/",
-                                                 FeatureVisibilityEnum.public, FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,listCoordConjunctions)
-    
-        dirSubConjunctions = self.BASE_DIR+"/partOfSpeech/"+self.objLanguage.name+"/subordinatingConjunctions.txt"
-        listSubConjunctions = dirSubConjunctions.readlines()
-        
-        featSubConjunctionsCount = WordBasedFeature("Subordinating Conjunction Count","Count the number of subordinating conjunctions in the text."
-                                                 "Based on file style.c from path diction-1.11.tar.gz of http://ftp.gnu.org/gnu/diction/",
-                                                 FeatureVisibilityEnum.public, FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,listSubConjunctions)
-           
-        dirCorConjunctions = self.BASE_DIR+"/partOfSpeech/"+self.objLanguage.name+"/correlativeConjunctions.txt"
-        listCorConjunctions = dirCorConjunctions.readlines()
-        
-        featCorConjunctionsCount = WordBasedFeature("Correlative Conjunction Count","Count the number of correlative conjunctions in the text."
-                                                 "Based on file style.c from path diction-1.11.tar.gz of http://ftp.gnu.org/gnu/diction/",
-                                                 FeatureVisibilityEnum.public, FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,listCorConjunctions)
-        
-        arrFeatures.append(featArticlesCount)
-        arrFeatures.append(featAuxVerbsCount)
-        arrFeatures.append(featCoordConjunctionsCount)
-        arrFeatures.append(featCorConjunctionsCount)
-        arrFeatures.append(featIndPronounsCount)
-        arrFeatures.append(featIntPronounsCount)
-        arrFeatures.append(featPrepositionsCount)
-        arrFeatures.append(featPronounsCount)
-        arrFeatures.append(featRelPronounsCount)
-        arrFeatures.append(featSubConjunctionsCount)
-        arrFeatures.append(featToBeVerbsCount)
-        
         return arrFeatures
