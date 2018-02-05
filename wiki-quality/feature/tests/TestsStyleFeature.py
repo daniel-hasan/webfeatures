@@ -4,7 +4,7 @@ Testes de todas as classes abstratas de calculo das features
 @author: Daniel Hasan Dalip hasan@decom.cefetmg.br
 '''
 import unittest
-from feature.featureImpl.style_features import WordCountFeature,\
+from feature.language_dependent_words.featureImpl.style_features import WordCountFeature,\
     SentenceCountFeature, LargeSentenceCountFeature, ParagraphCountFeature,\
     LargeParagraphCountFeature
 from feature.features import FeatureVisibilityEnum, Document,\

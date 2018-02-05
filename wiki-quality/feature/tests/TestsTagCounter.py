@@ -4,7 +4,8 @@ Testes da contagem de tags em HTML
 @author: Beatriz Souza da Silva beatrizsouza_dasilva@hotmail.com
 '''
 import unittest
-from feature.featureImpl.structure_features import TagCountFeature
+from feature.language_dependent_words.featureImpl.structure_features import TagCountFeature
+from feature.features import ParserTags
 from feature.features import FeatureVisibilityEnum, Document, TagBasedFeature
 from utils.basic_entities import FormatEnum, FeatureTimePerDocumentEnum
 
@@ -52,7 +53,17 @@ class TestTagCounter(unittest.TestCase):
         int_result = tcount2.compute_feature(document)
         self.assertEqual(int_result, 1, "Nao foi contabilizado o numero de palavras corretos no teste do terceiro documento")
 
-        
+class TestParserTags(unittest.TestCase):
+    def testParser(self):
+        tcount = TagCountFeature("contagem de tags", "Feature que conta tags em HTML", "HTML", 
+                                         FeatureVisibilityEnum.public, 
+                                         FormatEnum.HTML, 
+                                         FeatureTimePerDocumentEnum.MILLISECONDS,["head","body"])
+        document = Document(1,"doc1","O texto nao precisa -necessariamente - ser o texto que sera testado")
+        parser = ParserTags(tcount,document)
+        parser.feed("<head></head><body>Dados de teste</body><p>Parágrafo</p>")
+
+    
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'TestFeatureCalculator.testName']
     unittest.main()

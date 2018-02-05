@@ -11,6 +11,9 @@ from os.path import join, isfile, isdir
 from posix import listdir
 from html.parser import HTMLParser
 from utils.basic_entities import FormatEnum
+import re
+
+
 
 
 class Document(object):
@@ -23,6 +26,11 @@ class FeatureDocumentsWriter(object):
     @abstractmethod
     def write_document(self,document, arr_feats_used, arr_feats_result):
         raise NotImplementedError("Voce deve criar uma subclasse e a mesma deve sobrepor este método")
+    
+    @abstractmethod
+    def write_header(self, arr_features_used):
+        '''raise NotImplementedError'''
+        pass
     
 class FeatureDocumentsReader(object):
     '''
@@ -81,22 +89,19 @@ class DocSetReaderDummy(FeatureDocumentsReader):
 #        return Klass(**self.arr_feature_arguments)
 
 class ParserTags(HTMLParser):
-    def __init__(self, arr_features, document):
+    def __init__(self, feat, document):
         HTMLParser.__init__(self)
         self.document = document
-        self.arr_features = [feat for feat in arr_features if isinstance(feat, TagBasedFeature)]
+        self.feat = feat
         
     def handle_data(self,str_data):
-        for feat in self.arr_features:
-            var = feat.handle_data(str_data)
-            print(var)
+        pass
 
     def handle_starttag(self, tag, attrs):
-        for feat in self.arr_features:
-            var  = feat.handle_starttag(tag)
-            TagBasedFeature.checkTag(self.document, tag)
-            print(var)
- 
+        self.feat.checkTag(self.document, tag)
+    
+    def handle_endtag(self, tag):
+        self.feat.checkTag(self.document, tag)
 
 class FeatureCalculatorManager(object):
 
@@ -113,11 +118,15 @@ class FeatureCalculatorManager(object):
 
             # Rodar todos os docuemntos para todas as features que não
             # necessitam de algum metodo de preprocessamento de todo o conjunto de documento
+        
+        docWriter.write_header(arr_features_to_extract)
+        
         for doc in datReader.get_documents():
             arr_features_result = self.computeFeatureSet(doc, arr_features_to_extract,format)
             #Para cada um processamento do documentSet necessário,
             # rodar todas as features que necessitam dele.
             docWriter.write_document(doc,arr_features_to_extract,arr_features_result)
+            
             
         pass
     
@@ -141,33 +150,40 @@ class FeatureCalculatorManager(object):
         @author:  
         ''' 
         
+        
         str_text = docText.str_text
+        arr_feat_result = []
+        
+        for feat in arr_features:
+            arr_feat_result.append(None)
         
         if format is FormatEnum.HTML:
-            parser = ParserTags(arr_features)
-            str_text = docText.read()
-            parser.feed(str_text)
-            str_text = parser.handle_data(str_text)
-            #para cada feature tag based rodar o compute feature para obter o resultado final
-            #for arr_features:
-            #    HTMLParser.feed(str_text)
+            aux = 0
+            for feat in arr_features:
+                if isinstance(feat, TagBasedFeature):
+                    parser = ParserTags(feat, docText)
+                    parser.feed(str_text)
+                    arr_feat_result[aux] = feat.compute_feature(docText)
+                aux = aux + 1
+                            
+            #str_text = parser.str_plain_text
+            str_text = re.sub("<[^>]+>", " ", str_text)
+            
         
-        
-        #armazeno os text based features 
-        arr_feat_result = [] 
         #armazo as word based features e sentence based feature
         word_buffer = ""
         sentence_buffer = ""
         paragraph_buffer = ""
         
         for str_char in str_text:
-                
-            if(word_buffer != "" and str_char in FeatureCalculator.word_divisors):
-                for int_i,feat in enumerate(arr_features):
+            
+            word_proc = word_buffer.strip()
+            if(len(word_proc) > 0 and str_char in FeatureCalculator.word_divisors):
+                for feat in arr_features:
                     if(isinstance(feat, WordBasedFeature)):
-                        feat.checkWord(docText,word_buffer.strip())
+                        feat.checkWord(docText, word_proc)
                         if(str_char != " "):
-                            feat.checkWord(docText,str_char)
+                            feat.checkWord(docText, str_char)
                     word_buffer = ""
                 
             else:
@@ -175,7 +191,7 @@ class FeatureCalculatorManager(object):
             
             sentence_buffer = sentence_buffer + str_char
             if(str_char in FeatureCalculator.sentence_divisors):
-                    for int_i,feat in enumerate(arr_features):
+                    for feat in arr_features:
                         if(isinstance(feat, SentenceBasedFeature)):
                             feat.checkSentence(docText,sentence_buffer)
                     sentence_buffer = ""
@@ -184,7 +200,7 @@ class FeatureCalculatorManager(object):
             
             
             if(paragraph_buffer != "" and str_char in FeatureCalculator.paragraph_divisor):
-                    for int_i,feat in enumerate(arr_features):
+                    for feat in arr_features:
                         if(isinstance(feat, ParagraphBasedFeature)):
                             feat.checkParagraph(docText,paragraph_buffer)
                     paragraph_buffer = ""
@@ -209,10 +225,15 @@ class FeatureCalculatorManager(object):
                 feat.checkParagraph(docText, paragraph_buffer)
         
         #para todoas as WordBasedFeatue ou SentenceBased feature, rodar o compute_feature
+        
+        aux = 0
         for feat in arr_features:
-            arr_feat_result.append(None)
-        for int_i,feat in enumerate(arr_features):
-            arr_feat_result[int_i] = feat.compute_feature(docText)
+            if isinstance(feat, TagBasedFeature):
+                pass
+            else:
+                arr_feat_result[aux] = feat.compute_feature(docText)
+            aux = aux + 1
+            
         return arr_feat_result
 
 class FeatureVisibilityEnum(Enum):
