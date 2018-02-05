@@ -66,7 +66,7 @@ class WordCountFeature(WordBasedFeature):
         super(WordBasedFeature,self).__init__(name,description,reference,visibility,text_format,feature_time_per_document)    
         if(setWordsToCount==None):
             setWordsToCount = []
-        if(case_sensitive):
+        if(not case_sensitive):
             setWordsToCount = [word.lower() for word in setWordsToCount]
         
         self.case_sensitive = case_sensitive
@@ -75,7 +75,7 @@ class WordCountFeature(WordBasedFeature):
     
      
     def checkWord(self,document,word):
-        if word in self.setWordsToCount or (self.case_sensitive and word.lower() in self.setWordsToCount):
+        if word in self.setWordsToCount or (not self.case_sensitive and word.lower() in self.setWordsToCount):
             self.int_word_counter = self.int_word_counter + 1
     
     def compute_feature(self,document):

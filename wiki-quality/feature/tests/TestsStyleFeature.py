@@ -4,7 +4,7 @@ Testes de todas as classes abstratas de calculo das features
 @author: Daniel Hasan Dalip hasan@decom.cefetmg.br
 '''
 import unittest
-from feature.language_dependent_words.featureImpl.style_features import WordCountFeature,\
+from feature.featureImpl.style_features import WordCountFeature,\
     SentenceCountFeature, LargeSentenceCountFeature, ParagraphCountFeature,\
     LargeParagraphCountFeature
 from feature.features import FeatureVisibilityEnum, Document,\
@@ -338,9 +338,10 @@ class TestFeatureCalculator(unittest.TestCase):
         wcount.checkWord(document, "de")
         wcount.checkWord(document, "DE")
         wcount.checkWord(document, "Do")
+        wcount.checkWord(document, "do")
         wcount.checkWord(document, "ui")
         int_result = wcount.compute_feature(document)
-        self.assertEqual(int_result, 3, "Nao foi contabilizado o numero de palavras corretos no teste do terceiro documento")
+        self.assertEqual(int_result, 2, "Nao foi contabilizado o numero de palavras corretos no teste do terceiro documento")
 
         
 if __name__ == "__main__":

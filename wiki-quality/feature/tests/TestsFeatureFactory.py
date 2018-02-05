@@ -1,7 +1,7 @@
 from feature.feature_factory.feature_factory import WordsFeatureFactory
 import unittest
 from utils.basic_entities import LanguageEnum, FormatEnum
-from feature.language_dependent_words.featureImpl import WordBasedFeature
+from feature.featureImpl import WordBasedFeature
 import os
 from os.path import join, isfile, isdir
 from feature.features import Document, FeatureCalculatorManager,\
