@@ -19,9 +19,6 @@ from wqual.models.utils import EnumModel, EnumManager, CompressedTextField
 
 
 
-
-
-
 class StatusEnum(Enum):
     '''
     Created on 14 de ago de 2017
@@ -48,10 +45,7 @@ class Status(EnumModel):
         return StatusEnum
     
 
-
-    
-
-        
+   
 class Dataset(models.Model):
     '''
     Created on 14 de ago de 2017
@@ -60,18 +54,20 @@ class Dataset(models.Model):
     Dataset que o usuário enviou
     '''
     nam_dataset = models.CharField(max_length=45)
+    
     dat_submitted = models.DateTimeField()
     dat_valid_until = models.DateTimeField(blank=True, null=True)
     
-    #não aceitou o campo em branco
-    #start_dat_processing = models.DateTimeField(blank=True)
-    #end_dat_processing = models.DateTimeField(blank=True)
+    start_dat_processing = models.DateTimeField(blank=True, null=True)
+    end_dat_processing = models.DateTimeField(blank=True, null=True)
     
     format = models.ForeignKey(Format, models.PROTECT)    
     
     feature_set = models.ForeignKey(FeatureSet, models.PROTECT)
     user = models.ForeignKey(User, models.PROTECT)
     status = models.ForeignKey(Status, models.PROTECT)
+    dsc_result_header = models.TextField(blank=True, null=True)
+    
     
     def save_compressed_file(self,comp_file_pointer):
             #validacao ser feita aqui
@@ -97,10 +93,6 @@ class Dataset(models.Model):
                 objDocumentoTexto.save()
                 self.document_set.add(objDocumento,bulk=False)
                 
-
-   
-    
-   
 
 
 class ResultValityPerUserGroup(models.Model):
@@ -144,18 +136,8 @@ class DocumentResult(models.Model):
     @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
     Resultado obtido do documento
     '''
-    dsc_result = CompressedTextField()
+    dsc_result = models.TextField()
     document = models.OneToOneField(Document, models.PROTECT)
-    
-    '''
-    @property
-    def dsc_result(self):
-        return lzma.decompress(self.dsc_result).decode("utf-8")
-
-    @dsc_result.setter
-    def dsc_result(self, dsc_result):
-        self.dsc_to_compress = bytes(dsc_result, 'utf-8')        
-        self.__dsc_result = lzma.compress(self.dsc_to_compress)
-        
-    '''
-    
+   
+   
+   

@@ -34,16 +34,11 @@ class Scheduler(object):
 			
 			with transaction.atomic():
 				dataset = self.get_next()
-				#if dataset: o get_next esta atualizando a data deixar m qual??
-					#atualizar o status do dataset para processing 
-					#dataset.status = Status.objects.get_enum(StatusEnum.PROCESSING)
-					#dataset.save()
+				
 			
-			if dataset:
-				print("if")
-				
-				arr_feats_used = self.get_arr_features()
-				
+			if dataset:				
+				arr_feats_used = self.get_arr_features(dataset)
+								
 				doc_read = DatasetModelDocReader(dataset)
 				doc_write = DatasetModelDocWriter()
 
@@ -53,7 +48,6 @@ class Scheduler(object):
 				
 				dataset.status = Status.objects.get_enum(StatusEnum.COMPLETE)
 			else:
-				print("else")
 				time.sleep(int_wait_minutes);
 				break
 

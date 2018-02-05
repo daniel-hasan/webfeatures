@@ -6,7 +6,7 @@ Created on 30/10/2017
     
     Para rodar o teste pelo terminal entre na pasta wiki-quality-web
     e rode o comando:
-            python3 manage.py test scheduler.tests_doc_io
+            python3 manage.py test scheduler.tests.tests_doc_io
 
 
 '''
@@ -66,6 +66,7 @@ class TestDocIO(TestCase):
         self.feature_set.delete()
         self.my_admin.delete()
     
+    '''      
             
     def testReader(self):
         d = DatasetModelDocReader(dataset=self.objDataset)
@@ -83,11 +84,11 @@ class TestDocIO(TestCase):
                     
             self.assertTrue(bol_encontrou, "Nao foi possivel encontrar o documento de id: "+str(doc.int_doc_id)+" nome: "+doc.str_doc_name)
         
-    '''
+    
     def testWriter(self):
         d = DatasetModelDocWriter()
         arr_feats_used = ["Texto das features usadas"]
-        arr_feats_result = [{"Teste": "feat1", "teste2": "feat2"}] #
+        arr_feats_result = [{'Teste': 'feat1', 'teste2': 'feat2'}] #
                 
         for doc_feat in self.arr_doc_feat:
             d.write_document(doc_feat, arr_feats_used, arr_feats_result)
@@ -95,9 +96,8 @@ class TestDocIO(TestCase):
             self.assertEqual(doc_feat.int_doc_id, DocumentDataset.objects.get(id = doc_feat.int_doc_id).id, 
                                    "Nao foi possivel encontrar o documento com o id procurado")
         
-            print(DocumentDataset.objects.get(id = doc_feat.int_doc_id).documentresult.dsc_result)
-            #self.assertEqual(str(arr_feats_result), str(DocumentDataset.objects.get(id = doc_feat.int_doc_id).documentresult.dsc_result), 
-            #                       "O dsc_result não é igual ao resultado do documento com o id proucurado")
+            self.assertEqual(arr_feats_result, json.loads(DocumentDataset.objects.get(id = doc_feat.int_doc_id).documentresult.dsc_result), 
+                                   "O dsc_result não é igual ao resultado do documento com o id proucurado")
             
                 
     

@@ -12,7 +12,7 @@ from django.db.models.deletion import ProtectedError
 
 from utils.basic_entities import FormatEnum
 
-import base64, bz2
+import base64, bz2, lzma
 
 
 #from wqual.models.utils import EnumModel
@@ -200,11 +200,9 @@ class CompressedTextField(models.TextField):
             return value
 
         try:
-            return bz2.compress(base64.b64decode(value)) 
-            #value.decode('base64').decode('bz2').decode('utf-8')
-            print("try")
-        except Exception:
-            print("exe")
+            return lzma.compress(bytes(value, 'utf-8')) 
+           
+        except Exception:     
             return value
 
     def get_prep_value(self, value):
@@ -216,11 +214,13 @@ class CompressedTextField(models.TextField):
             return value
         except Exception:
             try:
-                tmp = value.encode('utf-8').encode('bz2').encode('base64')
+                tmp = lzma.decompress(value).decode('utf-8')
+                print("tmp")
+                print(tmp)
             except Exception:
                 return value
             else:
                 if len(tmp) > len(value):
                     return value
-
                 return tmp
+ 

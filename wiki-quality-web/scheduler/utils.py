@@ -28,8 +28,8 @@ class DatasetModelDocWriter(FeatureDocumentsWriter):
             self.document = document
             self.arr_feats_used = arr_feats_used
             
-            self.arr_feats_result = json.dumps(json.dumps(arr_feats_result))
-                        
+            self.arr_feats_result = json.dumps(arr_feats_result)
+                                    
             doc=DocumentDataset.objects.get(id = self.document.int_doc_id)
             doc_result = DocumentResult(dsc_result=self.arr_feats_result, document=doc)
             doc_result.save()

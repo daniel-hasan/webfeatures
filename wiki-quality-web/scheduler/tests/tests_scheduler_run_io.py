@@ -40,7 +40,7 @@ class TestSchedulerRun(TestCase):
                                                     feature_set=self.feature_set,
                                                     user=self.my_admin,
                                                     status=self.status)
-        
+        '''
         self.objDataset1 = Dataset.objects.create(nam_dataset = "dataset_test1", 
                                                     dat_submitted = date1, 
                                                     dat_valid_until = datetime.now(), 
@@ -57,6 +57,8 @@ class TestSchedulerRun(TestCase):
                                                     user=self.my_admin,
                                                     status=self.status)
         
-        def testRun(self):
-            next_dataset = OldestFirstScheduler().run(0)
+        
+        '''
+    def testRun(self):
+        next_dataset = OldestFirstScheduler().run(0)
             
