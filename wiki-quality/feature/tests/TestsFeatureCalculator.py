@@ -22,6 +22,8 @@ class DocSetReaderForTest(FeatureDocumentsReader):
         yield Document(2,"doc2","ipi ipi ura. Duas frases no texto.")
         yield Document(3,"doc3","lalala.\nMeu teste tem tres paragrafos.\nEsse é o último.\n")
         yield Document(4,"doc4","lalala.\nMeu teste tem tres paragrafos.\nEsse é o último")
+        yield Document(5,"doc5","<p>Ola        ,      meu nome é hasan.</p>")
+        yield Document(6,"doc6","<head></head><body><p>Meu</p><p>teste de palavras.</p></body>")
 
 class DocWriterForTest(FeatureDocumentsWriter):
     '''
@@ -88,7 +90,22 @@ class ParagraphTestFeature(ParagraphBasedFeature):
     def compute_feature(self,document):
         arr_aux = self.arr_str_paragraph
         self.arr_str_paragraph = []      
-        return arr_aux    
+        return arr_aux
+
+class TagTestFeature(TagBasedFeature):
+    
+    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document):
+        super(TagBasedFeature,self).__init__(name,description,reference,visibility,text_format,feature_time_per_document)
+        self.arr_str_tag = []
+        
+          
+    def checkTag(self,document,tag):
+        self.arr_str_tag.append(tag)
+    
+    def compute_feature(self,document):
+        arr_aux = self.arr_str_tag
+        self.arr_str_tag = []      
+        return arr_aux
 
 class TestFeatureCalculator(unittest.TestCase):
     
@@ -105,7 +122,7 @@ class TestFeatureCalculator(unittest.TestCase):
             Implemente esse método para eliminar algo feito no teste
         '''
         pass
-
+    
 
     def testLeitura(self):
         '''
@@ -134,13 +151,25 @@ class TestFeatureCalculator(unittest.TestCase):
                                          "SILVA Ola. Contando Olas. Conferencia dos Hello World", 
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.text_plain, 
+                                         FeatureTimePerDocumentEnum.MILLISECONDS),
+                        
+                        WordTestFeature("tag feature", "Essa feature é divertitida", 
+                                         "SILVA Ola. Contando Olas. Conferencia dos Hello World", 
+                                         FeatureVisibilityEnum.public, 
+                                         FormatEnum.HTML,
+                                         FeatureTimePerDocumentEnum.MILLISECONDS),
+                        
+                        TagTestFeature("tag legal feature", "Essa feature é divertitida", 
+                                         "SILVA Ola. Contando Olas. Conferencia dos Hello World", 
+                                         FeatureVisibilityEnum.public, 
+                                         FormatEnum.HTML,
                                          FeatureTimePerDocumentEnum.MILLISECONDS)
                         ]
         obj_writer = DocWriterForTest()
         FeatureCalculator.featureManager.computeFeatureSetDocuments(DocSetReaderForTest(),
                                                                     obj_writer,
                                                                     arr_features,
-                                                                    FormatEnum.text_plain
+                                                                    FormatEnum.HTML
                                                                     )
         map_result = obj_writer.result
         
@@ -148,11 +177,18 @@ class TestFeatureCalculator(unittest.TestCase):
                                                      , "A leitura das palavras está incorreta"
                                                      )
         self.assertListEqual(map_result["doc1"][1], ["Ola, meu nome é hasan."], "A leitura do texto está incorreto")
-        self.assertListEqual(map_result["doc1"][1], ["Ola, meu nome é hasan."], "A leitura do texto está incorreto")
         self.assertListEqual(map_result["doc4"][1], ["lalala.","\nMeu teste tem tres paragrafos.","\nEsse é o último"], "A leitura do texto está incorreto")
         self.assertListEqual(map_result["doc4"][2], ["lalala.","Meu teste tem tres paragrafos.","Esse é o último"], "A leitura do texto está incorreto")
         self.assertListEqual(map_result["doc1"][2], ["Ola, meu nome é hasan."], "A leitura do texto está incorreto")
-    
+        
+        '''Testam se o HTML está sendo limpo'''
+        self.assertListEqual(map_result["doc5"][3], ["Ola",",","meu","nome","é","hasan","."],"A leitura das palavras está incorreta")
+        self.assertListEqual(map_result["doc6"][3], ["Meu","teste","de","palavras","."], "A leitura do texto está incorreto")
+        
+        '''Testam o checkTag'''
+        self.assertListEqual(map_result["doc5"][4], ["p","p"],"A leitura das tags está incorreta")
+        self.assertListEqual(map_result["doc6"][4], ["head","head","body","p","p","p","p","body"],"A leitura das tags está incorreta")
+        
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'TestFeatureCalculator.testName']
     unittest.main()

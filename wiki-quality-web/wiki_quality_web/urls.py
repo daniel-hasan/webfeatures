@@ -36,4 +36,5 @@ urlpatterns = [
     url(r'^used_features.html', views.UsedFeatureListViewTeste.as_view(), name='used_features'),
     url(r'^$', auth_views.login, {'template_name': 'content/home.html'}, name="home"),
     url(r'^authentication$', views.LoginView.as_view(), name='authentication'),
+    url(r'^signup/', views.SignUpView.as_view(), name='signup'),
 ]
