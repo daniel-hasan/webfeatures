@@ -185,6 +185,7 @@ class UsedFeature(models.Model):
     feature_visibility = models.ForeignKey(FeatureVisibility,models.PROTECT)
     text_format = models.ForeignKey(Format,models.PROTECT)
     objects = UsedFeatureManager()
+    
     def get_feature_instance(self):
         FeatureClass = self.feature.get_feature_class()
         param = {
