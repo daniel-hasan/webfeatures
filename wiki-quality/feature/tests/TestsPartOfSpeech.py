@@ -8,7 +8,7 @@ class TestFile(unittest.TestCase):
     def test(self):
         
         classe = WordsFeatureFactory(LanguageEnum.en)
-        for word in classe.getTestClasseGramatical("prepositions"):
+        for word in classe.getClasseGramatical("prepositions"):
             print(str(word).title() + "\n")
 
 if __name__ == "__main__":

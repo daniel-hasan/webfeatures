@@ -117,7 +117,7 @@ class WordsFeatureFactory(FeatureFactory):
         print(self.BASE_DIR)
     
     
-    def getTestClasseGramatical(self, str_classe):
+    def getClasseGramatical(self, str_classe):
         
         fileClasseGramatical = self.BASE_DIR+"/partOfSpeech/"+self.objLanguage.name+"/" + str_classe + ".txt"
         with open(fileClasseGramatical) as file:
@@ -125,21 +125,20 @@ class WordsFeatureFactory(FeatureFactory):
         
         return listPrepositions
     
-    def createFeatures(self):
+    def createFeatureObject(self,classe):
+        listWords = self.getClasseGramatical(classe)
+        objFeature = WordCountFeature(str(classe).title() + " Count","Count the number of "+ classe +" in the text.",
+                        "Based on file style.c from path diction-1.11.tar.gz of http://ftp.gnu.org/gnu/diction/",
+                        FeatureVisibilityEnum.public, 
+                        FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,listWords,True)
         
-        arrFeatures = []
+        return objFeature
+    
+    def createFeatures(self):
         
         part_of_speech = ["articles","auxiliaryVerbs","coordinatingConjunctions","correlativeConjunctions",
                           "indefinitePronouns","interrogativePronouns","prepositions","pronouns",
                           "relativePronouns","subordinatingConjunctions","toBeVerbs"]
         
-        for classe in part_of_speech:
-            dirClasses = self.BASE_DIR + "/partOfSpeech/" + self.objLanguage.name + "/" + classe + ".txt"
-            with open(dirClasses) as file:
-                listWords = file.read().split(",")
-                arrFeatures.append(WordBasedFeature(str(classe).title() + "Count","Count the number of "+ classe +" in the text.",
-                                                 "Based on file style.c from path diction-1.11.tar.gz of http://ftp.gnu.org/gnu/diction/",
-                                                 FeatureVisibilityEnum.public, 
-                                                 FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,listWords))
-
+        arrFeatures = [self.createFeatureObject(classe) for classe in part_of_speech]
         return arrFeatures
