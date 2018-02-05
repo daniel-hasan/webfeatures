@@ -193,7 +193,7 @@ class UsedFeature(models.Model):
             "text_format": self.text_format.get_enum(),
             "feature_time_per_document": self.feature_time_to_extract.get_enum()
         }        
-        for arg in UsedFeature.usedfeatureargval_set.all():
+        for arg in self.usedfeatureargval_set.all():
             if arg.type_argument == UsedFeatureArgVal.INT:
                 param[arg.nam_argument] = int(arg.val_argument)
             elif arg.type_argument == UsedFeatureArgVal.JSON:
