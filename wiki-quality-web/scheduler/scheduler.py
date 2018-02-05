@@ -26,16 +26,17 @@ class Scheduler(object):
 			arrFeatures.append(objUsedFeature.get_feature_instance())
 		return arrFeatures
 	
-	def run(self, int_wait_minutes):
+	def run(self, int_wait_minutes,int_max_iterations = float('inf')):
 				
 		int_wait_minutes = int_wait_minutes*60;
-
-		while True:
+		i = 0
+		while i<int_max_iterations:
 			
 			with transaction.atomic():
 				dataset = self.get_next()
 				
-			
+			print("dataset run")
+			print(dataset)
 			if dataset:				
 				arr_feats_used = self.get_arr_features(dataset)
 								
@@ -49,6 +50,6 @@ class Scheduler(object):
 				dataset.status = Status.objects.get_enum(StatusEnum.COMPLETE)
 			else:
 				time.sleep(int_wait_minutes);
-				break
-
-
+				#break
+			i = i+1
+			

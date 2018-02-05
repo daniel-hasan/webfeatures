@@ -60,5 +60,5 @@ class TestSchedulerRun(TestCase):
         
         '''
     def testRun(self):
-        next_dataset = OldestFirstScheduler().run(0)
+        next_dataset = OldestFirstScheduler().run(0,10)
             

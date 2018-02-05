@@ -29,11 +29,6 @@ class TestUsedFeature(unittest.TestCase):
         self.assertEqual(0, 0, "Esse teste ainda não foi implementado")   
         
 
-
-if __name__ == "__main__":
-    #import sys;sys.argv = ['', 'TestFeatureCalculator.testName']
-    unittest.main()
-        
         
 
 
