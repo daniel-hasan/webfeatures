@@ -8,13 +8,15 @@ Tabelas responsáveis por armazenar a configuração, definida pelo usuário, do
 from __future__ import unicode_literals
 
 from django.contrib.auth.models import User
-from django.db import models
+from django.db import models, transaction
 import json
+
 from feature.features import ParamTypeEnum, FeatureVisibilityEnum
 from utils.basic_entities import LanguageEnum, FeatureTimePerDocumentEnum
-from wqual.models.utils import Format
-from wqual.models.utils import EnumManager, EnumModel
 from utils.feature_utils import get_class_by_name
+from wqual.models.utils import EnumManager, EnumModel
+from wqual.models.utils import Format
+
 
 class Feature(models.Model):
     '''
@@ -43,20 +45,25 @@ class ParamType(EnumModel):
         return ParamTypeEnum
     
 class FeatureFactoryManager(models.Manager):
+    '''
+    Created on 07 de fev de 2018
+    
+    @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
+    '''
     def get_all_features_from_language(self,obj_language):
-        arrFeatures = []
+        arr_features = []
         for featFactory in self.all():
             #instantiate feature factory class
-            FeatureFactoryClass = get_class_by_name(featFactory.nam_module+"."+nam_factory_class) 
+            FeatureFactoryClass = get_class_by_name(featFactory.nam_module+"."+featFactory.nam_factory_class) 
             
             objFeatureFactory = None 
             if FeatureFactoryClass.IS_LANGUAGE_DEPENDENT:
-               objFeatureFactory = FeatureFactoryClass(obj_language.get_enum())
+                objFeatureFactory = FeatureFactoryClass(obj_language.get_enum())
             else:
                 objFeatureFactory = FeatureFactoryClass
             
             #add all the features from factory
-            [arrFeatures.append(objFeature) for objFeature in objFeatureFactory.createFeatures()]
+            [arr_features.append(objFeature) for objFeature in objFeatureFactory.createFeatures()]
         return arr_features
             
 class FeatureFactory(models.Model):
@@ -69,7 +76,7 @@ class FeatureFactory(models.Model):
     '''
     nam_module = models.CharField( max_length=45)
     nam_factory_class = models.CharField( max_length=45) 
-    
+    objects = FeatureFactoryManager()
     def get_class(self):
         '''
         resgata a classe com um vocabulario dependente de linguagem a ser usa
@@ -144,7 +151,41 @@ class FeatureVisibility(EnumModel):
     @staticmethod
     def get_enum_class():
         return FeatureVisibilityEnum
-    
+
+class UsedFeatureManager(models.Manager):
+    def insertFeaturesObject(self,featureSet,arrObjectFeatures):
+        with transaction.atomic():
+            for objFeature in arrObjectFeatures:
+                featureObj = Feature.objects.get_or_create(nam_module=objFeature.__module__, nam_feature_class=objFeature.__class__.name)
+                objFeatUsed = self.create(feature_set=featureSet,
+                                            feature = featureObj,
+                                            feature_time_to_extract=FeatureTimePerDocument.objects.get_enum(objFeature.feature_time_per_document),
+                                            feature_visibility=FeatureVisibility.objects.get_enum(objFeature.feature_visibility),
+                                            text_format=Format.objects.get_enum(objFeature.text_format)
+                                            )
+            
+                #adiciona os demais parametros da feature (nao configuraveis) 
+                for name,value in objFeature.__dict__.items():
+                    if name not in ("visibility","text_format","feature_time_per_document") and type(value) == "string":
+                        UsedFeatureArgVal.objects.create(    nam_argument = name,
+                                                             val_argument = value,
+                                                             is_configurable = False)
+                #adiciona as features configuraveis
+                for objConfigurableFeature in objFeature.arr_configurable_param:
+                    strParamType = ""
+                    if objConfigurableFeature.param_type in (ParamTypeEnum.int,ParamTypeEnum.float,ParamTypeEnum.string):
+                        strParamType = objConfigurableFeature.param_type.value
+                    elif objConfigurableFeature.param_type == ParamTypeEnum.choices:
+                        strParamType = UsedFeatureArgVal.JSON
+                    UsedFeatureArgVal.objects.create(    nam_argument = name,
+                                                             val_argument = value,
+                                                             type_argument=strParamType,
+                                                             is_configurable = True,
+                                                             used_feature=objFeatUsed,
+                                                             )
+                
+                
+ 
 class UsedFeature(models.Model):
     '''
     Created on 13 de ago de 2017
@@ -189,9 +230,10 @@ class UsedFeatureArgVal(models.Model):
     Argumentos (i.e. parametros) usados para instanciar esta feature 
     '''
     INT = "int"
+    FLOAT = "float"
     STRING = "string"
     JSON = "json"
-    TIPOS_DADOS = [(INT,"int"),(STRING,"string"),(JSON,"json")]
+    TIPOS_DADOS = [(INT,ParamTypeEnum.int.value)(FLOAT,ParamTypeEnum.float.value),(STRING,ParamTypeEnum.string.value),(JSON,"json")]
 
     nam_argument = models.CharField(max_length=45)
     val_argument = models.CharField(max_length=45)

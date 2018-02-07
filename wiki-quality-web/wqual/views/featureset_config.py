@@ -5,13 +5,16 @@ Created on 14 de ago de 2017
 Views relacionadas a configuração das features
 '''
 from django.forms.utils import ErrorList
+from django.http.response import JsonResponse, HttpResponse, \
+    HttpResponseRedirect
 from django.urls.base import reverse, reverse_lazy
+from django.views.generic.base import View
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 
 from utils.basic_entities import LanguageEnum
 from wqual.models.featureset_config import FeatureSet, Language, UsedFeature, \
-    UsedFeatureArgVal
+    UsedFeatureArgVal, FeatureFactory
 
 
 class FormValidation(object):
@@ -168,3 +171,56 @@ class FeatureSetDelete(DeleteView):
      
     def get_success_url(self):
         return reverse_lazy('feature_set_list')
+    
+    
+    
+    
+class ListFeaturesView(View):
+    '''
+    Created on 07 de fev de 2018
+   
+    @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
+    Lista todos os conjunto de features criados.
+    '''    
+    def get_features(self,strLanguageCode):
+        """
+           Obtem features e processa elas já no formato a ser retornado para o ajax
+        """
+        #obtem as features 
+        feat_obj_list = FeatureFactory.objects.get_all_features_from_language(Language.objects.get(name=strLanguageCode))
+        
+        #agrupa elas por um id criado, adicionando em feature_list este id
+        dict_feat_per_id = {}
+        id = 1
+        for objFeature in feat_obj_list:
+            
+            dict_feat_per_id[id] = objFeature
+            id = id+1
+        return dict_feat_per_id
+        
+    def post(self, request):
+        strLanguageCode = self.kwargs["nam_language"]
+        str_key_feat_per_id = "dict_feat_per_id_"+strLanguageCode
+        #obtem o mapa de features por id
+        dict_feat_per_id = {}
+        if str_key_feat_per_id in request.session:
+            #lista as features e adiciona um id para cada uma (retornando este discionario) 
+            dict_feat_per_id = self.get_features(self.kwargs["nam_language"])
+            request.session[str_key_feat_per_id] = dict_feat_per_id
+        else:
+            dict_feat_per_id =request.session[str_key_feat_per_id] 
+        arr_features = []
+        for idFeature,objFeature in dict_feat_per_id.items():
+            arr_features.append({"id":idFeature,
+                               "name":objFeature.name,
+                               "description":objFeature.description,
+                               "reference":objFeature.reference})
+            
+            
+        return JsonResponse(arr_features)
+class InsertUsedFeaturesView(View):
+    def post(self, request):
+        arrHidUsedFeaturesToInsert = self.POST["hidUsedFeatures"]
+        
+        return HttpResponseRedirect(reverse('feature_set_edit', args=[self.kwargs["nam_feature_set"]]))
+    
