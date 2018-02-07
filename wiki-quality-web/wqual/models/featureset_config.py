@@ -42,7 +42,23 @@ class ParamType(EnumModel):
     def get_enum_class():
         return ParamTypeEnum
     
-
+class FeatureFactoryManager(models.Manager):
+    def get_all_features_from_language(self,obj_language):
+        arrFeatures = []
+        for featFactory in self.all():
+            #instantiate feature factory class
+            FeatureFactoryClass = get_class_by_name(featFactory.nam_module+"."+nam_factory_class) 
+            
+            objFeatureFactory = None 
+            if FeatureFactoryClass.IS_LANGUAGE_DEPENDENT:
+               objFeatureFactory = FeatureFactoryClass(obj_language.get_enum())
+            else:
+                objFeatureFactory = FeatureFactoryClass
+            
+            #add all the features from factory
+            [arrFeatures.append(objFeature) for objFeature in objFeatureFactory.createFeatures()]
+        return arr_features
+            
 class FeatureFactory(models.Model):
     '''
     Created on 13 de ago de 2017
