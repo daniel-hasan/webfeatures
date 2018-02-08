@@ -1,0 +1,73 @@
+{% extends "../bases/base_main_site.html" %}
+{% load static %}
+{% block title %}Feature Set Update Insert{% endblock %}
+  
+{% block content %}
+
+<script src="{% static "js/featureSetConfigUpdate.js" %}"></script>
+
+<script>
+	function cancelEditFeature(){
+		window.location.href = '{% url "feature_set_list" %}';
+	}
+</script>
+
+<div id="tabs">
+  <ul>
+    <li><a href="#tabs-1">Description</a></li>
+    <li><a href="#tabs-2">Features Set</a></li>
+  </ul>
+  <div id="tabs-1">
+  	<div class = "col-md-6">	
+  		{% if object.id %}
+  				<form action="{% url "feature_set_edit" object.nam_feature_set %}" method="post">{% csrf_token %}
+  			{% else %}
+  				<form action="{% url "feature_set_insert" %}" method="post">{% csrf_token %}
+  		{% endif %}
+				{% for field in form %}
+					{{ field.errors }}
+					<div class="form-group">
+						{% ifequal field.label "Nam feature set" %}
+							<span>Name Feature Set:</span>
+						{% endifequal %}	
+						
+						{% ifequal field.label "Dsc feature set" %}
+							<span>Description Feature Set:</span>
+						{% endifequal %}
+						
+						{% ifequal field.label "Language" %}
+							<span>Language:</span>
+						{% endifequal %}
+						
+						<div>
+	                    	{{ field }}
+	                   </div>
+	                </div>
+	    		{% endfor %}
+	    		<button type="submit" class="ui-button ui-widget ui-corner-all">Save</button>
+	    		<input type="button" class="ui-button ui-widget ui-corner-all" onclick="cancelEditFeature()" value = "Cancel" />
+		</form>
+	</div>
+  </div>
+  <div id="tabs-2">
+  	<a><button id="insert" class="btn btn-primary">Add Feature</button></a>
+  	<div id='div'></div>
+    <script src="{% url "used_feature_js" %}"></script> 
+  </div>
+</div>
+
+
+<div id="add-form" title="Add Feature Set">
+  <form action="" method="post">{% csrf_token %}
+	 <span class="ui-icon  ui-icon-search"></span>
+	 <input type="text" name="search" placeholder="search..."><br><br>
+				
+	 <button type="submit" id="add">Add</button>
+	 <button type="submit" id="cancel">Cancel</button>
+  </form>
+</div>
+
+
+ 
+
+{% endblock %}

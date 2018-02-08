@@ -269,7 +269,6 @@ class FeatureCalculator(object):
     def addConfigurableParam(self,objParam):
         self.arr_configurable_param.append(objParam)
     
-    
      
 class TextBasedFeature(FeatureCalculator):
     '''

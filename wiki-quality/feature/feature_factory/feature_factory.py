@@ -19,8 +19,7 @@ class FeatureFactory(object):
     Cria as features de um determinado tipo.
     @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>  
     '''  
-    def is_language_dependent(self):
-        return False
+    IS_LANGUAGE_DEPENDENT = False
     
     @abstractmethod
     def createFeatures(self):
@@ -101,7 +100,7 @@ class StyleFeatureFactory(FeatureFactory):
         
 
 class WordsFeatureFactory(FeatureFactory):
-    
+    IS_LANGUAGE_DEPENDENT = True
     def __init__(self,objLanguage):
         super(FeatureFactory,self).__init__()
         self.objLanguage = objLanguage
@@ -135,5 +134,3 @@ class WordsFeatureFactory(FeatureFactory):
         arrFeatures = [self.createFeatureObject(classe) for classe in part_of_speech]
         return arrFeatures
     
-    def is_language_dependent(self):
-        return True

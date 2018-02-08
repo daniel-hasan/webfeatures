@@ -1,0 +1,43 @@
+{% extends "../bases/base_main_site.html" %}
+
+
+
+{% block title %}Publications{% endblock %}
+
+
+{% block content %}
+
+<table class="table table-bordered table-condensed">
+	<thead>	
+		<tr class="table-success">
+			<th>Title</th>
+			<th>Authors</th>
+			<th>Conference</th>
+			<th>Period</th>
+		</tr>
+	</thead>
+	{% for publication in object_list %}	
+	<tbody>	
+		<tr> 
+			<td>{{ publication.nam_title }}</td>
+			<td>
+				{% for author in publication.authors.all %}
+					{% if forloop.last %}
+						{{ author }}
+					{% else %}
+						{{ author }},
+					{% endif %}
+				{% endfor %}
+				</td>
+			<td>{{ publication.conference }}</td>
+			<td>{{ publication.num_year }}</td> 
+		</tr> 
+	</tbody>
+	{% endfor %}
+</table>
+
+{% endblock %}
+
+
+=======
+>>>>>>> 9a6c66b798c5a465b06db7335edc2ca43d3e6647

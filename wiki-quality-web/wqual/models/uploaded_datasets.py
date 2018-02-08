@@ -7,13 +7,16 @@ Tabelas relacionadas com o upload de datasets para a futura
 extração de features. 
 As tabelas relacionadas com o resultado desta extração também está neste arquivo.
 '''
-from enum import IntEnum, Enum
 from django.contrib.auth.models import User, Group
 from django.db import models
+from enum import Enum
+import lzma
+from utils.uncompress_data import CompressedFile
+from wqual.models.exceptions import FileSizeException
+from wqual.models import FeatureSet, Format
+from wqual.models.utils import EnumModel
 
-from utils.basic_entities import FormatEnum
-from wqual.models import FeatureSet
-from wqual.models.utils import EnumModel, EnumManager
+
 
 
 class StatusEnum(Enum):
@@ -23,9 +26,11 @@ class StatusEnum(Enum):
     @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
 Tipos de status da extração de features de um determinado dataset
     '''
+    SUBMITTED = "Submitted"
     PROCESSING = "Processing"
     COMPLETE = "Completed"
     NOT_AVALIABLE = "The time to download the result has expired"
+
 
 class Status(EnumModel):
     '''
@@ -40,17 +45,7 @@ class Status(EnumModel):
         return StatusEnum
     
 
-class Format(EnumModel):
-    '''
-    Created on 14 de ago de 2017
-    
-    @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
-    Armazena os possíveis formatos de arquivo (de acordo com o enum FormatEnum)
-    '''
-    
-    @staticmethod
-    def get_enum_class():
-        return FormatEnum
+
     
 
         
@@ -71,8 +66,34 @@ class Dataset(models.Model):
     feature_set = models.ForeignKey(FeatureSet, models.PROTECT)
     user = models.ForeignKey(User, models.PROTECT)
     status = models.ForeignKey(Status, models.PROTECT)
+    
+    def save_compressed_file(self,comp_file_pointer):
+            #validacao ser feita aqui
+            
+            #se um dos arquivos for maior que XX, 
+            #lancar uma excecao falando que o tamanho foi maior
+            
+            
+            #inserção
+            #save
+            objFileZip = CompressedFile.get_compressed_file(comp_file_pointer)
+            
+            int_limit = 1
+            for name,int_file_size in objFileZip.get_each_file_size():
+                if int_file_size > int_limit:
+                    raise FileSizeException("The file "+name+" exceeds the limit of "+str(int_limit)+" bytes")
+                
+            self.save()   
+            for name,strFileTxt in objFileZip.read_each_file():
+                objDocumento = Document(nam_file=name,dataset=self)
+                objDocumento.save()
+                objDocumentoTexto = DocumentText(document=objDocumento,dsc_text=strFileTxt)
+                objDocumentoTexto.save()
+                self.document_set.add(objDocumento,bulk=False)
+                
 
-
+                
+                
 class ResultValityPerUserGroup(models.Model):
     '''
     Created on 16 de ago de 2017
@@ -115,7 +136,16 @@ class DocumentResult(models.Model):
     Resultado obtido do documento
     '''
     dsc_result = models.TextField()
-    
     document = models.OneToOneField(Document, models.PROTECT)
     
+     
+    @property
+    def dsc_result(self):
+        return lzma.decompress(self.dsc_result).decode("utf-8")
+        
+    @dsc_result.setter
+    def dsc_result(self, dsc_result):
+        dsc_to_compress = bytearray()
+        dsc_to_compress.extend(map(ord, dsc_result))
+        self.dsc_result = lzma.compress(dsc_to_compress)
     

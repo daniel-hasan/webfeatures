@@ -16,5 +16,6 @@ class PublicationList(ListView):
     @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
     Lista todas as publicações
     '''
+    
     model = Publication
     template_name = "content/publication_list.html"

@@ -6,19 +6,20 @@ Created on 8 de ago de 2017
 Classes que podem ser uteis nos modelos do app wqual
 '''
 from abc import abstractstaticmethod
- 
 from django.db import models
 from django.db.models.deletion import ProtectedError
 
-class EnumManager(models.Manager):
-    '''
-    Created on 15 de ago de 2017
-    
-    @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
-    Classe com os métodos para atualizar automaticamente um Enum em um banco de dados. 
-    '''
+from utils.basic_entities import FormatEnum
 
-    
+
+#from wqual.models.utils import EnumModel
+class EnumQuerySet(models.query.QuerySet):
+    def get(self, **kwargs):
+        try:
+            return super().get(**kwargs)
+        except self.model.DoesNotExist:
+            self.update_enums_in_db()
+            return super().get(**kwargs)
     def has_enum_in_db(self,enum):
         '''
         Created on 15 de ago de 2017
@@ -27,6 +28,15 @@ class EnumManager(models.Manager):
         Busca se um determinado enum existe no BD pelo seu nome.
         '''
         return self.filter(name=enum.name).exists()
+
+    def get_enum(self,enum):
+        '''
+        Created on 16 de nov de 2017
+        
+        @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
+        Retorna o enum 
+        '''
+        return self.get(name=enum.name)
     
     def insert_enum(self,enum):
         '''
@@ -37,27 +47,8 @@ class EnumManager(models.Manager):
         '''
         ModelClass = self.model
         obj = ModelClass(name=enum.name,value=enum.value)
-        obj.save()
-    
-  
-    
-    
-    def get_queryset(self):
-        '''
-        Created on 15 de ago de 2017
-        
-        @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
-        Atualiza os enuns sempre quando esta classe de modelo
-        for consultada pela primeira vez durante a execução do app.
-        '''
-        if(not hasattr(self.model, '__first_query') ):
-            #print("Prima vez")
-            setattr(self.model,"__first_query", False)
-            self.update_enums_in_db()
-            
-            
-        return super(EnumManager, self).get_queryset()
-    
+        obj.save()        
+         
     def update_enums_in_db(self):
         '''
         Created on 15 de ago de 2017
@@ -96,6 +87,36 @@ class EnumManager(models.Manager):
                 self.insert_enum(enum)
 
 
+class EnumManager(models.Manager.from_queryset(EnumQuerySet)):
+    '''
+    Created on 15 de ago de 2017
+    
+    @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
+    Classe com os métodos para atualizar automaticamente um Enum em um banco de dados. 
+    '''
+
+    
+
+    
+  
+    
+    
+    def get_queryset(self):
+        '''
+        Created on 15 de ago de 2017
+        
+        @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
+        Atualiza os enuns sempre quando esta classe de modelo
+        for consultada pela primeira vez durante a execução do app.
+        '''
+        if(not hasattr(self.model, '__first_query') ):
+            #print("Prima vez")
+            setattr(self.model,"__first_query", False)
+            self.update_enums_in_db()
+            
+            
+        return super(EnumManager, self).get_queryset()
+        
 class EnumModel(models.Model):
     '''
     Created on 15 de ago de 2017
@@ -155,3 +176,14 @@ class EnumModel(models.Model):
     class Meta:
         abstract = True
 
+class Format(EnumModel):
+    '''
+    Created on 14 de ago de 2017
+    
+    @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
+    Armazena os possíveis formatos de arquivo (de acordo com o enum FormatEnum)
+    '''
+    
+    @staticmethod
+    def get_enum_class():
+        return FormatEnum

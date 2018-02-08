@@ -1,9 +1,11 @@
-from plainbox.testing_utils import testcases
-
 from django.contrib.auth.models import User
 from django.test import TestCase
 from django.test.client import Client
 from django.urls.base import reverse
+from plainbox.testing_utils import testcases
+
+from utils.basic_entities import LanguageEnum
+from wqual.models import Language
 
 
 # Create your tests here.

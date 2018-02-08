@@ -1,28 +1,35 @@
 {% extends "../bases/base_main_site.html" %}
-
+{% load static %}
 
 {% block title %}Feature Set Configuration{% endblock %}
 
-
 {% block content %}
-	
-	<table class="table table-bordered table-condensed">	
-	{% for featSet in object_list %}	
-		{% ifequal featSet.group "g1" %}
-         	<tr> <td>{{ featSet.nam_feature_set }}</td> <td>{{ featSet.dsc_feature_set|safe }}</td>
-         	<td><a href="{% url "feature_set_edit" featSet.nam_feature_set%}">Editar</a></td></tr>
-        	{% else %}
-            	<tr class="table-success"><th colspan="3">{{ featSet.nam_feature_set }}</th></tr>
-     	{% endifequal %}	    
-	{% endfor %}
-	</table>
-	
-	
-	
-	<!--<form action="" method="post">{% csrf_token %}
-    	{{ form.as_p }}
-    	<input type="submit" value="Update" />
-	</form>-->
 
+<table class="table table-bordered">
+	<thead>
+	  <tr>
+	     <th>Name Feature Set</th>
+	     <th>Description Feature Set</th>
+	     <th colspan="2"><a href="{% url "feature_set_insert" %}"><button id="insert" class="ui-button ui-widget ui-corner-all">Insert</button></a></th>
+	  </tr>
+	 </thead>
+	{% for featSet in object_list %}			
+         	<tr> 
+	         	<td>{{ featSet.nam_feature_set }}</td> <td>{{ featSet.dsc_feature_set|safe }}</td>
+	         	<td><a href="{% url "feature_set_edit" featSet.nam_feature_set%}"><button class="ui-button ui-widget ui-corner-all">Edit</button></a></td>
+	         	<td><form action="{% url "feature_set_delete" featSet.nam_feature_set%}" method="post">{% csrf_token %}
+	         				<button id="delete" class="ui-button ui-widget ui-corner-all">Delete</button>
+	         		</form>
+	         	</td>
+         	<tr>        	    	
+	{% endfor %}
+</table>
+
+<script>
+</script>
 
 {% endblock %}
+
+
+
+
