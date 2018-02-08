@@ -10,7 +10,7 @@ from __future__ import unicode_literals
 from django.contrib.auth.models import User
 from django.db import models, transaction
 import json
-
+import inspect
 from feature.features import ParamTypeEnum, FeatureVisibilityEnum
 from utils.basic_entities import LanguageEnum, FeatureTimePerDocumentEnum
 from utils.feature_utils import get_class_by_name
@@ -60,7 +60,7 @@ class FeatureFactoryManager(models.Manager):
             if FeatureFactoryClass.IS_LANGUAGE_DEPENDENT:
                 objFeatureFactory = FeatureFactoryClass(obj_language.get_enum())
             else:
-                objFeatureFactory = FeatureFactoryClass
+                objFeatureFactory = FeatureFactoryClass()
             
             #add all the features from factory
             [arr_features.append(objFeature) for objFeature in objFeatureFactory.createFeatures()]
@@ -153,38 +153,74 @@ class FeatureVisibility(EnumModel):
         return FeatureVisibilityEnum
 
 class UsedFeatureManager(models.Manager):
+    
     def insert_features_object(self,featureSet,arrObjectFeatures):
         with transaction.atomic():
+            int_ord_feature = UsedFeature.objects.filter(feature_set=featureSet).count()+1
             for objFeature in arrObjectFeatures:
-                featureObj = Feature.objects.get_or_create(nam_module=objFeature.__module__, nam_feature_class=objFeature.__class__.name)
+                featureObj = Feature.objects.get_or_create(nam_module=objFeature.__module__, nam_feature_class=objFeature.__class__.__name__)[0]
+                
                 objFeatUsed = self.create(feature_set=featureSet,
                                             feature = featureObj,
                                             feature_time_to_extract=FeatureTimePerDocument.objects.get_enum(objFeature.feature_time_per_document),
-                                            feature_visibility=FeatureVisibility.objects.get_enum(objFeature.feature_visibility),
-                                            text_format=Format.objects.get_enum(objFeature.text_format)
+                                            feature_visibility=FeatureVisibility.objects.get_enum(objFeature.visibility),
+                                            text_format=Format.objects.get_enum(objFeature.text_format),
+                                            ord_feature=int_ord_feature
                                             )
             
-                #adiciona os demais parametros da feature (nao configuraveis) 
+                #obtem todos os atributos do construtor (exceto o primeiro - self)
+                arrParamsConstrutor = set(inspect.getargspec(objFeature.__init__).args[1:]) 
+                dictParamsToInsert = {}
+                #agrupa os parametros num dicionario (pelo nome do atributo)
                 for name,value in objFeature.__dict__.items():
-                    if name not in ("visibility","text_format","feature_time_per_document") and type(value) == "string":
-                        UsedFeatureArgVal.objects.create(    nam_argument = name,
-                                                             val_argument = value,
-                                                             is_configurable = False)
-                #adiciona as features configuraveis
+                    if(name in arrParamsConstrutor):
+                        if name not in ("visibility","text_format","feature_time_per_document"):
+                            paramType = None
+                            paramValue = value 
+                            if(type(value)==str):
+                                paramType = UsedFeatureArgVal.STRING
+                            elif(type(value)==int):
+                                paramType = UsedFeatureArgVal.INT
+                            elif(type(value)==float):
+                                paramType = UsedFeatureArgVal.FLOAT                                
+                            elif(type(value)==bool):
+                                paramType = UsedFeatureArgVal.BOOLEAN
+                            elif type(value)==list or type(value)==dict:
+                                paramType = UsedFeatureArgVal.JSON
+                                paramValue = json.dumps(value)
+                            elif(type(value)==set):
+                                paramType = UsedFeatureArgVal.JSON_SET
+                                paramValue = [element for element in value]
+                                paramValue = json.dumps(paramValue)
+                            if(paramType==None):
+                                print("TIPO NONE<<<<<< "+str(type(value)))
+                            print("TIPO>>>>>>>>>>:"+str(type(value))+" TYPE: "+paramType)
+                            dictParamsToInsert[name]= {"nam_argument": name,
+                                                       "val_argument": str(paramValue),
+                                                       "type_argument":paramType,
+                                                       "is_configurable": False}
+                                                            
+                #atualiza como configuraveis os parametros que estao como configuraveis
                 for objConfigurableFeature in objFeature.arr_configurable_param:
-                    strParamType = ""
-                    if objConfigurableFeature.param_type in (ParamTypeEnum.int,ParamTypeEnum.float,ParamTypeEnum.string):
-                        strParamType = objConfigurableFeature.param_type.value
-                    elif objConfigurableFeature.param_type == ParamTypeEnum.choices:
-                        strParamType = UsedFeatureArgVal.JSON
-                    UsedFeatureArgVal.objects.create(    nam_argument = name,
-                                                             val_argument = objConfigurableFeature.default_value,
-                                                             type_argument=strParamType,
-                                                             is_configurable = True,
-                                                             used_feature=objFeatUsed,
-                                                             )
+                    if(objConfigurableFeature.att_name in dictParamsToInsert):
+                        dictArgValToInsert = dictParamsToInsert[objConfigurableFeature.att_name]
+                        if objConfigurableFeature.param_type == ParamTypeEnum.choices:
+                            pass
+                            #TODO: se for choices, armazenas as alternativas (arr_choices) no campo apropriado
+                            
+                        dictArgValToInsert["val_argument"] = objConfigurableFeature.default_value
+                        dictArgValToInsert["is_configurable"] = True
+                        
+                for dictArgValToInsert in dictParamsToInsert.values():
+                    UsedFeatureArgVal.objects.create(    nam_argument = dictArgValToInsert["nam_argument"],
+                                                                 val_argument = dictArgValToInsert["val_argument"],
+                                                                 type_argument=dictArgValToInsert["type_argument"],
+                                                                 is_configurable = dictArgValToInsert["is_configurable"],
+                                                                 used_feature=objFeatUsed,
+                                                                 )
+                    
                 
-                
+                int_ord_feature = int_ord_feature+1
  
 class UsedFeature(models.Model):
     '''
@@ -213,8 +249,14 @@ class UsedFeature(models.Model):
         for arg in UsedFeature.usedfeatureargval_set.all():
             if arg.type_argument == UsedFeatureArgVal.INT:
                 param[arg.nam_argument] = int(arg.val_argument)
+            if arg.type_argument == UsedFeatureArgVal.FLOAT:
+                param[arg.nam_argument] = float(arg.val_argument)                
+            elif arg.type_argument == UsedFeatureArgVal.BOOLEAN:
+                param[arg.nam_argument] = bool(arg.val_argument)
             elif arg.type_argument == UsedFeatureArgVal.JSON:
                 param[arg.nam_argument] = json.loads(arg.val_argument)
+            elif arg.type_argument == UsedFeatureArgVal.JSON_SET:
+                param[arg.nam_argument] = set(json.loads(arg.val_argument))                
             else:
                 param[arg.nam_argument] = arg.val_argument
 
@@ -233,8 +275,10 @@ class UsedFeatureArgVal(models.Model):
     INT = "int"
     FLOAT = "float"
     STRING = "string"
+    BOOLEAN = "boolean"
     JSON = "json"
-    TIPOS_DADOS = [(INT,ParamTypeEnum.int.value)(FLOAT,ParamTypeEnum.float.value),(STRING,ParamTypeEnum.string.value),(JSON,"json")]
+    JSON_SET = "json_set"
+    TIPOS_DADOS = [(INT,"int"),(FLOAT,"float"),(STRING,"string"),(BOOLEAN,"boolean"),(JSON,"json"),(JSON_SET,"json_set")]
 
     nam_argument = models.CharField(max_length=45)
     val_argument = models.CharField(max_length=45)
