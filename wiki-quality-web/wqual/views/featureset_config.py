@@ -218,9 +218,9 @@ class ListFeaturesView(View):
             
             
         return JsonResponse(arr_features)
+    
 class InsertUsedFeaturesView(View):
     def post(self, request):
-        arrHidUsedFeaturesToInsert = self.POST["hidUsedFeatures"]
-        
-        return HttpResponseRedirect(reverse('feature_set_edit', args=[self.kwargs["nam_feature_set"]]))
-    
+        arrHidUsedFeaturesToInsert = [int(strId) for strId in self.POST["hidUsedFeaturesToInsert"].split(",")]
+        UsedFeature.objects.insert_features_object(arrHidUsedFeaturesToInsert)
+        return HttpResponseRedirect(reverse('feature_set_edit_features', args=[self.kwargs["nam_feature_set"]]))

@@ -153,7 +153,7 @@ class FeatureVisibility(EnumModel):
         return FeatureVisibilityEnum
 
 class UsedFeatureManager(models.Manager):
-    def insertFeaturesObject(self,featureSet,arrObjectFeatures):
+    def insert_features_object(self,featureSet,arrObjectFeatures):
         with transaction.atomic():
             for objFeature in arrObjectFeatures:
                 featureObj = Feature.objects.get_or_create(nam_module=objFeature.__module__, nam_feature_class=objFeature.__class__.name)
@@ -178,7 +178,7 @@ class UsedFeatureManager(models.Manager):
                     elif objConfigurableFeature.param_type == ParamTypeEnum.choices:
                         strParamType = UsedFeatureArgVal.JSON
                     UsedFeatureArgVal.objects.create(    nam_argument = name,
-                                                             val_argument = value,
+                                                             val_argument = objConfigurableFeature.default_value,
                                                              type_argument=strParamType,
                                                              is_configurable = True,
                                                              used_feature=objFeatUsed,
@@ -201,7 +201,8 @@ class UsedFeature(models.Model):
     feature_time_to_extract = models.ForeignKey(FeatureTimePerDocument,models.PROTECT)
     feature_visibility = models.ForeignKey(FeatureVisibility,models.PROTECT)
     text_format = models.ForeignKey(Format,models.PROTECT)
-
+    objects = UsedFeatureManager()
+    
     def get_feature_instance(self):
         FeatureClass = self.feature.get_feature_class()
         param = {
