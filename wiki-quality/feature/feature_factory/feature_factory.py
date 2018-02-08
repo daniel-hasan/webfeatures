@@ -108,7 +108,7 @@ class StyleFeatureFactory(FeatureFactory):
         
 
 class WordsFeatureFactory(FeatureFactory):
-    
+    IS_LANGUAGE_DEPENDENT = True
     def __init__(self,objLanguage):
         super(FeatureFactory,self).__init__()
         self.objLanguage = objLanguage
