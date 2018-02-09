@@ -7,19 +7,19 @@
 			{% csrf_token %}
 			<input name="file_dataset" type="file">
 			{% for field in form %}
-				<div class="form-elements">
-					{% ifequal field.label "Format" %}
-						<span>Format Dataset:</span>
-					{% endifequal %}
-					
-					{% ifequal field.label "Feature set" %}
-						<span>Feature Set Dataset: </span>
-					{% endifequal %}
-				</div>
+				{% ifequal field.label "Format" %}
+					<span>Format Dataset:</span>
+				{% endifequal %}
+			
+				{% ifequal field.label "Feature set" %}
+					<span>Feature Set Dataset: </span>
+				{% endifequal %}
 				<div>
 					{{ field }}
 				</div>
-				{{ field.errors }}
+				{% for error in field.errors %}
+					<p class="erro-p">{{ error }}</p>
+				{% endfor %}
 			{% endfor %}						
 			<button type="submit" class="submit_button">Submit</button>
 		</form>
@@ -33,6 +33,7 @@
     			<th>Valid until</th>
     			<th>Feature Set</th>
     			<th>Text Format</th>
+    			<th>Download</th>
     		</tr>
     	</thead>
     	<tbody>
@@ -44,12 +45,14 @@
   	  				<td>{{ dataset.dat_valid_until }}</td>
     				<td>{{ dataset.feature_set }}</td>
     				<td>{{ dataset.format.name }}</td>
+					<td><a href="{% url "download_result" dataset.id "json" %}">json</a> <a href="{% url "download_result" dataset.id "xls" %}">xls</a></td>
 					<td>
 						<form action="{% url "dataset_delete" dataset.nam_dataset%}" method="post">
 							{% csrf_token %}
          					<button class="btn btn-danger" id="delete">Delete</button>
          				</form>
 					</td>
+					
     			</tr>
 				{% empty %}
 				<tr>

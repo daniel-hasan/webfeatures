@@ -7,15 +7,15 @@ Tabelas relacionadas com o upload de datasets para a futura
 extração de features. 
 As tabelas relacionadas com o resultado desta extração também está neste arquivo.
 '''
+
+from enum import IntEnum, Enum
 from django.contrib.auth.models import User, Group
 from django.db import models
-from enum import Enum
 import lzma
 from utils.uncompress_data import CompressedFile
 from wqual.models.exceptions import FileSizeException
 from wqual.models import FeatureSet, Format
-from wqual.models.utils import EnumModel
-
+from wqual.models.utils import EnumModel, EnumManager, CompressedTextField
 
 
 
@@ -45,10 +45,7 @@ class Status(EnumModel):
         return StatusEnum
     
 
-
-    
-
-        
+   
 class Dataset(models.Model):
     '''
     Created on 14 de ago de 2017
@@ -57,15 +54,25 @@ class Dataset(models.Model):
     Dataset que o usuário enviou
     '''
     nam_dataset = models.CharField(max_length=45)
+    
     dat_submitted = models.DateTimeField()
     dat_valid_until = models.DateTimeField(blank=True, null=True)
     
+    start_dat_processing = models.DateTimeField(blank=True, null=True)
+    end_dat_processing = models.DateTimeField(blank=True, null=True)
     
     format = models.ForeignKey(Format, models.PROTECT)    
     
     feature_set = models.ForeignKey(FeatureSet, models.PROTECT)
     user = models.ForeignKey(User, models.PROTECT)
     status = models.ForeignKey(Status, models.PROTECT)
+    dsc_result_header = models.TextField(blank=True, null=True)
+    
+    
+
+    
+
+    
     
     def save_compressed_file(self,comp_file_pointer):
             #validacao ser feita aqui
@@ -78,7 +85,7 @@ class Dataset(models.Model):
             #save
             objFileZip = CompressedFile.get_compressed_file(comp_file_pointer)
             
-            int_limit = 1
+            int_limit = 10*(1024*1024)
             for name,int_file_size in objFileZip.get_each_file_size():
                 if int_file_size > int_limit:
                     raise FileSizeException("The file "+name+" exceeds the limit of "+str(int_limit)+" bytes")
@@ -116,8 +123,10 @@ class Document(models.Model):
     '''
 
     nam_file = models.CharField(max_length=255, blank=True, null=True)
+    dataset = models.ForeignKey(Dataset, models.CASCADE)
     
-    dataset = models.ForeignKey(Dataset, models.PROTECT)
+    
+    
 class DocumentText(models.Model):
     '''
     Created on 14 de ago de 2017
@@ -126,7 +135,8 @@ class DocumentText(models.Model):
     Texto do documento
     '''
     dsc_text = models.TextField()
-    document = models.OneToOneField(Document, models.PROTECT)
+    document = models.OneToOneField(Document, models.CASCADE)
+    
     
 class DocumentResult(models.Model):
     '''
@@ -136,16 +146,8 @@ class DocumentResult(models.Model):
     Resultado obtido do documento
     '''
     dsc_result = models.TextField()
-    document = models.OneToOneField(Document, models.PROTECT)
-    
-     
-    @property
-    def dsc_result(self):
-        return lzma.decompress(self.dsc_result).decode("utf-8")
-        
-    @dsc_result.setter
-    def dsc_result(self, dsc_result):
-        dsc_to_compress = bytearray()
-        dsc_to_compress.extend(map(ord, dsc_result))
-        self.dsc_result = lzma.compress(dsc_to_compress)
-    
+    document = models.OneToOneField(Document, models.CASCADE)
+
+   
+   
+   

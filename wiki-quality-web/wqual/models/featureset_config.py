@@ -19,8 +19,10 @@ from utils.basic_entities import LanguageEnum, FeatureTimePerDocumentEnum,\
 from wqual.models.utils import Format
 from wqual.models.utils import EnumManager, EnumModel
 from utils.feature_utils import get_class_by_name
+from decimal import Decimal
 from wqual.models.utils import EnumManager, EnumModel
 from wqual.models.utils import Format
+
 
 class Feature(models.Model):
     '''
@@ -137,13 +139,32 @@ class FeatureSet(models.Model):
             models.Index(fields=['nam_feature_set', 'user']),
         ]
         
+from django.core.validators import MaxValueValidator
 
 class FeatureTimePerDocument(EnumModel):
     '''
     Created on 17 de ago de 2017
 
     @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
+    
     '''
+    '''
+    val_cost_time = models.DecimalField(max_digits=20,decimal_places=9) #,decimal_places=9, default=Decimal('0.0000'))
+    
+    def save(self, *args, **kwargs):
+        if(self.name==FeatureTimePerDocumentEnum.MICROSECONDS):
+            self.val_cost_time = 1/(10^6)
+        elif(self.name==FeatureTimePerDocumentEnum.MILLISECONDS):
+            self.val_cost_time = 1/(10^3)
+        elif(self.name==FeatureTimePerDocumentEnum.SECONDS):
+            self.val_cost_time = 1
+        elif(self.name==FeatureTimePerDocumentEnum.MINUTES):
+            self.val_cost_time = 60
+        elif(self.name==FeatureTimePerDocumentEnum.HOURS):
+            self.val_cost_time = 3600
+        super().save(*args, **kwargs)
+    '''
+    
     @staticmethod
     def get_enum_class():
         return FeatureTimePerDocumentEnum
@@ -263,11 +284,11 @@ class UsedFeature(models.Model):
     def get_feature_instance(self):
         FeatureClass = self.feature.get_feature_class()
         param = {
-            "visibility": self.feature_visibility.getEnum(),
-            "text_format": self.text_format.getEnum(),
-            "feature_time_per_document": self.feature_time_to_extract.getEnum()
-        }
-        for arg in UsedFeature.usedfeatureargval_set.all():
+            "visibility": self.feature_visibility.get_enum(),
+            "text_format": self.text_format.get_enum(),
+            "feature_time_per_document": self.feature_time_to_extract.get_enum()
+        }        
+        for arg in self.usedfeatureargval_set.all():
             if arg.type_argument == UsedFeatureArgVal.INT:
                 param[arg.nam_argument] = int(arg.val_argument)
             if arg.type_argument == UsedFeatureArgVal.FLOAT:

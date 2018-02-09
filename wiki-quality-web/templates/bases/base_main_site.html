@@ -92,6 +92,7 @@
 {% block body %}
   	
   	<header>
+  		{% if user.is_authenticated %}
   		<nav role="navigation" class="navbar navbar-default">
         
             <div class="navbar-header">
@@ -109,15 +110,17 @@
                     <li><a href="{% url "feature_set_list"%}">Configure Features set</a></li>
                     <li><a href="{% url "extract_features" %}">Analyse Texts</a></li>
                     <li><a href="{% url "publications"%}">Publications</a></li>
+                    <li><a href="{% url "logout"%}">Log out</a></li>
                 </ul>
             </div>
         
         </nav>
+        {% endif %}
   	</header>
     <main>
-    <!-- <img src="{% static "imgs/siri.png" %}"> --> 
+    <!-- <img src="{% static "imgs/siri.png" %}"> -->
 	    {% block content %}
-	    	
+	    
 	    {% endblock %}
     </main>
 {% endblock %}    

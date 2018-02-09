@@ -1,36 +1,50 @@
-<!DOCTYPE html>
+{% extends "../bases/base_main_site.html" %}
 {% load static %}
-<html>
-	<head>
-		<meta charset="utf-8">
-		<title>Login</title>
-		<link rel="stylesheet" href="{% static "css/wikiQuality.css" %}">
-		<link href="https://fonts.googleapis.com/css?family=Fredericka+the+Great" rel="stylesheet"> 
-	</head>
-	<body>
-		<main class="home_sign-up_main">
-			<h1 class="home_sign-up_h1">WikiQuality</h1>
+
+{% block content %}
+		<section class="home_sign-up_section">
 			{% if not user.is_authenticated %}
- 				 <form action="{% url "authentication" %}" method="post">
+				<h1 class="home_sign-up_h1">WikiQuality</h1>
+ 				<form method="post">
  			 		{% csrf_token %}
- 			 		{% for field in form %}
- 			 			{{ field.errors }}
+ 			 		{% for field in form %}		 			
  			 			{% ifequal field.label "Username" %}
  			 				<input class="login_sign-up_input" for="id_username" name="username" type="text" placeholder="Username">
  			 			{% endifequal %}
+ 			 			
  			 			{% ifequal field.label "Password" %}
- 			 				<input class="login_sign-up_input" for="id_password" name="password" type="password" placeholder="Password">
+ 			 				<section class="home-password-section">
+ 			 					<input class="password-eye-input" for="id_password" name="password" type="password" placeholder="Password">
+ 			 					<img class="password-eye" src="{% static "imgs/Eye.png" %}">
+ 			 				</section>
 	 			 		{% endifequal %}
+	 			 		
+	 			 		{% for error in field.errors %}
+	 			 			<p>{{ error }}</p>
+	 			 		{% endfor %}
 	 		 		{% endfor %}
     				<button class="login_sign-up_button" type="submit">Log in</button>
     				<a class="link_sign-up" href="{% url 'signup' %}">Create an account</a>
  				</form>
  			{% else %}
- 				<section class="home-section">
-	 				<h2 class="home_main_h2">Error</h2>
-	 				<p class="home_main_p">There's a user authenticated right now, please logout first</p>
-	 			</section>
  			{% endif %}
- 		</main>
- 	</body>
- </html>
+ 		</section>
+ 		<script>
+ 			//Obtém a imagem do olho e o input tipo senha.
+ 			let PasswordEyeInput = document.querySelector(".password-eye-input");
+ 			let olho = document.querySelector('img');
+ 			
+ 			//Cria uma função para mudar o tipo do input senha.
+ 			function muda_input() {
+ 				if(PasswordEyeInput.classList.contains('texto')) {
+ 					PasswordEyeInput.setAttribute('type', 'password');
+ 				}
+ 				else {
+ 					PasswordEyeInput.setAttribute('type', 'text');
+ 				}
+ 				PasswordEyeInput.classList.toggle('texto');
+ 			}
+ 			//Ao clicar no olho, a função criada anteriormente é executada.
+ 			olho.addEventListener('click', muda_input);
+ 		</script>
+{% endblock %}

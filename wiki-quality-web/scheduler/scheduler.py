@@ -1,4 +1,7 @@
-
+'''
+Created on 15 de dez de 2017
+@author: Priscilla Raiane <priscilla.rm.carmo@gmail.com>
+'''
 
 
 from abc import abstractmethod
@@ -10,7 +13,7 @@ from scheduler.utils import DatasetModelDocReader, DatasetModelDocWriter
 from wqual.models.featureset_config import UsedFeature
 from wqual.models.uploaded_datasets import StatusEnum, Status
 
-class Scheduler (object):
+class Scheduler(object):
 
 	@abstractmethod
 	def get_next(self):
@@ -23,33 +26,31 @@ class Scheduler (object):
 			arrFeatures.append(objUsedFeature.get_feature_instance())
 		return arrFeatures
 	
-	def run(self, int_wait_minutes):
+	def run(self, int_wait_minutes,int_max_iterations = float('inf')):
 				
 		int_wait_minutes = int_wait_minutes*60;
-
-		while True:
-			
+		i = 0
+		while i<int_max_iterations:
+			bolFoundDataset = False
 			with transaction.atomic():
 				dataset = self.get_next()
+				
+				print("dataset run")
+				print(dataset)
 				if dataset:
-					#atualizar o status do dataset para processing 
-					dataset.status = Status.objects.get_enum(StatusEnum.PROCESSING)
+					bolFoundDataset = True				
+					arr_feats_used = self.get_arr_features(dataset)
+									
+					doc_read = DatasetModelDocReader(dataset)
+					doc_write = DatasetModelDocWriter(dataset)
+
+					
+					FeatureCalculator.featureManager.computeFeatureSetDocuments(datReader=doc_read,docWriter=doc_write,arr_features_to_extract=arr_feats_used,format=dataset.format.get_enum())
+					
+					dataset.status = Status.objects.get_enum(StatusEnum.COMPLETE)
 					dataset.save()
-			
-			if dataset:
-				
-				#obter as features usadas?
-				arr_feats_used = self.get_arr_features()
-				
-				doc_read = DatasetModelDocReader(dataset)
-				doc_write = DatasetModelDocWriter()
-
-				arr_used_feat = UsedFeature.objects.filter(feature_set_id=dataset.feature_set_id)
-				
-				FeatureCalculator.featureManager.computeFeatureSetDocuments(datReader=doc_read,docWriter=doc_write,arr_features_to_extract=arr_used_feat,format=dataset.format.get_enum())
-				
-				dataset.status = Status.objects.get_enum(StatusEnum.COMPLETE)
-			else:
+			if(bolFoundDataset):	
 				time.sleep(int_wait_minutes);
-				break
-
+				#break
+			i = i+1
+			
