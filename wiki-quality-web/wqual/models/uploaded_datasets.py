@@ -69,6 +69,11 @@ class Dataset(models.Model):
     dsc_result_header = models.TextField(blank=True, null=True)
     
     
+
+    
+
+    
+    
     def save_compressed_file(self,comp_file_pointer):
             #validacao ser feita aqui
             
@@ -118,8 +123,10 @@ class Document(models.Model):
     '''
 
     nam_file = models.CharField(max_length=255, blank=True, null=True)
+    dataset = models.ForeignKey(Dataset, models.CASCADE)
     
-    dataset = models.ForeignKey(Dataset, models.PROTECT)
+    
+    
 class DocumentText(models.Model):
     '''
     Created on 14 de ago de 2017
@@ -128,7 +135,8 @@ class DocumentText(models.Model):
     Texto do documento
     '''
     dsc_text = models.TextField()
-    document = models.OneToOneField(Document, models.PROTECT)
+    document = models.OneToOneField(Document, models.CASCADE)
+    
     
 class DocumentResult(models.Model):
     '''
@@ -138,7 +146,8 @@ class DocumentResult(models.Model):
     Resultado obtido do documento
     '''
     dsc_result = models.TextField()
-    document = models.OneToOneField(Document, models.PROTECT)
+    document = models.OneToOneField(Document, models.CASCADE)
+
    
    
    

@@ -25,9 +25,8 @@ import unittest
 
 class TestUsedFeature(unittest.TestCase):
     def testL(self):
-        #for usedFeature in UsedFeature.objects.all()
-        self.assertEqual(0, 0, "Esse teste ainda não foi implementado")   
-        
+        for used_feature in UsedFeature.objects.all():
+            feat_inst = used_feature.get_feature_instance()
 
         
 
