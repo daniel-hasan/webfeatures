@@ -191,36 +191,47 @@ class ListFeaturesView(View):
         
         #agrupa elas por um id criado, adicionando em feature_list este id
         dict_feat_per_id = {}
-        id = 1
+        #idFeature = 1
         for objFeature in feat_obj_list:
-            
-            dict_feat_per_id[id] = objFeature
-            id = id+1
+            dict_feat_per_id[objFeature.name] = objFeature
+            #idFeature = idFeature+1
         return dict_feat_per_id
         
-    def post(self, request):
-        strLanguageCode = self.kwargs["nam_language"]
-        str_key_feat_per_id = "dict_feat_per_id_"+strLanguageCode
-        #obtem o mapa de features por id
-        dict_feat_per_id = {}
-        if str_key_feat_per_id in request.session:
-            #lista as features e adiciona um id para cada uma (retornando este discionario) 
-            dict_feat_per_id = self.get_features(self.kwargs["nam_language"])
-            request.session[str_key_feat_per_id] = dict_feat_per_id
-        else:
-            dict_feat_per_id =request.session[str_key_feat_per_id] 
+    def post(self, request,nam_language):
+        #str_key_feat_per_id = "dict_feat_per_id_"+nam_language
+        
+        #obtem o mapa de features por id (cria se necessario)
+        #dict_feat_per_id = {}
+        #if str_key_feat_per_id not in request.session:
+        #lista as features e adiciona um id para cada uma (retornando este discionario) 
+        #    dict_feat_per_id = self.get_features(nam_language)
+        #    request.session[str_key_feat_per_id] = dict_feat_per_id
+        #else:
+        #    dict_feat_per_id =request.session[str_key_feat_per_id] 
+        dict_feat_per_id = self.get_features(nam_language)
         arr_features = []
-        for idFeature,objFeature in dict_feat_per_id.items():
-            arr_features.append({"id":idFeature,
-                               "name":objFeature.name,
+        for namFeature,objFeature in dict_feat_per_id.items():
+            arr_features.append({"name":namFeature,
                                "description":objFeature.description,
                                "reference":objFeature.reference})
             
             
-        return JsonResponse(arr_features)
+        return JsonResponse({"features_array":arr_features})
     
 class InsertUsedFeaturesView(View):
-    def post(self, request):
-        arrHidUsedFeaturesToInsert = [int(strId) for strId in self.POST["hidUsedFeaturesToInsert"].split(",")]
-        UsedFeature.objects.insert_features_object(arrHidUsedFeaturesToInsert)
-        return HttpResponseRedirect(reverse('feature_set_edit_features', args=[self.kwargs["nam_feature_set"]]))
+    def post(self, request,nam_language,nam_feature_set):
+        #get the features to add
+        arrStrFeatureNames = [int(strId) for strId in request.POST["hidUsedFeaturesToInsert"].split("|")]
+        
+        #get all the possible features
+        dict_feat_per_id = self.get_features(nam_language)
+        
+        #obtain the objects to insert by name
+        arrObjFeaturesToInsert = [dict_feat_per_id[nam_feature] for nam_feature in arrStrFeatureNames]
+        objFeatureSet=FeatureSet.objects.get(user=self.request.user,nam_feature_set=nam_feature_set)
+        
+        #inser them
+        UsedFeature.objects.insert_features_object(objFeatureSet,arrObjFeaturesToInsert)
+        
+        #return the object
+        return HttpResponseRedirect(reverse('feature_set_edit_features', args=[nam_feature_set]))

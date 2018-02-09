@@ -153,11 +153,31 @@ class FeatureVisibility(EnumModel):
         return FeatureVisibilityEnum
 
 class UsedFeatureManager(models.Manager):
-    
+    def from_obj_to_bd_type_val(self,value):
+        paramType = None
+        paramValue = value 
+        if(type(value)==str):
+            paramType = UsedFeatureArgVal.STRING
+        elif(type(value)==int):
+            paramType = UsedFeatureArgVal.INT
+        elif(type(value)==float):
+            paramType = UsedFeatureArgVal.FLOAT                                
+        elif(type(value)==bool):
+            paramType = UsedFeatureArgVal.BOOLEAN
+        elif type(value)==list or type(value)==dict:
+            paramType = UsedFeatureArgVal.JSON
+            paramValue = json.dumps(value)
+        elif(type(value)==set):
+            paramType = UsedFeatureArgVal.JSON_SET
+            paramValue = [element for element in value]
+            paramValue = json.dumps(paramValue)
+            
+        return paramType,paramValue
     def insert_features_object(self,featureSet,arrObjectFeatures):
         with transaction.atomic():
             int_ord_feature = UsedFeature.objects.filter(feature_set=featureSet).count()+1
             for objFeature in arrObjectFeatures:
+                #print("Inserindo Feature: "+objFeature.__class__.__name__)
                 featureObj = Feature.objects.get_or_create(nam_module=objFeature.__module__, nam_feature_class=objFeature.__class__.__name__)[0]
                 
                 objFeatUsed = self.create(feature_set=featureSet,
@@ -175,26 +195,10 @@ class UsedFeatureManager(models.Manager):
                 for name,value in objFeature.__dict__.items():
                     if(name in arrParamsConstrutor):
                         if name not in ("visibility","text_format","feature_time_per_document"):
-                            paramType = None
-                            paramValue = value 
-                            if(type(value)==str):
-                                paramType = UsedFeatureArgVal.STRING
-                            elif(type(value)==int):
-                                paramType = UsedFeatureArgVal.INT
-                            elif(type(value)==float):
-                                paramType = UsedFeatureArgVal.FLOAT                                
-                            elif(type(value)==bool):
-                                paramType = UsedFeatureArgVal.BOOLEAN
-                            elif type(value)==list or type(value)==dict:
-                                paramType = UsedFeatureArgVal.JSON
-                                paramValue = json.dumps(value)
-                            elif(type(value)==set):
-                                paramType = UsedFeatureArgVal.JSON_SET
-                                paramValue = [element for element in value]
-                                paramValue = json.dumps(paramValue)
-                            if(paramType==None):
-                                print("TIPO NONE<<<<<< "+str(type(value)))
-                            print("TIPO>>>>>>>>>>:"+str(type(value))+" TYPE: "+paramType)
+                            paramType,paramValue = self.from_obj_to_bd_type_val(value)
+                            #if(paramType==None):
+                            #    print("TIPO NONE<<<<<< "+str(type(value)))
+                            #print("TIPO>>>>>>>>>>:"+str(type(value))+" TYPE: "+paramType)
                             dictParamsToInsert[name]= {"nam_argument": name,
                                                        "val_argument": str(paramValue),
                                                        "type_argument":paramType,
@@ -281,7 +285,7 @@ class UsedFeatureArgVal(models.Model):
     TIPOS_DADOS = [(INT,"int"),(FLOAT,"float"),(STRING,"string"),(BOOLEAN,"boolean"),(JSON,"json"),(JSON_SET,"json_set")]
 
     nam_argument = models.CharField(max_length=45)
-    val_argument = models.CharField(max_length=45)
+    val_argument = models.CharField(max_length=5000)
     type_argument = models.CharField(max_length=10,choices=TIPOS_DADOS,default=STRING)
     
     is_configurable = models.BooleanField(default=False)

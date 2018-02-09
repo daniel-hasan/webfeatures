@@ -1,6 +1,9 @@
-from django.contrib.auth.models import User
-from django.test.testcases import TestCase
 import inspect
+
+from django.contrib.auth.models import User
+from django.test.client import Client
+from django.test.testcases import TestCase
+from django.urls.base import reverse
 
 from feature.featureImpl.style_features import WordCountFeature, \
     LargeSentenceCountFeature
@@ -62,14 +65,17 @@ class TestUsedFeatures(TestCase):
 
         
     def assertFeatureEqual(self,objFeatureBD,objFeatureObjPython):
+        #verifica atributos (visibility,format, time se sao iguais)
         self.assertEqual(objFeatureBD.feature_visibility.get_enum(), objFeatureObjPython.visibility, "The visibility attr is not equal")
         self.assertEqual(objFeatureBD.text_format.get_enum(), objFeatureObjPython.text_format, "The text_format attr is not equal")
-        self.assertEqual(objFeatureBD.feature_time_per_document.get_enum(), objFeatureObjPython.feature_time_per_document, "The feature_time_per_document attr is not equal")
+        self.assertEqual(objFeatureBD.feature_time_to_extract.get_enum(), objFeatureObjPython.feature_time_per_document, "The feature_time_per_document attr is not equal")
         
+        #obtem os parametros no construtor para verificar se sao os mesmos
         arrParamsConstrutor = set(inspect.getargspec(objFeatureObjPython.__init__).args[1:])
         
         #search if the att in bd were in objFeatureObjPython
-        for argVal in objFeatureBD.usedfeatureargs_set.all():
+        set_configurable_params_bd = set([])
+        for argVal in objFeatureBD.usedfeatureargval_set.all():
             if(argVal.nam_argument=="name"):
                 self.assertEqual(argVal.val_argument, objFeatureObjPython.name, "The "+argVal.nam_argument+" attr is not equal")
                 
@@ -82,11 +88,12 @@ class TestUsedFeatures(TestCase):
                 
                 #if is a configurable param, search in objFeatureObjPython.arr_configurable_param    
                 if(argVal.is_configurable):
+                    set_configurable_params_bd.add(argVal.nam_argument)
                     bolEncontrou = False
                     for confParam in objFeatureObjPython.arr_configurable_param:
                         if(confParam.att_name == argVal.nam_argument):
                             bolEncontrou = True
-                            self.assertEqual(argVal.val_argument, confParam.default_value, "The "+argVal.nam_argument+" attr was not set to default")
+                            self.assertEqual(argVal.val_argument, str(UsedFeature.objects.from_obj_to_bd_type_val(confParam.default_value)[1]), "The "+argVal.nam_argument+" attr was not set to default")
                     self.assertTrue(bolEncontrou, "Could not find the configurable parameter: "+argVal.nam_argument+" in the feature object")
                     
                 #search the att in att args
@@ -95,17 +102,20 @@ class TestUsedFeatures(TestCase):
                     if(namAtt == argVal.nam_argument):
                             bolEncontrou = True
                             if(not argVal.is_configurable):
-                                self.assertEqual(argVal.val_argument, valAtt, "The "+argVal.nam_argument+" attr was not igual in the object")
+                                self.assertEqual(argVal.val_argument, str(UsedFeature.objects.from_obj_to_bd_type_val(valAtt)[1]), "The "+argVal.nam_argument+" attr was not igual in the object")
                             self.assertTrue(bolEncontrou, "Could not find the parameter: "+argVal.nam_argument+" in the feature object")
-            #search if all the construtor atts are in BD (expept visibility,text_format and feature_time_per_document)
-            for strConstructorParam in arrParamsConstrutor:
-                if(strConstructorParam not in ("visibility","text_format","feature_time_per_document")):
-                    bolEncontrou = False
-                    for argVal in objFeatureBD.usedfeatureargs_set.all():
-                        if(argVal.nam_argument == strConstructorParam):
-                            bolEncontrou = True
-                    self.assertTrue(bolEncontrou, "Could not find the parameter: "+argVal.nam_argument+" in the database")
-
+        #search if all the construtor atts are in BD (expept visibility,text_format and feature_time_per_document)
+        for strConstructorParam in arrParamsConstrutor:
+            if(strConstructorParam not in ("visibility","text_format","feature_time_per_document")):
+                bolEncontrou = False
+                for argVal in objFeatureBD.usedfeatureargval_set.all():
+                    if(argVal.nam_argument == strConstructorParam):
+                        bolEncontrou = True
+                self.assertTrue(bolEncontrou, "Could not find the parameter: "+argVal.nam_argument+" in the database")
+        set_configurable_params =set([confParam.att_name for confParam in objFeatureObjPython.arr_configurable_param])
+        self.assertSetEqual(set_configurable_params_bd, set_configurable_params, "The set of configurable params in BD and in the object are diferent in the feature '"+objFeatureObjPython.name+"'")
+        #print("Set in BD:"+str(set_configurable_params_bd)+" set in obj: "+str(set_configurable_params))
+                
     def test_feature_list(self):
         objEnglish = Language.objects.get(name="en")
         arrFeatures = FeatureFactoryBD.objects.get_all_features_from_language(objEnglish)
@@ -134,18 +144,26 @@ class TestUsedFeatures(TestCase):
         UsedFeature.objects.insert_features_object(self.feature_set, arrObjectFeatures)
         
         #pega todos os used features 
-        arrUsedFeatures = UsedFeature.objects.filter(id=self.featureSet.pk)
-        self.assertEqual(len(arrUsedFeatures), 2, "Deveria ter 2 features e tem "+len(arrUsedFeatures))
+        arrUsedFeatures = UsedFeature.objects.filter(feature_set=self.feature_set.pk)
+        self.assertEqual(len(arrUsedFeatures), 2, "Deveria ter 2 features e tem "+str(len(arrUsedFeatures)))
         for objFeatureUsed in arrUsedFeatures:
-            msg="The feature should be Preposition Count or Largest Phrase Count but it was "+objFeatureUsed.name
-            self.assertTrue(objFeatureUsed.name == "Preposition Count" or objFeatureUsed.name == "Largest Phrase Count", msg)
-            if(objFeatureUsed.name == "Preposition Count"):
+            str_nameFeature = objFeatureUsed.usedfeatureargval_set.get(nam_argument="name").val_argument
+                
+            msg="The feature should be Preposition Count or Largest Phrase Count but it was "+str_nameFeature
+            self.assertTrue(str_nameFeature == "Preposition Count" or str_nameFeature == "Largest Phrase Count", msg)
+            if(str_nameFeature == "Preposition Count"):
                 self.assertFeatureEqual(objFeatureUsed,wordCount)
-            elif(objFeatureUsed.name == "Largest Phrase Count"):
+            elif(str_nameFeature == "Largest Phrase Count"):
                 self.assertFeatureEqual(objFeatureUsed,featLargeSentenceCount)
         
         
         
     def test_view_feature_list_add(self):
-        pass 
-    
+        c = Client()
+        #list all the features correctly
+        str_url = reverse("list_all_features",kwargs={"nam_language":"en"})
+        #print("URL:"+str_url)
+        response = c.post(str_url, {})
+        self.assertEqual(response.status_code, 200, "could not obtain a status 200")
+         
+        
