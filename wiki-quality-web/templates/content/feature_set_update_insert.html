@@ -58,6 +58,8 @@
   	{% else %}
   		<script src="{% url "used_features" %}"></script>
   	{% endif %}
+  		<script src="{% url "insert_list_used_features" %}"></script>
+  		<script src="{% static "js/csrf_token_ajax.js" %}"></script>
   </div>
 </div>
 
