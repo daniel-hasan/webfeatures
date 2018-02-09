@@ -14,7 +14,10 @@ import json
 import inspect
 from django_mysql.models import JSONField
 from feature.features import ParamTypeEnum, FeatureVisibilityEnum
-from utils.basic_entities import LanguageEnum, FeatureTimePerDocumentEnum
+from utils.basic_entities import LanguageEnum, FeatureTimePerDocumentEnum,\
+    FormatEnum
+from wqual.models.utils import Format
+from wqual.models.utils import EnumManager, EnumModel
 from utils.feature_utils import get_class_by_name
 from wqual.models.utils import EnumManager, EnumModel
 from wqual.models.utils import Format
@@ -108,6 +111,7 @@ class Language(EnumModel):
     def __str__(self):
         return "[{code}] {language}".format(code=self.name,language=self.value)      
       
+
 class FeatureSet(models.Model):
     '''
     Created on 13 de ago de 2017
@@ -120,6 +124,7 @@ class FeatureSet(models.Model):
     
     language = models.ForeignKey(Language, models.PROTECT)  
     user = models.ForeignKey(User, models.PROTECT)
+    
     
     def __str__(self):
         return "{name} : {description} ".format(name=self.nam_feature_set, description=self.dsc_feature_set)
@@ -152,6 +157,7 @@ class FeatureVisibility(EnumModel):
     @staticmethod
     def get_enum_class():
         return FeatureVisibilityEnum
+
 
 class UsedFeatureManager(models.Manager):
     def from_obj_to_bd_type_val(self,value):
@@ -226,6 +232,17 @@ class UsedFeatureManager(models.Manager):
                 
                 int_ord_feature = int_ord_feature+1
         return dictInsertedFeatPerName
+    def get_html_features_name_grouped_by_featureset(self):
+        arrUsedFeatures = UsedFeature.objects.prefetch_related("usedfeatureargval_set").filter(text_format__name=FormatEnum.HTML.name)
+        mapFeaturesGroup = {}
+        #navega em todos os used features
+        #agrupando o nome das features
+        for objUsed in list(arrUsedFeatures):
+            mapFeaturesGroup[objUsed.feature_set_id] = []
+            for arg in objUsed.usedfeatureargval_set.all():
+                if(arg.nam_argument == "name"):
+                    mapFeaturesGroup[objUsed.feature_set_id].append(arg.val_argument)
+        return mapFeaturesGroup
 class UsedFeature(models.Model):
     '''
     Created on 13 de ago de 2017

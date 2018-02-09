@@ -66,7 +66,7 @@ class WordCountFeature(WordBasedFeature):
         super(WordBasedFeature,self).__init__(name,description,reference,visibility,text_format,feature_time_per_document)    
         if(setWordsToCount==None):
             setWordsToCount = []
-        if(case_sensitive):
+        if(not case_sensitive):
             setWordsToCount = [word.lower() for word in setWordsToCount]
         
         self.case_sensitive = case_sensitive
@@ -75,14 +75,14 @@ class WordCountFeature(WordBasedFeature):
     
      
     def checkWord(self,document,word):
-        if word in self.setWordsToCount or (self.case_sensitive and word.lower() in self.setWordsToCount):
+        if word in self.setWordsToCount or (not self.case_sensitive and word.lower() in self.setWordsToCount):
             self.int_word_counter = self.int_word_counter + 1
     
     def compute_feature(self,document):
         aux = self.int_word_counter
         self.int_word_counter = 0
         return aux
-                
+        
 class ParagraphCountFeature(ParagraphBasedFeature):
     '''
     Contabiliza o número de paragrafos de um texto
@@ -113,6 +113,7 @@ class LargeParagraphCountFeature(WordBasedFeature):
         self.int_large_paragraph = 0
         self.int_word_counter = 0
         self.size = size
+        
     def checkWord(self,document,word):
         if word in FeatureCalculator.paragraph_divisor:
             self.large_paragraph(self.int_word_counter)
@@ -128,3 +129,4 @@ class LargeParagraphCountFeature(WordBasedFeature):
         aux = self.int_large_paragraph
         self.int_large_paragraph = 0
         return aux
+

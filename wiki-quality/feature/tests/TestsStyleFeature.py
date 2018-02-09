@@ -338,9 +338,10 @@ class TestFeatureCalculator(unittest.TestCase):
         wcount.checkWord(document, "de")
         wcount.checkWord(document, "DE")
         wcount.checkWord(document, "Do")
+        wcount.checkWord(document, "do")
         wcount.checkWord(document, "ui")
         int_result = wcount.compute_feature(document)
-        self.assertEqual(int_result, 3, "Nao foi contabilizado o numero de palavras corretos no teste do terceiro documento")
+        self.assertEqual(int_result, 2, "Nao foi contabilizado o numero de palavras corretos no teste do terceiro documento")
 
         
 if __name__ == "__main__":
