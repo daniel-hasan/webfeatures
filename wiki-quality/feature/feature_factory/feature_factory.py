@@ -7,8 +7,8 @@ Created on 8 de ago de 2017
 from abc import abstractmethod
 
 from feature import ConfigurableParam, ParamTypeEnum
-from feature.language_dependent_words.featureImpl.style_features import *
-from feature.language_dependent_words.featureImpl.structure_features import *
+from feature.featureImpl.style_features import *
+from feature.featureImpl.structure_features import *
 from feature.features import  FeatureVisibilityEnum
 from utils.basic_entities import FormatEnum, FeatureTimePerDocumentEnum
 from django.contrib.sessions.backends import file
@@ -19,6 +19,7 @@ class FeatureFactory(object):
     Cria as features de um determinado tipo.
     @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>  
     '''  
+    IS_LANGUAGE_DEPENDENT = False
     def class_language_dependent(self,str_class):
         '''
         resgata a classe com um vocabulario dependente de linguagem a ser usa
@@ -108,13 +109,12 @@ class StyleFeatureFactory(FeatureFactory):
         
 
 class WordsFeatureFactory(FeatureFactory):
-    
+    IS_LANGUAGE_DEPENDENT = True
     def __init__(self,objLanguage):
         super(FeatureFactory,self).__init__()
         self.objLanguage = objLanguage
         self.BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
         self.BASE_DIR = os.path.abspath(os.path.join(self.BASE_DIR,os.pardir))
-        print(self.BASE_DIR)
     
     
     def getClasseGramatical(self, str_classe):
@@ -128,9 +128,9 @@ class WordsFeatureFactory(FeatureFactory):
     def createFeatureObject(self,classe):
         listWords = self.getClasseGramatical(classe)
         objFeature = WordCountFeature(str(classe).title() + " Count","Count the number of "+ classe +" in the text.",
-                        "Based on file style.c from path diction-1.11.tar.gz of http://ftp.gnu.org/gnu/diction/",
+                        "Based on file style.c from the file diction-1.11.tar.gz in http://ftp.gnu.org/gnu/diction/",
                         FeatureVisibilityEnum.public, 
-                        FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,listWords,True)
+                        FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,listWords,False)
         
         return objFeature
     
