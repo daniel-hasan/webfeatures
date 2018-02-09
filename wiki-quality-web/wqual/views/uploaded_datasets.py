@@ -6,34 +6,25 @@ Views relacionadas a upload dos datasets
 '''
 from _io import BytesIO
 from datetime import datetime
-from io import StringIO
+
 import json
 import lzma
 import os
 import uuid
-import zipfile
 
-from django import forms
-from django.contrib import messages
-from django.core.files.storage import FileSystemStorage
-from django.db.models.fields.files import FileField
+
+
 from django.forms.utils import ErrorList
 from django.http import HttpResponse
-from django.template import context
-from django.template.context import RequestContext
+import zipfile
 from django.urls.base import reverse
 from django.views.generic.base import View
 from django.views.generic.edit import CreateView, DeleteView
-from django.views.generic.list import ListView
-
-import numpy as np
-from utils.uncompress_data import *
 from wqual.models import Dataset
 from wqual.models.exceptions import FileSizeException
-from wqual.models.featureset_config import UsedFeature
-from wqual.models.uploaded_datasets import Format, Status, StatusEnum, DocumentText, \
+from wqual.models.uploaded_datasets import  Status, StatusEnum, DocumentText, \
     Document, DocumentResult
-from Onboard.Indicator import BackendAppIndicator
+
 
 
 class DatasetDownloadView(View):
@@ -168,4 +159,3 @@ class DatasetDelete(DeleteView):
         
         def get_success_url(self):
             return reverse('extract_features')
-            
