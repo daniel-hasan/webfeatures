@@ -88,11 +88,9 @@ class FeatureSetEdit(UpdateView):
 
     template_name = "content/feature_set_update_insert.html"
     
-    def form_valid(self, form):
-        
+    def form_valid(self, form):        
         bol_valid = FeatureSetEdit.form_validator.form_valid(self, form)
         return super(UpdateView, self).form_valid(form) if bol_valid else super(UpdateView, self).form_invalid(form)
-    
     
     def get_object(self):
         return FeatureSet.objects.get(user=self.request.user,nam_feature_set=self.kwargs["nam_feature_set"])
@@ -102,30 +100,17 @@ class FeatureSetEdit(UpdateView):
 
      
 class UsedFeatureListView(ListView):
-    '''
-    Created on 14 de ago de 2017
-   
-    @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
-    Lista todos os conjunto de features criados.
-    '''
    
     model = UsedFeature
-    
     template_name = "content/used_features.js"
+    
     def get_queryset(self):
-        return {1:[{"used_feature_id":1,"nam_argument":"name","val_argument":"lalala","is_configurable":False},
-                   {"used_feature_id":1,"nam_argument":"description","val_argument":"xuxu","is_configurable":False},
-                   {"used_feature_id":1,"nam_argument":"llalala","val_argument":"eeeeee","is_configurable":True}],
-                2:[{"used_feature_id":2,"nam_argument":"name","val_argument":"l3lele","is_configurable":False},
-                   {"used_feature_id":2,"nam_argument":"description","val_argument":"xaxa","is_configurable":False},
-                   {"used_feature_id":2,"nam_argument":"llalala","val_argument":"eeeeee","is_configurable":True}]}
-        '''
         obj_Feature_Set = FeatureSet.objects.get(user=self.request.user,nam_feature_set=self.kwargs["nam_feature_set"])
-        arr_used_features_set = UsedFeature.objects.filter(feature_set__pk = obj_Feature_Set.id)
-        arr_used_features = UsedFeatureArgVal.objects.filter(used_feature__feature_set__id = obj_Feature_Set.id,  nam_argument__in=["name","description"])\
-                                  .values("used_feature_id","nam_argument","val_argument", "is_configurable", "used_feature__feature_set__nam_feature_set", "used_feature__feature_set__dsc_feature_set")                                                
-        #return arr_used_features 
-       
+        #arr_used_features_set = UsedFeature.objects.filter(feature_set__pk = obj_Feature_Set.id)
+        arr_used_features = UsedFeatureArgVal.objects.filter(used_feature__feature_set__id = obj_Feature_Set.id)\
+                                 .values("used_feature_id", "dsc_argument", "id", "type_argument", "nam_argument","val_argument", "is_configurable")                                                
+        
+        
         map_used_feat_per_id = {}
         
         for mapused in arr_used_features:
@@ -136,7 +121,6 @@ class UsedFeatureListView(ListView):
             map_used_feat_per_id[id_feature].append(mapused)
 
         return map_used_feat_per_id
-        '''
 
 class UsedFeatureListViewTeste(ListView):
     '''
@@ -149,16 +133,23 @@ class UsedFeatureListViewTeste(ListView):
     model = UsedFeature
     template_name = "content/used_feature.js"
     def get_queryset(self):
-       # obj_Feature_Set = FeatureSet.objects.get(user = self.request.user,nam_feature_set = self.kwargs["nam_feature_set"])
-       # arr_used_features_set = UsedFeature.objects.filter(feature_set__pk = obj_Feature_Set )
-       # return arr_used_features_set 
-        obj_Feature_Set = UsedFeature.objects.all().order_by('ord_feature')
+        obj_Feature_Set = UsedFeatureArgVal.objects.all()
         return obj_Feature_Set    
 
     def get_success_url(self):
         return reverse('feature_set_list')
-    
 
+class UsedFeatureIsConfigurableForm(UpdateView): 
+    
+    model = UsedFeatureArgVal
+    fields = ['val_argument']
+    template_name = "content/used_features.js"
+    
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST)
+        UsedFeatureArgVal.objects.get(user=self.request.user,used_feature_id=self.kwargs["id"])
+        
+        
 class FeatureSetDelete(DeleteView):
     model = FeatureSet
     template_name = "content/feature_set_delete.html"

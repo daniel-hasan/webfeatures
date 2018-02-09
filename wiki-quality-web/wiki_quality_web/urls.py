@@ -29,5 +29,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^publications$', views.PublicationList.as_view(), name='publications'),
     url(r'^usedFeatures/(?P<nam_feature_set>.*)$', views.UsedFeatureListView.as_view(), name='usedFeatures.js'),
+    url(r'^usedFeatureIsConfigurable/(?P<used_feature_id>.*)$', views.UsedFeatureIsConfigurableForm.as_view(), name='usedFeaturesIsConfigurableForm'),
+    
     url(r'^usedFeaturesInsert$', views.UsedFeatureListViewTeste.as_view(), name='used_features'),
 ]

@@ -8,13 +8,18 @@ Tabelas responsáveis por armazenar a configuração, definida pelo usuário, do
 from __future__ import unicode_literals
 
 from django.contrib.auth.models import User
-from django.db import models
+from django.template.defaultfilters import default
 import json
+
+from django.db import models
+
+from django_mysql.models import JSONField
 from feature.features import ParamTypeEnum, FeatureVisibilityEnum
 from utils.basic_entities import LanguageEnum, FeatureTimePerDocumentEnum
-from wqual.models.utils import Format
-from wqual.models.utils import EnumManager, EnumModel
 from utils.feature_utils import get_class_by_name
+from wqual.models.utils import EnumManager, EnumModel
+from wqual.models.utils import Format
+ 
 
 class Feature(models.Model):
     '''
@@ -98,7 +103,7 @@ class FeatureSet(models.Model):
     user = models.ForeignKey(User, models.PROTECT)
     
     def __str__(self):
-        return "{name} ||| {description} ".format(name=self.nam_feature_set, description=self.dsc_feature_set)
+        return "{name} : {description} ".format(name=self.nam_feature_set, description=self.dsc_feature_set)
 
     
     class Meta:
@@ -179,6 +184,9 @@ class UsedFeatureArgVal(models.Model):
 
     nam_argument = models.CharField(max_length=45)
     val_argument = models.CharField(max_length=45)
+    dsc_argument = models.CharField(max_length=255, blank=True, null=True)
+    json_choices = JSONField(blank=True, null=True)
+    
     type_argument = models.CharField(max_length=10,choices=TIPOS_DADOS,default=STRING)
     
     is_configurable = models.BooleanField(default=False)
