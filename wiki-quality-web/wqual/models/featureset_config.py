@@ -174,6 +174,7 @@ class UsedFeatureManager(models.Manager):
             
         return paramType,paramValue
     def insert_features_object(self,featureSet,arrObjectFeatures):
+        dictInsertedFeatPerName = {}
         with transaction.atomic():
             int_ord_feature = UsedFeature.objects.filter(feature_set=featureSet).count()+1
             for objFeature in arrObjectFeatures:
@@ -187,7 +188,7 @@ class UsedFeatureManager(models.Manager):
                                             text_format=Format.objects.get_enum(objFeature.text_format),
                                             ord_feature=int_ord_feature
                                             )
-            
+                dictInsertedFeatPerName[objFeature.name] = objFeatUsed
                 #obtem todos os atributos do construtor (exceto o primeiro - self)
                 arrParamsConstrutor = set(inspect.getargspec(objFeature.__init__).args[1:]) 
                 dictParamsToInsert = {}
@@ -196,9 +197,7 @@ class UsedFeatureManager(models.Manager):
                     if(name in arrParamsConstrutor):
                         if name not in ("visibility","text_format","feature_time_per_document"):
                             paramType,paramValue = self.from_obj_to_bd_type_val(value)
-                            #if(paramType==None):
-                            #    print("TIPO NONE<<<<<< "+str(type(value)))
-                            #print("TIPO>>>>>>>>>>:"+str(type(value))+" TYPE: "+paramType)
+
                             dictParamsToInsert[name]= {"nam_argument": name,
                                                        "val_argument": str(paramValue),
                                                        "type_argument":paramType,
@@ -225,7 +224,7 @@ class UsedFeatureManager(models.Manager):
                     
                 
                 int_ord_feature = int_ord_feature+1
- 
+        return dictInsertedFeatPerName
 class UsedFeature(models.Model):
     '''
     Created on 13 de ago de 2017

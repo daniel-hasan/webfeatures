@@ -1,9 +1,9 @@
-import inspect
-
 from django.contrib.auth.models import User
 from django.test.client import Client
 from django.test.testcases import TestCase
 from django.urls.base import reverse
+import inspect
+import json
 
 from feature.featureImpl.style_features import WordCountFeature, \
     LargeSentenceCountFeature
@@ -15,6 +15,7 @@ from wqual.models.featureset_config import Language, FeatureSet, FeatureFactory 
     UsedFeature
 from wqual.models.uploaded_datasets import Status
 from wqual.models.utils import Format
+from wqual.views.featureset_config import ListFeaturesView
 
 
 class FeatureFactoryDummy(FeatureFactory):
@@ -22,7 +23,7 @@ class FeatureFactoryDummy(FeatureFactory):
         
         arrFeatures = [WordCountFeature("Preposition Count","Count the number of prepositions in the text","ref",FeatureVisibilityEnum.public,FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,setWordsToCount=["de","do","du"])]
         featLargeSentenceCount = LargeSentenceCountFeature("Largest Phrase Count","Count the number of phrases larger than a specified threshold","ref",FeatureVisibilityEnum.public,FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,10)
-        featLargeSentenceCount.addConfigurableParam(ConfigurableParam("int_sentence_size","Sentence Size",
+        featLargeSentenceCount.addConfigurableParam(ConfigurableParam("int_size","Sentence Size",
                                                                       "The sentence need to have (at least) this length (in words) in order to be considered a large phrase",
                                                                 10,ParamTypeEnum.int))
         arrFeatures.append(featLargeSentenceCount)
@@ -36,12 +37,15 @@ class FeatureFactoryDummyLangDep(FeatureFactory):
         
         arrFeatures = [WordCountFeature("Preposition Count "+self.objLanguage.name,"Count the number of prepositions in the text","ref",FeatureVisibilityEnum.public,FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,setWordsToCount=["de","do","du"])]
         featLargeSentenceCount = LargeSentenceCountFeature("Largest Phrase Count "+self.objLanguage.name,"Count the number of phrases larger than a specified threshold","ref",FeatureVisibilityEnum.public,FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,10)
-        featLargeSentenceCount.addConfigurableParam(ConfigurableParam("int_sentence_size","Sentence Size",
+        featLargeSentenceCount.addConfigurableParam(ConfigurableParam("int_size","Sentence Size",
                                                                       "The sentence need to have (at least) this length (in words) in order to be considered a large phrase",
                                                                 10,ParamTypeEnum.int))
         arrFeatures.append(featLargeSentenceCount)
         return arrFeatures
 class TestUsedFeatures(TestCase):
+    STR_FEAT_NAME1 = "__PrepCount OI__"
+    STR_FEAT_NAME2 = "__LargeFeat OI__"
+    
     def setUp(self):
 
         Format.objects.update_enums_in_db()
@@ -54,6 +58,9 @@ class TestUsedFeatures(TestCase):
         
         self.password = "meunome"
         self.my_admin = User.objects.create_superuser('myuser', 'myemail@test.com', self.password)
+        
+        
+        
         self.feature_set = FeatureSet.objects.create(nam_feature_set="Featzinho",
                                                      dsc_feature_set="lalalal",
                                                      language=self.language,
@@ -157,13 +164,90 @@ class TestUsedFeatures(TestCase):
                 self.assertFeatureEqual(objFeatureUsed,featLargeSentenceCount)
         
         
-        
-    def test_view_feature_list_add(self):
+    
+    def test_view_feature_list(self,language_code="en"):
         c = Client()
+        c.login(username=self.my_admin.username, password=self.password)
+        
         #list all the features correctly
-        str_url = reverse("list_all_features",kwargs={"nam_language":"en"})
-        #print("URL:"+str_url)
+        str_url = reverse("list_all_features",kwargs={"nam_language":language_code})
         response = c.post(str_url, {})
         self.assertEqual(response.status_code, 200, "could not obtain a status 200")
-         
+        
+        #check if found the feature names
+        arrFeatNames = ["Largest Phrase Count","Largest Phrase Count "+language_code,"Preposition Count","Preposition Count "+language_code]
+        
+        arrFeatures = response.json()['arrFeatures']
+        
+        for str_expected_feature_name in arrFeatNames:
+            bolEncontrou = False
+            for feature in arrFeatures:
+                if(str_expected_feature_name == feature['name']):
+                    bolEncontrou = True
+            self.assertTrue(bolEncontrou, "Could not found the feature: "+str_expected_feature_name)
+        
+        return arrFeatures
+    def assert_feature_add(self,client,str_url,arrFeatNames,arr_num_of_config_args):
+        
+        strPostFeatNames = "|".join(arrFeatNames)
+        response = client.post(str_url, {"hidUsedFeaturesToInsert":strPostFeatNames})
+        self.assertEqual(response.status_code, 200, "could not obtain a status 200")
+        
+        #check if found the feature names
+        arrUsedFeatures = response.json()['arrUsedFeatures']
+        intI = 0
+        for str_expected_feature_name in arrFeatNames:
+            bolEncontrou = False
+            for feature in arrUsedFeatures:
+                if(str_expected_feature_name == feature['name']):
+                    self.assertTrue(feature['used_feature_id'] != None, "Used feature cannot be None")
+                    bolEncontrou = True
+                    
+                    #test the feature param 
+                    arrParam = feature['arr_param']
+                    self.assertEqual(len(arrParam), arr_num_of_config_args[intI], "The number of configured param for the feature '"+feature['name']+"' is not the same. Expected: "+str(arr_num_of_config_args[intI]))
+                    if(len(arrParam)>0):
+                        self.assertTrue(feature['is_configurable'], "The number of params is greater than zero, then, the is_configurable must be true")
+                    else:
+                        self.assertTrue(not feature['is_configurable'], "The number of params is zero, then, the is_configurable must be false")
+                    intI = intI+1
+                    
+            self.assertTrue(bolEncontrou, "Could not found the feature: "+str_expected_feature_name)
+            
+                
+    def test_view_feature_add(self):
+        c = Client()
+        c.login(username=self.my_admin.username, password=self.password)
+        
+        #list all the features correctly
+        str_url = reverse("insert_used_features",kwargs={"nam_feature_set":self.feature_set.nam_feature_set})
+        objLanguage = self.feature_set.language
+        
+        #test inserting 2 features
+        arrFeatNames = ["Largest Phrase Count "+objLanguage.name,"Preposition Count"]
+        self.assert_feature_add(c,str_url,arrFeatNames,[1,0])
+        
+        #test inserting all the features
+        objFeatureSet = FeatureSet.objects.create(nam_feature_set="Featzinho2",
+                                                     dsc_feature_set="lalalal",
+                                                     language=self.language,
+                                                     user=self.my_admin)
+        #get all the features
+        dict_feat_per_id = ListFeaturesView.get_features(self.language.name)
+        #prepare the array of features    
+        arrParamPerFeature = []
+        arrFeatNames=[]
+        for name,objFeature in dict_feat_per_id.items():
+            arrFeatNames.append(name)
+            arrParamPerFeature.append(len(objFeature.arr_configurable_param))
+        print("Number of feats: "+str(len(arrFeatNames)))
+        print("Feat names: "+str(arrFeatNames))
+        
+        
+        str_url = reverse("insert_used_features",kwargs={"nam_feature_set":objFeatureSet.nam_feature_set})
+        self.assert_feature_add(c,str_url,arrFeatNames,arrParamPerFeature)
+            
+        
+        
+        
         

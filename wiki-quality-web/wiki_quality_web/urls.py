@@ -27,6 +27,7 @@ urlpatterns = [
     url(r'^f(?P<nam_feature_set>.*)/insert_features/$', views.InsertUsedFeaturesView.as_view(), name='insert_used_features'),
     url(r'^getAllFeatures/(?P<nam_language>.*)$', views.ListFeaturesView.as_view(), name='list_all_features'),
     url(r'^featureSetConfig/(?P<nam_feature_set>[^#]*)#featuresEdit$', views.FeatureSetEdit.as_view(), name='feature_set_edit_features'),
+    url(r'^insert_list_used_features.js', views.JSListAddUsedFeatureView.as_view(), name='insert_list_used_features'),
     url(r'^featureSetConfig$', views.FeatureSetListView.as_view(), name='feature_set_list'),
     url(r'^extractFeatures$', views.DatasetListView.as_view(), name='extract_features'),
     url(r'^admin/', admin.site.urls),
