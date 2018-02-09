@@ -31,24 +31,25 @@ class Scheduler(object):
 		int_wait_minutes = int_wait_minutes*60;
 		i = 0
 		while i<int_max_iterations:
-			
+			bolFoundDataset = False
 			with transaction.atomic():
 				dataset = self.get_next()
 				
-			print("dataset run")
-			print(dataset)
-			if dataset:				
-				arr_feats_used = self.get_arr_features(dataset)
-								
-				doc_read = DatasetModelDocReader(dataset)
-				doc_write = DatasetModelDocWriter()
+				print("dataset run")
+				print(dataset)
+				if dataset:
+					bolFoundDataset = True				
+					arr_feats_used = self.get_arr_features(dataset)
+									
+					doc_read = DatasetModelDocReader(dataset)
+					doc_write = DatasetModelDocWriter(dataset)
 
-				arr_used_feat = UsedFeature.objects.filter(feature_set_id=dataset.feature_set_id)
-				
-				FeatureCalculator.featureManager.computeFeatureSetDocuments(datReader=doc_read,docWriter=doc_write,arr_features_to_extract=arr_used_feat,format=dataset.format.get_enum())
-				
-				dataset.status = Status.objects.get_enum(StatusEnum.COMPLETE)
-			else:
+					
+					FeatureCalculator.featureManager.computeFeatureSetDocuments(datReader=doc_read,docWriter=doc_write,arr_features_to_extract=arr_feats_used,format=dataset.format.get_enum())
+					
+					dataset.status = Status.objects.get_enum(StatusEnum.COMPLETE)
+					dataset.save()
+			if(bolFoundDataset):	
 				time.sleep(int_wait_minutes);
 				#break
 			i = i+1

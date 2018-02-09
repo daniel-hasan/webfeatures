@@ -23,7 +23,17 @@ class DatasetModelDocReader(FeatureDocumentsReader):
             yield DocumentFeature(doc.id, doc.nam_file, doc.documenttext.dsc_text)
             
 class DatasetModelDocWriter(FeatureDocumentsWriter):
+        def __init__(self, dataset):
+            self.dataset = dataset
         
+        def write_header(self,arr_features):
+            dictFeatureHeader = {}
+            for i,objFeature in enumerate(arr_features):
+                dictFeatureHeader[i] = {"name":objFeature.name,
+                                        "params":objFeature.get_params_str()}
+                
+            self.dataset.dsc_result_header = json.dumps(dictFeatureHeader)  
+            self.dataset.save()
         def write_document(self,document, arr_feats_used, arr_feats_result):  
             self.document = document
             self.arr_feats_used = arr_feats_used

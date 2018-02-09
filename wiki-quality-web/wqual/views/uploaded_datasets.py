@@ -4,28 +4,94 @@ Created on 14 de ago de 2017
 @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
 Views relacionadas a upload dos datasets
 '''
+from _io import BytesIO
 from datetime import datetime
+from io import StringIO
+import json
+import lzma
+import os
+import uuid
+import zipfile
+
 from django import forms
 from django.contrib import messages
 from django.core.files.storage import FileSystemStorage
-from django.forms.utils import ErrorList
-from django.views.generic.list import ListView
-import lzma
-import os
-
 from django.db.models.fields.files import FileField
+from django.forms.utils import ErrorList
+from django.http import HttpResponse
 from django.template import context
+from django.template.context import RequestContext
 from django.urls.base import reverse
+from django.views.generic.base import View
 from django.views.generic.edit import CreateView, DeleteView
+from django.views.generic.list import ListView
 
+import numpy as np
 from utils.uncompress_data import *
 from wqual.models import Dataset
 from wqual.models.exceptions import FileSizeException
 from wqual.models.featureset_config import UsedFeature
 from wqual.models.uploaded_datasets import Format, Status, StatusEnum, DocumentText, \
-    Document
+    Document, DocumentResult
+from Onboard.Indicator import BackendAppIndicator
 
 
+class DatasetDownloadView(View):
+    def get(self, request, dataset_id,format):
+        
+        txt_file_name = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))+"/tmp/"+str(uuid.uuid1())
+        #print(txt_file_name)
+        
+        s = BytesIO()
+        zf = zipfile.ZipFile(s, "w")
+        with open(txt_file_name+"."+format, "w") as f:
+            if(format=="json"):
+                f.write("{\n")
+                f.write("\t\"feature_descriptions\":"+Dataset.objects.get(id=dataset_id).dsc_result_header+",\n")
+                f.write("\t\"data\": [")
+                for document in Document.objects.all().filter(dataset_id=dataset_id):
+                    strResult = "{\"docname\":" + document.nam_file
+                    for doc_result in DocumentResult.objects.filter(document = document):
+                        arrFeatures = ["\""+str(i)+"\":"+str(feat) for i,feat in enumerate(json.loads(doc_result.dsc_result)) ]
+                        strResult = strResult + ", \"result\": {" +(",".join(arrFeatures))+"}"
+                    strResult = strResult + "},\n"
+                    f.write(strResult)
+                f.write("\t]\n")
+                f.write("}")
+            else:
+                dictArrFeatures = json.loads(Dataset.objects.get(id=dataset_id).dsc_result_header)
+                #print header
+                f.write("doc_name")
+                i=0
+                print("FEATUS: "+str(dictArrFeatures))
+                while(str(i) in dictArrFeatures):
+                    f.write(","+dictArrFeatures[str(i)]['name'])
+                    i = i+1
+                f.write("\n")
+                
+                #print each line per doc
+                for document in Document.objects.all().filter(dataset_id=dataset_id):
+                    strResult = document.nam_file+","
+                    for doc_result in DocumentResult.objects.filter(document = document):
+                        arrFeatures = [str(feat) for i,feat in enumerate(json.loads(doc_result.dsc_result)) ]
+                        strResult = strResult +(",".join(arrFeatures))
+                    strResult = strResult + "\n"
+                    f.write(strResult)    
+                    
+                                    
+        zf.write(txt_file_name+"."+format,arcname="result."+format, compress_type=zipfile.ZIP_DEFLATED)   
+        zf.close()
+        os.remove(txt_file_name+"."+format)
+
+                
+        resp = HttpResponse(s.getvalue(), content_type="application/force-download")
+        # ..and correct content-disposition
+        resp['Content-Disposition'] = 'attachment; filename=%s' % "result.zip"
+
+
+
+        
+        return resp
 class DatasetCreateView(CreateView):
     '''
     Created on 14 de ago de 2017
@@ -39,7 +105,12 @@ class DatasetCreateView(CreateView):
     model = Dataset
     template_name = "content/dataset_list.html"
     
- 
+    
+    
+
+                
+    
+        
     def descompacta(self):
         return lzma.decompress(self.arquivo).decode("utf-8")
     

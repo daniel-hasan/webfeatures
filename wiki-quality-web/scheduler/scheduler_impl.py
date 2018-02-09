@@ -21,14 +21,14 @@ class OldestFirstScheduler(Scheduler):
 		'''
 			Retorna o dataset mais antigo
 		'''
-		print("Veio aquiiiii ")
+		
 		objSubmited = Status.objects.get_enum(StatusEnum.SUBMITTED)
 		
 		with transaction.atomic():
 			dataset_oldest = Dataset.objects.select_for_update().filter(status=objSubmited).order_by('dat_submitted').first()
 			if not dataset_oldest:
 				return None
-			
+				
 			dataset_oldest.status= Status.objects.get_enum(StatusEnum.PROCESSING)
 			#atualiza a data aqui
 			dataset_oldest.start_dat_processing=datetime.now()

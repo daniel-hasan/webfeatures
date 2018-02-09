@@ -269,6 +269,13 @@ class FeatureCalculator(object):
     def addConfigurableParam(self,objParam):
         self.arr_configurable_param.append(objParam)
     
+    def get_params_str(self):
+        arrParams = []
+        for param in self.arr_configurable_param:
+            if(param.att_name in self.__dict__):
+                arrParams.append(param.name+":"+self.__dict__[param.att_name])
+        
+        return "; ".join(arrParams)
      
 class TextBasedFeature(FeatureCalculator):
     '''
