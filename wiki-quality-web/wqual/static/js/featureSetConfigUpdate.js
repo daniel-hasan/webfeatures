@@ -1,24 +1,19 @@
 $( function() {
-	var dialog;
-		  
-	    dialog = $( "#add-form" ).dialog({
-	      autoOpen: false,
-	      height: 300,
-	      width: 600,
-	      modal: true,
-	    });
+	$( "#add-form" ).dialog({
+	     autoOpen: false,
+	     height: 300,
+	     width: 600,
+	     modal: true,
+	     buttons: {
+	        Cancel: function() {
+	          $( this ).dialog( "close" );
+	        }
+      	}
+	});
 	 
-	    $( "#insert" ).button().on( "click", function() {
-	      dialog.dialog( "open" );
-	    });
-	
-	    $( "#cancel" ).button().on( "click", function() {
-	      dialog.dialog( "close" );
-	    });
-	    
-	    $( "#add" ).button().on( "click", function() {
-	      dialog.dialog( "close" );
-	    });
+	$( "#insert" ).on( "click", function() {
+	     $( "#add-form" ).dialog( "open" );
+	});
 } );
 
 $( function() {

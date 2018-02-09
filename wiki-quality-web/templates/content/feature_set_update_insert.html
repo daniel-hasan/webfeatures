@@ -50,24 +50,25 @@
 	</div>
   </div>
   <div id="tabs-2">
-  	<a><button id="insert" class="btn btn-primary">Add Feature</button></a>
-  	<div id='div'></div>
-    <script src="{% url "used_feature_js" %}"></script> 
+  	<a><button id="insert">Add Feature</button></a>
+  	<br><br>
+  	<ul id='div'></ul>
+  	{% if object.id %}
+  		<script src="{% url "usedFeatures.js" object.nam_feature_set %}"></script>
+  	{% else %}
+  		<script src="{% url "used_features" %}"></script>
+  	{% endif %}
+  		<script src="{% url "insert_list_used_features" %}"></script>
+  		<script src="{% static "js/csrf_token_ajax.js" %}"></script>
   </div>
 </div>
-
 
 <div id="add-form" title="Add Feature Set">
   <form action="" method="post">{% csrf_token %}
 	 <span class="ui-icon  ui-icon-search"></span>
 	 <input type="text" name="search" placeholder="search..."><br><br>
 				
-	 <button type="submit" id="add">Add</button>
-	 <button type="submit" id="cancel">Cancel</button>
   </form>
 </div>
-
-
- 
 
 {% endblock %}
