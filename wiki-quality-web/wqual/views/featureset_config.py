@@ -216,22 +216,26 @@ class ListFeaturesView(View):
                                "reference":objFeature.reference})
             
             
-        return JsonResponse({"features_array":arr_features})
+        return JsonResponse({"arrFeatures":arr_features})
     
 class InsertUsedFeaturesView(View):
-    def post(self, request,nam_language,nam_feature_set):
+    def post(self, request,nam_feature_set):
+        #get the feature set object
+        objFeatureSet=FeatureSet.objects.get(user=self.request.user,nam_feature_set=nam_feature_set)
+        
         #get the features to add
         arrStrFeatureNames = [int(strId) for strId in request.POST["hidUsedFeaturesToInsert"].split("|")]
         
         #get all the possible features
-        dict_feat_per_id = self.get_features(nam_language)
+        dict_feat_per_id = self.get_features(objFeatureSet.language.name)
         
         #obtain the objects to insert by name
         arrObjFeaturesToInsert = [dict_feat_per_id[nam_feature] for nam_feature in arrStrFeatureNames]
-        objFeatureSet=FeatureSet.objects.get(user=self.request.user,nam_feature_set=nam_feature_set)
+        
         
         #inser them
         UsedFeature.objects.insert_features_object(objFeatureSet,arrObjFeaturesToInsert)
         
         #return the object
-        return HttpResponseRedirect(reverse('feature_set_edit_features', args=[nam_feature_set]))
+        #return HttpResponseRedirect(reverse('feature_set_edit_features', args=[nam_feature_set]))
+        return JsonResponse(reverse({"arrUsedFeaturesArgs":mapUsedFeaturesArgs})
