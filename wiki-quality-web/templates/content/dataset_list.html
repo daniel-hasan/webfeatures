@@ -47,7 +47,7 @@
     				<td>{{ dataset.format.name }}</td>
 					<td><a href="{% url "download_result" dataset.id "json" %}">json</a> <a href="{% url "download_result" dataset.id "xls" %}">xls</a></td>
 					<td>
-						<form action="{% url "dataset_delete" dataset.nam_dataset%}" method="post">
+						<form action="{% url "dataset_delete" dataset.id %}" method="post">
 							{% csrf_token %}
          					<button class="btn btn-danger" id="delete">Delete</button>
          				</form>

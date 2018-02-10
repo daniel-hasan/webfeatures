@@ -32,7 +32,7 @@ urlpatterns = [
     url(r'^featureSetConfig/(?P<nam_feature_set>[^#]*)#featuresEdit$', views.FeatureSetEdit.as_view(), name='feature_set_edit_features'),
     url(r'^insert_list_used_features.js', views.JSListAddUsedFeatureView.as_view(), name='insert_list_used_features'),
     url(r'^featureSetConfig$', views.FeatureSetListView.as_view(), name='feature_set_list'),
-    url(r'^extractFeatures/(?P<nam_dataset>.*)/delete/$', views.DatasetDelete.as_view(), name='dataset_delete'),
+    url(r'^extractFeatures/(?P<id_dataset>.*)/delete/$', views.DatasetDelete.as_view(), name='dataset_delete'),
     url(r'^extractFeatures$', views.DatasetCreateView.as_view(), name='extract_features'),
     url(r'^extractFeatures/downloadResult/(?P<dataset_id>[0-9]+).(?P<format>(xls|json))$', views.DatasetDownloadView.as_view(), name="download_result"),
     url(r'^admin/', admin.site.urls),

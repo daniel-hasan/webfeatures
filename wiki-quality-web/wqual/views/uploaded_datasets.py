@@ -155,7 +155,7 @@ class DatasetDelete(DeleteView):
         template_name = "content/dataset_list.html"
         
         def get_object(self):
-            return Dataset.objects.get(user=self.request.user,nam_dataset=self.kwargs["nam_dataset"],file=self.request['file_dataset'])
+            return Dataset.objects.get(user=self.request.user,id=self.kwargs["id_dataset"])
         
         def get_success_url(self):
             return reverse('extract_features')
