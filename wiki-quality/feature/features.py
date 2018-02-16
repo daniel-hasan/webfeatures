@@ -95,12 +95,14 @@ class ParserTags(HTMLParser):
         self.feat = feat
         
     def handle_data(self,str_data):
-        pass
+        self.feat.data(self.document,str_data)
 
     def handle_starttag(self, tag, attrs):
+        self.feat.startTag(self.document,tag,attrs)
         self.feat.checkTag(self.document, tag)
     
     def handle_endtag(self, tag):
+        self.feat.endTag(self.document,tag)
         self.feat.checkTag(self.document, tag)
 
 class FeatureCalculatorManager(object):
@@ -335,6 +337,15 @@ class TagBasedFeature(FeatureCalculator):
     
     def checkTag(self,document,tag):
         raise NotImplemented
+    
+    def startTag(self,document,tag,attrs):
+        pass
+    
+    def endTag(self,document,tag):
+        pass
+    
+    def data(self,document,str_data):
+        pass
     
     @abstractmethod
     def compute_feature(self, document):
