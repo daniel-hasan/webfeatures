@@ -12,7 +12,7 @@ from _datetime import datetime
 from scheduler.scheduler_impl import OldestFirstScheduler
 
 from django.contrib.auth.models import User
-from wqual.models.uploaded_datasets import Dataset, Status, Format, StatusEnum
+from wqual.models.uploaded_datasets import Dataset,Document, DocumentText, DocumentResult, Status, Format
 from wqual.models.featureset_config import FeatureSet, Language
 
 class TestSchedulerRun(TestCase):
@@ -58,9 +58,20 @@ class TestSchedulerRun(TestCase):
                                                     status=self.status)
         
         
+        self.document = Document.objects.create(nam_file = "Documento", dataset = self.objDataset0)
+        self.doc_text = DocumentText.objects.create(dsc_text = "Insira um texto aqui", document =self.document)
         
     def testRun(self):
         next_dataset = OldestFirstScheduler().run(0,10)
+        
+        
+        for i in range(len(Document.objects.all())):
+            for doc_txt in DocumentText.objects.filter(document_id = Document.objects.all()[i]):
+                self.assertEqual(doc_txt, None, "Os documentos do dataset não foram apagados")
+               
+        
+        print(DocumentResult.objects.all())
+        
         '''
         Terminar de testar se funcionou como o esperado
         

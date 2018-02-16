@@ -12,6 +12,7 @@ from feature.features import FeatureCalculator
 from scheduler.utils import DatasetModelDocReader, DatasetModelDocWriter
 from wqual.models.featureset_config import UsedFeature
 from wqual.models.uploaded_datasets import StatusEnum, Status
+from wqual.models.uploaded_datasets import Document, DocumentText
 
 class Scheduler(object):
 
@@ -35,8 +36,6 @@ class Scheduler(object):
 			with transaction.atomic():
 				dataset = self.get_next()
 				
-				print("dataset run")
-				print(dataset)
 				if dataset:
 					bolFoundDataset = True				
 					arr_feats_used = self.get_arr_features(dataset)
@@ -44,13 +43,19 @@ class Scheduler(object):
 					doc_read = DatasetModelDocReader(dataset)
 					doc_write = DatasetModelDocWriter(dataset)
 
-					
 					FeatureCalculator.featureManager.computeFeatureSetDocuments(datReader=doc_read,docWriter=doc_write,arr_features_to_extract=arr_feats_used,format=dataset.format.get_enum())
 					
 					dataset.status = Status.objects.get_enum(StatusEnum.COMPLETE)
+					
+					
+					for doc_delete in Document.objects.filter(dataset_id=dataset.id):
+						if DocumentText.objects.filter(document = doc_delete):
+							doc_delete.delete()
+					
 					dataset.save()
+					
 			if(bolFoundDataset):	
 				time.sleep(int_wait_minutes);
-				#break
+
 			i = i+1
 			

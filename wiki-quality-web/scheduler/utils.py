@@ -34,6 +34,7 @@ class DatasetModelDocWriter(FeatureDocumentsWriter):
                 
             self.dataset.dsc_result_header = json.dumps(dictFeatureHeader)  
             self.dataset.save()
+            
         def write_document(self,document, arr_feats_used, arr_feats_result):  
             self.document = document
             self.arr_feats_used = arr_feats_used
