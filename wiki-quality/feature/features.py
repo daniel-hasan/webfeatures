@@ -177,6 +177,9 @@ class FeatureCalculatorManager(object):
         
         for str_char in str_text:
             
+            for feat in arr_features:
+                if(isinstance(feat, CharBasedFeature)):
+                    feat.checkChar(docText,str_char)
             word_proc = word_buffer.strip()
             if(len(word_proc) > 0 and str_char in FeatureCalculator.word_divisors):
                 for feat in arr_features:
@@ -332,7 +335,27 @@ class TagBasedFeature(FeatureCalculator):
     @abstractmethod
     def compute_feature(self, document):
         raise NotImplementedError
+    
+class CharBasedFeature(FeatureCalculator):
+    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document):
+        super(FeatureCalculator,self).__init__(name,description,reference,visibility,text_format,feature_time_per_document) 
+    
+    @abstractmethod
+    def checkChar(self,document,char):
+        raise NotImplementedError
+    
+    @abstractmethod
+    def compute_feature(self,document):
+        raise NotImplementedError
 
+class ReadabilityBasedFeature(FeatureCalculator):
+    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document):
+        super(FeatureCalculator,self).__init__(name,description,reference,visibility,text_format,feature_time_per_document) 
+    
+    @abstractmethod
+    def compute_feature(self,document):
+        raise NotImplementedError
+    
 class ParamTypeEnum(Enum):
     '''
         Tipo do valor de um parametro de uma feature.
