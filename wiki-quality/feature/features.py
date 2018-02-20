@@ -11,6 +11,8 @@ from os.path import join, isfile, isdir
 from posix import listdir
 from html.parser import HTMLParser
 from utils.basic_entities import FormatEnum
+import html
+
 import re
 
 
@@ -99,11 +101,11 @@ class ParserTags(HTMLParser):
 
     def handle_starttag(self, tag, attrs):
         self.feat.startTag(self.document,tag,attrs)
-        self.feat.checkTag(self.document, tag)
+        #self.feat.checkTag(self.document, tag)
     
     def handle_endtag(self, tag):
         self.feat.endTag(self.document,tag)
-        self.feat.checkTag(self.document, tag)
+        #self.feat.checkTag(self.document, tag)
 
 class FeatureCalculatorManager(object):
 
@@ -167,10 +169,16 @@ class FeatureCalculatorManager(object):
                     parser.feed(str_text)
                     arr_feat_result[aux] = feat.compute_feature(docText)
                 aux = aux + 1
-                            
+            #considera apenas o que estiver dentro de <body> </body> (se esses elementos existirem)
+            str_text_lower = str_text.lower()
+            int_pos_body = str_text_lower.find("<body>")
+            int_pos_fim_body = str_text_lower.find("</body>")
+            if(int_pos_body >=0 and int_pos_fim_body>=0):
+                str_text = str_text[int_pos_body+6:int_pos_fim_body]
             #str_text = parser.str_plain_text
             str_text = re.sub("<[^>]+>", " ", str_text)
-            
+            #elimina as html entities
+            str_text = html.unescape(str_text)
         
         #armazo as word based features e sentence based feature
         word_buffer = ""
@@ -335,8 +343,8 @@ class TagBasedFeature(FeatureCalculator):
     def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document):
         super(FeatureCalculator,self).__init__(name,description,reference,visibility,text_format,feature_time_per_document) 
     
-    def checkTag(self,document,tag):
-        raise NotImplemented
+    #def checkTag(self,document,tag):
+    #    raise NotImplemented
     
     def startTag(self,document,tag,attrs):
         pass
