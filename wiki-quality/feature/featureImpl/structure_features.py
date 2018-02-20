@@ -6,13 +6,19 @@ Features de estrutura (como numero de seções, citações etc.)
 '''
 
 from abc import abstractmethod
+import enum
 import html
 from statistics import stdev
 
 from feature.features import TagBasedFeature, WordBasedFeature, \
-    SentenceBasedFeature
+    SentenceBasedFeature, CharBasedFeature
 
 
+class TypeOfLink(enum):
+    all_links=1
+    just_external=2
+    just_internal=3
+    
 class TagCountFeature(TagBasedFeature):
     
     def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document,setTagsToCount=None):
@@ -21,6 +27,8 @@ class TagCountFeature(TagBasedFeature):
             setTagsToCount = []
         self.setTagsToCount = set([tag.lower() for tag in setTagsToCount])
         self.int_tag_counter = 0
+        
+    
     
     def startTag(self,document,tag,attrs):
         if tag.lower() in self.setTagsToCount:
@@ -30,22 +38,55 @@ class TagCountFeature(TagBasedFeature):
         aux = self.int_tag_counter
         self.int_tag_counter = 0
         return aux
+
+class LinkCountFeature(TagCountFeature):
     
-class TagCountFeaturePerFeature(TagBasedFeature,WordBasedFeature,CharBasedFeature,SentenceBasedFeature):
+    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document,typeOfLink):
+        super().__init__(name,description,reference,visibility,text_format,feature_time_per_document,setTagsToCount=["a"])    
+        self.typeOfLink = typeOfLink
+        
+    def startTag(self,document,tag,attrs):
+        if("href" not in attrs):
+            return
+        
+        count = (self.typeOfLink == TypeOfLink.just_external and (attrs["href"].startswith("http://")) or (attrs["href"].startswith("https://"))) or self.typeOfLink == TypeOfLink.just_internal 
+        
+        if count or self.typeOfLink == TypeOfLink.all_links:
+            super().startTag(document, tag, attrs)
+  
+    
+class TagCountFeaturePerFeature(TagCountFeature,WordBasedFeature,CharBasedFeature,SentenceBasedFeature):
     '''
     Created on 20 de fev de 2018
-    Ratio between a tag coutn feature (current object) and another tag count feature (another object)
+    Ratio between a tag count feature (current object) and another feature (another object)
     @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>  
     '''
     def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document,objFeature,setTagsToCount=None):
         super().__init__(name,description,reference,visibility,text_format,feature_time_per_document,setTagsToCount)
         self.objFeature = objFeature
     
+    #### Tag based Feature overide #########
     def startTag(self,document,tag,attrs):
         super().startTag(document,tag,attrs)
-        self.objFeature.startTag(document,tag,attrs)
-  
+        if(isinstance(self.objFeature,TagBasedFeature)):
+            self.objFeature.startTag(document,tag,attrs)
     
+    def data(self,document,str_data):
+        super().data(document,str_data)
+        if(isinstance(self.objFeature,TagBasedFeature)):
+            self.objFeature.data(document,str_data)
+            
+    def endTag(self,document,tag):
+        super().endTag(document,tag)
+        if(isinstance(self.objFeature,TagBasedFeature)):
+            self.objFeature.endTag(document,tag)
+    
+    def compute_feature(self, document):
+        int_val_cur_obj =super().compute_feature(document)
+        int_val_attr = self.objFeature.compute_feature(document) 
+        return int_val_cur_obj/int_val_attr
+    
+    #### WordBasedFeature,CharBasedFeature,SentenceBasedFeature overide #########
     def checkWord(self, document, word):
         if(isinstance(self.objFeature,WordBasedFeature)):
             self.objFeature.checkWord(document,word)
@@ -59,10 +100,7 @@ class TagCountFeaturePerFeature(TagBasedFeature,WordBasedFeature,CharBasedFeatur
         if(isinstance(self.objFeature,CharBasedFeature)):
             self.objFeature.checkChar(document,word)            
         
-    def compute_feature(self, document):
-        int_val_cur_obj =super().compute_feature(document)
-        int_val_attr = self.objFeature.compute_feature(document) 
-        return int_val_cur_obj/int_val_attr
+
         
 class SectionSizeFeature(TagBasedFeature):
     def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document,intSectionLevel):
