@@ -6,21 +6,51 @@ Created on 8 de ago de 2017
 '''
 from abc import abstractmethod
 from enum import Enum
+from html.parser import HTMLParser
 import os
 from os.path import join, isfile, isdir
 from posix import listdir
-from html.parser import HTMLParser
-from utils.basic_entities import FormatEnum
 import re
 
+from utils.basic_entities import FormatEnum
 
+class NotTheOwner(Exception):
+    def __init__(self):
+        super().__init__(self, "Object is not the owner: Permission denied or cache's empty")
+    
+class DocumentCache(object):
+    
+    def __init__(self,obj):
+        self.cache = {}
+        self.owner = {}
+    
+    def hasCacheItem(self, itemName):
+        return itemName in self.cache 
 
+    def getCacheItem(self, itemName, objRequest=None):
+        if itemName not in self.cache:
+            return None
+        if objRequest != None and self.owner[itemName] != objRequest:
+            raise NotTheOwner()
+        return self.cache[itemName]
+
+    def setCacheItem(self, itemName, intValue, objRequest):
+        if not self.hasCacheItem(itemName):
+            self.setOwnership(itemName, objRequest)
+        if self.owner[itemName] != objRequest:
+            raise NotTheOwner()
+        self.cache[itemName] = intValue
+        return self.cache[itemName]
+    
+    def setOwnership(self, itemName, objRequest):
+        self.owner[itemName] = objRequest
 
 class Document(object):
     def __init__(self,int_doc_id,str_doc_name,str_text):
         self.int_doc_id = int_doc_id
         self.str_doc_name = str_doc_name
         self.str_text = str_text
+        self.obj_cache = DocumentCache(self)
         
 class FeatureDocumentsWriter(object):
     @abstractmethod
@@ -99,9 +129,6 @@ class ParserTags(HTMLParser):
 
     def handle_starttag(self, tag, attrs):
         self.feat.checkTag(self.document, tag)
-    
-    def handle_endtag(self, tag):
-        self.feat.checkTag(self.document, tag)
 
 class FeatureCalculatorManager(object):
 
@@ -164,10 +191,12 @@ class FeatureCalculatorManager(object):
                     parser = ParserTags(feat, docText)
                     parser.feed(str_text)
                     arr_feat_result[aux] = feat.compute_feature(docText)
+                    feat.finish_document(docText)
                 aux = aux + 1
-                            
-            #str_text = parser.str_plain_text
+            
+            str_text_for_char = re.sub("<[^>]+>", "", str_text)
             str_text = re.sub("<[^>]+>", " ", str_text)
+            
             
         
         #armazo as word based features e sentence based feature
@@ -175,11 +204,12 @@ class FeatureCalculatorManager(object):
         sentence_buffer = ""
         paragraph_buffer = ""
         
-        for str_char in str_text:
-            
+        for str_char_for_char in str_text_for_char:
             for feat in arr_features:
                 if(isinstance(feat, CharBasedFeature)):
-                    feat.checkChar(docText,str_char)
+                    feat.checkChar(docText,str_char_for_char)
+        
+        for str_char in str_text:
             word_proc = word_buffer.strip()
             if(len(word_proc) > 0 and str_char in FeatureCalculator.word_divisors):
                 for feat in arr_features:
@@ -235,6 +265,7 @@ class FeatureCalculatorManager(object):
                 pass
             else:
                 arr_feat_result[aux] = feat.compute_feature(docText)
+                feat.finish_document(docText)
             aux = aux + 1
             
         return arr_feat_result
@@ -272,6 +303,13 @@ class FeatureCalculator(object):
     def addConfigurableParam(self,objParam):
         self.arr_configurable_param.append(objParam)
     
+    @abstractmethod
+    def compute_feature(self,document):
+        raise NotImplementedError
+    
+    @abstractmethod
+    def finish_document(self,document):
+        raise NotImplementedError
      
 class TextBasedFeature(FeatureCalculator):
     '''
@@ -280,28 +318,16 @@ class TextBasedFeature(FeatureCalculator):
     @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
     '''
     
-    @abstractmethod
-    def compute_feature(self,document):
-        raise NotImplementedError
-    
 class ParagraphBasedFeature(FeatureCalculator):
     
     @abstractmethod
     def checkParagraph(self,document,paragraph):
-        raise NotImplementedError
-    
-    @abstractmethod
-    def compute_feature(self,document):
-        raise NotImplementedError   
+        raise NotImplementedError  
     
 class SentenceBasedFeature(FeatureCalculator):
 
     @abstractmethod
     def checkSentence(self,document,sentence):
-        raise NotImplementedError
-    
-    @abstractmethod
-    def compute_feature(self,document):
         raise NotImplementedError
 
 class WordBasedFeature(FeatureCalculator):
@@ -317,11 +343,6 @@ class WordBasedFeature(FeatureCalculator):
     @abstractmethod
     def checkWord(self,document,word):
         raise NotImplementedError
-    
-    
-    @abstractmethod
-    def compute_feature(self,document):
-        raise NotImplementedError
             
 
 class TagBasedFeature(FeatureCalculator):
@@ -332,9 +353,6 @@ class TagBasedFeature(FeatureCalculator):
     def checkTag(self,document,tag):
         raise NotImplemented
     
-    @abstractmethod
-    def compute_feature(self, document):
-        raise NotImplementedError
     
 class CharBasedFeature(FeatureCalculator):
     def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document):
@@ -343,19 +361,7 @@ class CharBasedFeature(FeatureCalculator):
     @abstractmethod
     def checkChar(self,document,char):
         raise NotImplementedError
-    
-    @abstractmethod
-    def compute_feature(self,document):
-        raise NotImplementedError
-
-class ReadabilityBasedFeature(FeatureCalculator):
-    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document):
-        super(FeatureCalculator,self).__init__(name,description,reference,visibility,text_format,feature_time_per_document) 
-    
-    @abstractmethod
-    def compute_feature(self,document):
-        raise NotImplementedError
-    
+        
 class ParamTypeEnum(Enum):
     '''
         Tipo do valor de um parametro de uma feature.

@@ -44,6 +44,7 @@ class TestTagCounter(unittest.TestCase):
         tcount.checkTag(document,"body")
         tcount.checkTag(document,"p")
         int_result = tcount.compute_feature(document)
+        tcount.finish_document(document)
         self.assertEqual(int_result, 2, "Nao foi contabilizado o numero de palavras corretos no teste do terceiro documento")
         
         tcount2.checkTag(document, "head")
@@ -51,6 +52,7 @@ class TestTagCounter(unittest.TestCase):
         tcount2.checkTag(document,"body")
         tcount2.checkTag(document,"p")
         int_result = tcount2.compute_feature(document)
+        tcount2.finish_document(document)
         self.assertEqual(int_result, 1, "Nao foi contabilizado o numero de palavras corretos no teste do terceiro documento")
 
 class TestParserTags(unittest.TestCase):

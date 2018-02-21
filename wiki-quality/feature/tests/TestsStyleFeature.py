@@ -3,14 +3,16 @@ Created on 4 de set de 2017
 Testes de todas as classes abstratas de calculo das features
 @author: Daniel Hasan Dalip hasan@decom.cefetmg.br
 '''
+from os import linesep
 import unittest
-from feature.featureImpl.style_features import WordCountFeature,\
-    SentenceCountFeature, LargeSentenceCountFeature, ParagraphCountFeature,\
-    LargeParagraphCountFeature
-from feature.features import FeatureVisibilityEnum, Document,\
+
+from feature.featureImpl.style_features import WordCountFeature, \
+    SentenceCountFeature, LargeSentenceCountFeature, ParagraphCountFeature, \
+    LargeParagraphCountFeature, CharacterCountFeature, SyllableCountFeature,\
+    WordsSyllablesCountFeature
+from feature.features import FeatureVisibilityEnum, Document, \
     SentenceBasedFeature
 from utils.basic_entities import FormatEnum, FeatureTimePerDocumentEnum
-from os import linesep
 
 
 class TestFeatureCalculator(unittest.TestCase):
@@ -57,6 +59,7 @@ class TestFeatureCalculator(unittest.TestCase):
         parcountlarge.checkWord(document, linesep)
         
         int_result_larger = parcountlarge.compute_feature(document)
+        parcount.finish_document(document)
         self.assertEqual(int_result_larger, 0, "Nao foi contabilizado o numero de paragrafos grandes corretas no teste do segundo documento")
  
         
@@ -96,6 +99,7 @@ class TestFeatureCalculator(unittest.TestCase):
         parcountlarge.checkWord(document, linesep)
         
         int_result_larger = parcountlarge.compute_feature(document)
+        parcountlarge.finish_document(document)
         self.assertEqual(int_result_larger, 1, "Nao foi contabilizado o numero de paragrafos grandes corretos no teste do segundo documento")
  
                
@@ -140,6 +144,7 @@ class TestFeatureCalculator(unittest.TestCase):
         parcountlarge.checkWord(document, linesep)
         
         int_result_larger = parcountlarge.compute_feature(document)
+        parcountlarge.finish_document(document)
         self.assertEqual(int_result_larger, 1, "Nao foi contabilizado o numero de paragrafos grandes corretos no teste do segundo documento")
  
         
@@ -160,6 +165,7 @@ class TestFeatureCalculator(unittest.TestCase):
         sentcount.checkSentence(document, " Será que com espaço isso continua funcionando hein ? ")
         
         int_result = sentcount.compute_feature(document)
+        sentcount.finish_document(document)
         self.assertEqual(int_result, 4, "Nao foi contabilizado o numero de frases corretas no teste do primeiro documento")
         
         sentcountlarge.checkWord(document, "Frase")
@@ -168,6 +174,7 @@ class TestFeatureCalculator(unittest.TestCase):
         sentcountlarge.checkWord(document, "!")
         
         int_result_larger = sentcountlarge.compute_feature(document)
+        sentcountlarge.finish_document(document)
         self.assertEqual(int_result_larger, 0, "Nao foi contabilizado o numero de frases grandes corretas no teste do segundo documento")
  
         
@@ -210,6 +217,7 @@ class TestFeatureCalculator(unittest.TestCase):
         sentcountlarge.checkWord(document, ".")
         
         int_result_larger = sentcountlarge.compute_feature(document)
+        sentcountlarge.finish_document(document)
         self.assertEqual(int_result_larger, 1,
                           "Nao foi contabilizado o numero de frases grandes corretas no teste do segundo documento")
         
@@ -235,6 +243,7 @@ class TestFeatureCalculator(unittest.TestCase):
         sentcountlarge.checkWord(document, " ")
         
         int_result_larger = sentcountlarge.compute_feature(document)
+        sentcountlarge.finish_document(document)
         self.assertEqual(int_result_larger, 0, "Nao foi contabilizado o numero de frases grandes corretas no teste do segundo documento")
         
         
@@ -302,6 +311,7 @@ class TestFeatureCalculator(unittest.TestCase):
         
         
         int_result_larger = sentcountlarge.compute_feature(document)
+        sentcountlarge.compute_feature(document)
         self.assertEqual(int_result_larger, 1, "Nao foi contabilizado o numero de frases grandes corretas no teste do segundo documento")
         
     def testWordCountTest(self):
@@ -328,10 +338,12 @@ class TestFeatureCalculator(unittest.TestCase):
         wcount.checkWord(document, "é")
         wcount.checkWord(document, "do")
         int_result = wcount.compute_feature(document)
+        wcount.finish_document(document)
         self.assertEqual(int_result, 3, "Nao foi contabilizado o numero de palavras corretos no teste do primeiro documento")
         
         #teste quando o texto não possul palavra alguma
         int_result = wcount.compute_feature(document)
+        wcount.finish_document(document)
         self.assertEqual(int_result, 0, "Nao foi contabilizado o numero de palavras corretos no teste do segundo documento")
         
         #teste quando possui maiusculas e minusculas (deve-se contabilizar não importando maiusculas e minusculas)
@@ -341,8 +353,119 @@ class TestFeatureCalculator(unittest.TestCase):
         wcount.checkWord(document, "do")
         wcount.checkWord(document, "ui")
         int_result = wcount.compute_feature(document)
+        wcount.finish_document(document)
         self.assertEqual(int_result, 2, "Nao foi contabilizado o numero de palavras corretos no teste do terceiro documento")
-
+    
+    def testCharCount(self):
+        ccount = CharacterCountFeature("ola feature contadora", "Essa feature é divertitida", 
+                                         "SILVA Ola. Contando Olas. Conferencia dos Hello World", 
+                                         FeatureVisibilityEnum.public, FormatEnum.text_plain, 
+                                         FeatureTimePerDocumentEnum.MILLISECONDS)
+        
+        document = Document(1,"doc1","O texto nao precisa -necessariamente - ser o texto que sera testado")
+        
+        ccount.checkChar(document, "T")
+        ccount.checkChar(document, "e")
+        ccount.checkChar(document, "m")
+        ccount.checkChar(document, "q")
+        ccount.checkChar(document, " ")
+        ccount.checkChar(document, "d")
+        ccount.checkChar(document, "a")
+        ccount.checkChar(document, "r")
+        ccount.checkChar(document, " ")
+        ccount.checkChar(document, "1")
+        ccount.checkChar(document, "2")
+        ccount.checkChar(document, ".")
+        int_result = ccount.compute_feature(document)
+        ccount.finish_document(document)
+        self.assertEqual(int_result, 12, "Nao foi contabilizado o numero de chars corretos no teste do primeiro documento")
+        
+        ccount.checkChar(document, "T")
+        ccount.checkChar(document, "e")
+        ccount.checkChar(document, "m")
+        ccount.checkChar(document, "q")
+        ccount.checkChar(document, " ")
+        ccount.checkChar(document, "d")
+        ccount.checkChar(document, "a")
+        ccount.checkChar(document, "r")
+        ccount.checkChar(document, " ")
+        ccount.checkChar(document, "1")
+        ccount.checkChar(document, "1")
+        int_result = ccount.compute_feature(document)
+        ccount.finish_document(document)
+        self.assertEqual(int_result, 11, "Nao foi contabilizado o numero de chars corretos no teste do segundo documento")
+        
+    
+    def testSyllableCount(self):
+        scount = SyllableCountFeature("ola feature contadora", "Essa feature é divertitida", 
+                                         "SILVA Ola. Contando Olas. Conferencia dos Hello World", 
+                                         FeatureVisibilityEnum.public, FormatEnum.text_plain, 
+                                         FeatureTimePerDocumentEnum.MILLISECONDS)
+        
+        complexcount = WordsSyllablesCountFeature("ola feature contadora", "Essa feature é divertitida", 
+                                         "SILVA Ola. Contando Olas. Conferencia dos Hello World", 
+                                         FeatureVisibilityEnum.public, FormatEnum.text_plain, 
+                                         FeatureTimePerDocumentEnum.MILLISECONDS, 3)
+        
+        policount = WordsSyllablesCountFeature("ola feature contadora", "Essa feature é divertitida", 
+                                         "SILVA Ola. Contando Olas. Conferencia dos Hello World", 
+                                         FeatureVisibilityEnum.public, FormatEnum.text_plain, 
+                                         FeatureTimePerDocumentEnum.MILLISECONDS, 4)
+        
+        document = Document(1,"doc1","O texto nao precisa -necessariamente - ser o texto que sera testado")
+        
+        scount.checkWord(document, "I")
+        scount.checkWord(document, "don't")
+        scount.checkWord(document, "know")
+        scount.checkWord(document, "how")
+        int_result = scount.compute_feature(document)
+        scount.finish_document(document)
+        self.assertEqual(int_result, 4, "O numero de silabas do primeiro documento não está correto")
+        
+        scount.checkWord(document, "purple")
+        scount.checkWord(document, "perfect")
+        scount.checkWord(document, "sixty")
+        scount.checkWord(document, "Godard")
+        scount.checkWord(document, "tuesday")
+        scount.checkWord(document, "189")
+        int_result = scount.compute_feature(document)
+        scount.finish_document(document)
+        self.assertEqual(int_result, 11, "O numero de silabas do segundo documento não está correto")
+        
+        complexcount.checkWord(document, "Family")
+        complexcount.checkWord(document, "Animal")
+        complexcount.checkWord(document, "identical")
+        complexcount.checkWord(document, "now")
+        int_result = complexcount.compute_feature(document)
+        complexcount.finish_document(document)
+        self.assertEqual(int_result, 3, "O numero de palavras complexas do primeiro documento não está correto")
+        
+        complexcount.checkWord(document, "secretary")
+        complexcount.checkWord(document, "Undemanding")
+        complexcount.checkWord(document, "cat")
+        complexcount.checkWord(document, "dog")
+        complexcount.checkWord(document, "hey")
+        int_result = complexcount.compute_feature(document)
+        complexcount.finish_document
+        self.assertEqual(int_result, 2, "O numero de palavras complexas do segundo documento não está correto")
+        
+        policount.checkWord(document, "irregular")
+        policount.checkWord(document, "Watermelon")
+        policount.checkWord(document, "roll")
+        policount.checkWord(document, "fat")
+        int_result = policount.compute_feature(document)
+        policount.finish_document(document)
+        self.assertEqual(int_result, 2, "O numero de polissilabas do primeiro documento não está correto")
+        
+        policount.checkWord(document, "macaronic")
+        policount.checkWord(document, "Intermittent")
+        policount.checkWord(document, "environment")
+        policount.checkWord(document, "alligator")
+        policount.checkWord(document, "alternative")
+        int_result = policount.compute_feature(document)
+        policount.finish_document(document)
+        self.assertEqual(int_result, 5, "O numero de polissilabas do segundo documento não está correto")
+        
         
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'TestFeatureCalculator.testName']
