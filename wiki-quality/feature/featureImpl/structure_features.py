@@ -11,7 +11,7 @@ import html
 from statistics import stdev
 
 from feature.featureImpl.style_features import WordCountFeature, \
-    SentenceCountFeature
+    SentenceCountFeature, CharacterCountFeature
 from feature.features import TagBasedFeature, WordBasedFeature, \
     SentenceBasedFeature, CharBasedFeature, FeatureVisibilityEnum
 from utils.basic_entities import FormatEnum, FeatureTimePerDocumentEnum
@@ -63,10 +63,10 @@ class TagCountFeaturePerLengthFeature(TagCountFeature,WordBasedFeature,CharBased
     Ratio between a tag count feature (current object) and another feature (another object)
     @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>  
     '''
-    WORD_LENGTH = 1
-    CHAR_LENGTH = 2
-    SENTENCE_LENGTH = 3
-    SECTION_LENGTH = 4
+    WORD_COUNT = 1
+    CHAR_COUNT = 2
+    SENTENCE_COUNT = 3
+    SECTION_COUNT = 4
     
     def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document,intCountLengthType,intSectionLevel=2,setTagsToCount=None):
         super().__init__(name,description,reference,visibility,text_format,feature_time_per_document,setTagsToCount)
@@ -74,22 +74,22 @@ class TagCountFeaturePerLengthFeature(TagCountFeature,WordBasedFeature,CharBased
         self.intSectionLevel = intSectionLevel
         #instancia de acordo com o tipo
         self.objFeature = None
-        if(self.intCountLengthType == TagCountFeaturePerLengthFeature.WORD_LENGTH):
+        if(self.intCountLengthType == TagCountFeaturePerLengthFeature.WORD_COUNT):
             self.objFeature = WordCountFeature("Word Count","Word Count.",
                         "",
                         FeatureVisibilityEnum.public, 
                         FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,[],False)
-        elif(self.intCountLengthType == TagCountFeaturePerLengthFeature.CHAR_LENGTH):
-            self.objFeature = CharCountFeature("Char Count","Char Count.",
+        elif(self.intCountLengthType == TagCountFeaturePerLengthFeature.CHAR_COUNT):
+            self.objFeature = CharacterCountFeature("Char Count","Char Count.",
                                             "",
                                             FeatureVisibilityEnum.public, 
                                             FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,[],False)
-        elif(self.intCountLengthType == TagCountFeaturePerLengthFeature.SENTENCE_LENGTH):
+        elif(self.intCountLengthType == TagCountFeaturePerLengthFeature.SENTENCE_COUNT):
             self.objFeature = SentenceCountFeature("Sentence Count","Sentence Count.",
                         "",
                         FeatureVisibilityEnum.public, 
                         FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,[],False)
-        elif(self.intCountLengthType == TagCountFeaturePerLengthFeature.SECTION_LENGTH):
+        elif(self.intCountLengthType == TagCountFeaturePerLengthFeature.SECTION_COUNT):
             self.objFeature = TagCountFeature("contagem de tags", "Feature que conta tags em HTML", "HTML", 
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.HTML, 

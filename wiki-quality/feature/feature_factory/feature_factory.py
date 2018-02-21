@@ -55,8 +55,54 @@ class StructureFeatureFactory(FeatureFactory):
                                                                 " For example, the value '#mainDiv' point to an element in the page which the id is 'mainDiv'.", "", 
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.HTML, 
-                                         FeatureTimePerDocumentEnum.MILLISECONDS,["h2"],bolExternal=False,bolInternalSameDomain=False,bolInternalSamePage=True)
+                                         FeatureTimePerDocumentEnum.MILLISECONDS,["h2"],bolExternal=False,bolInternalSameDomain=False,bolInternalSamePage=True),
+                       AverageSectionSize("Mean section size","The ratio between the section size (in characters) and the section count","",
+                                          FeatureVisibilityEnum.public, 
+                                          FormatEnum.HTML, 
+                                          FeatureTimePerDocumentEnum.MILLISECONDS,1
+                                          ),
+                       LargestSectionSize("Largest section size","The size (in characters) of the largest section.","",
+                                          FeatureVisibilityEnum.public, 
+                                          FormatEnum.HTML, 
+                                          FeatureTimePerDocumentEnum.MILLISECONDS,1
+                                          ),
+                       ShortestSectionSize("Shortest section size","The size (in characters) of the shortest section","",
+                                          FeatureVisibilityEnum.public, 
+                                          FormatEnum.HTML, 
+                                          FeatureTimePerDocumentEnum.MILLISECONDS,1
+                                          ),                                              
+                       StdDeviationSectionSize("Standard deviation of the section size","Standard deviation of the section size (in characters)","",
+                                          FeatureVisibilityEnum.public, 
+                                          FormatEnum.HTML, 
+                                          FeatureTimePerDocumentEnum.MILLISECONDS,1
+                                          ),
 
+                       TagCountFeaturePerLengthFeature("Links per length","Number of links (considering the 'a' HTML tag) per length (in characters)","",
+                                          FeatureVisibilityEnum.public, 
+                                          FormatEnum.HTML, 
+                                          FeatureTimePerDocumentEnum.MILLISECONDS,
+                                          intCountLengthType=TagCountFeaturePerLengthFeature.CHAR_COUNT,intSectionLevel=None,setTagsToCount=["a"]
+                                          ),
+                        
+                        TagCountFeaturePerLengthFeature("Links per section","The ratio between the number of links (considering the 'a' HTML tag) and the section count","",
+                                          FeatureVisibilityEnum.public, 
+                                          FormatEnum.HTML, 
+                                          FeatureTimePerDocumentEnum.MILLISECONDS,
+                                          intCountLengthType=TagCountFeaturePerLengthFeature.SECTION_COUNT,intSectionLevel=None,setTagsToCount=["a"]
+                                          ),                       
+                       
+                        TagCountFeaturePerLengthFeature("Images per length","Number of images (considering the 'img' HTML tag) per length (in characters)","",
+                                          FeatureVisibilityEnum.public, 
+                                          FormatEnum.HTML, 
+                                          FeatureTimePerDocumentEnum.MILLISECONDS,
+                                          intCountLengthType=TagCountFeaturePerLengthFeature.CHAR_COUNT,intSectionLevel=None,setTagsToCount=["img"]
+                                          ),
+                        TagCountFeaturePerLengthFeature("Images per section","The ratio between the number of links (considering the  'img' HTML tag) and the section count","",
+                                          FeatureVisibilityEnum.public, 
+                                          FormatEnum.HTML, 
+                                          FeatureTimePerDocumentEnum.MILLISECONDS,
+                                          intCountLengthType=TagCountFeaturePerLengthFeature.SECTION_COUNT,intSectionLevel=None,setTagsToCount=["img"]
+                                          ),                       
                        ]
         
 
@@ -79,24 +125,42 @@ class StyleFeatureFactory(FeatureFactory):
         
         arrFeatures = []
         
-        featSentenceCount = SentenceCountFeature("Phrase Count","Count the number of phrases in the text.","reference",
+        featSentenceCount = SentenceCountFeature("Phrase count","Number of phrases in the text.","",
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.text_plain, FeatureTimePerDocumentEnum.MILLISECONDS)
         
-        featLargeSentenceCount = LargeSentenceCountFeature("Large Phrase Count","Count the number of phrases larger than a specified threshold.",
+        featLargeSentenceCount = LargeSentenceCountFeature("Large phrase Count","Count the number of phrases larger than a specified threshold.",
                                                            "reference",FeatureVisibilityEnum.public,FormatEnum.text_plain,
                                                            FeatureTimePerDocumentEnum.MICROSECONDS,10)
         
-        featLargeSentenceCount.addConfigurableParam(ConfigurableParam("int_sentence_size","Sentence Size",
+        featLargeSentenceCount.addConfigurableParam(ConfigurableParam("intSize","Sentence size",
                                                                       "The sentence need to have (at least) this length (in words) in order to be considered a large phrase.",
                                                                       10,ParamTypeEnum.int))
         
+        featLargestSentenceSize = LargeSentenceSizeFeature("Largest phrase size","Compute the size of the largest phrase.",
+                                                           "",FeatureVisibilityEnum.public,FormatEnum.text_plain,
+                                                           FeatureTimePerDocumentEnum.MICROSECONDS,10)
+        
+        featLargePhraseRate = PhraseRateMoreThanAvgFeature("Large phrase rate","Percentage of phrases whose length is t words more than the average phrase length. Where t is the parameter 'Size threshold'.",
+                                                           "",FeatureVisibilityEnum.public,FormatEnum.text_plain,
+                                                           FeatureTimePerDocumentEnum.MICROSECONDS,10,bolLarge=True,intSize=10)
+        featLargePhraseRate.addConfigurableParam(ConfigurableParam("intSize","Size threshold",
+                                                                      "The phrase need to have (at least) this length more than the average in order to be considered a large sentence. The length is calculated using the number of words.",
+                                                                      10,ParamTypeEnum.int))
+        
+        featShortPhraseRate = PhraseRateMoreThanAvgFeature("Short phrase rate","Percentage of phrases whose length is t words less than the average phrase length. Where t is the parameter 'Size threshold'.",
+                                                           "",FeatureVisibilityEnum.public,FormatEnum.text_plain,
+                                                           FeatureTimePerDocumentEnum.MICROSECONDS,10,bolLarge=True,intSize=5)
+        featShortPhraseRate.addConfigurableParam(ConfigurableParam("intSize","Size threshold",
+                                                                      "The phrase need to have (at most) this length less than the average in order to be considered a short sentence. The length is calculated using the number of words.",
+                                                                      5,ParamTypeEnum.int))        
+                
         featParagraphCount = ParagraphCountFeature("Paragraph Count","Count the number of paragraph at text",
                                          "reference",
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.text_plain, FeatureTimePerDocumentEnum.MILLISECONDS)
         
-        featLargeParagraphCount = LargeParagraphCountFeature("Large Paragraph Count","Count the number of paragraphs larger than a specified threshold",
+        featLargeParagraphCount = LargeParagraphCountFeature("Large Paragraph Count","The number of paragraphs larger than a specified threshold",
                                          "reference",
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.text_plain, FeatureTimePerDocumentEnum.MILLISECONDS,16)
@@ -141,11 +205,25 @@ class WordsFeatureFactory(FeatureFactory):
         
         return objFeature
     
+    def createBeginningOfSentenceFeatureObject(self,classe):
+        listWords = self.getClasseGramatical(classe)
+        n = ""
+        if(classe[0] in set(["a","e","i","o","u"])):
+            n = "n"
+        objFeature = BeginningSentenceWordCountFeature("Sentences starting with a"+n+" "+str(classe).title(),"Count the number of phrases that starts with a"+n+" "+ classe +" in the text.",
+                        "Based on file style.c from the file diction-1.11.tar.gz in http://ftp.gnu.org/gnu/diction/",
+                        FeatureVisibilityEnum.public, 
+                        FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,listWords,False)
+        
+        return objFeature
+    
     def createFeatures(self):
         
         part_of_speech = ["articles","auxiliaryVerbs","coordinatingConjunctions","correlativeConjunctions",
                           "indefinitePronouns","interrogativePronouns","prepositions","pronouns",
                           "relativePronouns","subordinatingConjunctions","toBeVerbs"]
         
+        
         arrFeatures = [self.createFeatureObject(classe) for classe in part_of_speech]
+        [arrFeatures.append(self.createBeginningOfSentenceFeatureObject(classe)) for classe in part_of_speech]
         return arrFeatures
