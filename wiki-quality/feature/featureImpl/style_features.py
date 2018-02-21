@@ -6,6 +6,7 @@ Features de estrutura (como numero de seções, citações etc.)
 '''
 
 from feature.features import *
+from feature.hyphenate import *
 
 
 class SentenceCountFeature(SentenceBasedFeature):
@@ -22,9 +23,10 @@ class SentenceCountFeature(SentenceBasedFeature):
         self.int_sentences_counter = self.int_sentences_counter + 1
     
     def compute_feature(self, document):
-        aux = self.int_sentences_counter
+        return self.int_sentences_counter
+    
+    def finish_document(self,document):
         self.int_sentences_counter = 0
-        return aux
 
 class LargeSentenceCountFeature(WordBasedFeature):
     '''
@@ -51,10 +53,11 @@ class LargeSentenceCountFeature(WordBasedFeature):
             self.int_word_counter = 0
     
     def compute_feature(self, document):
-        aux =  self.int_large_sentence
+        return self.int_large_sentence
+    
+    def finish_document(self,document):
         self.int_large_sentence = 0
         self.int_word_counter = 0
-        return aux
         
 class WordCountFeature(WordBasedFeature):
     '''
@@ -79,9 +82,10 @@ class WordCountFeature(WordBasedFeature):
             self.int_word_counter = self.int_word_counter + 1
     
     def compute_feature(self,document):
-        aux = self.int_word_counter
+        return self.int_word_counter
+    
+    def finish_document(self,document):
         self.int_word_counter = 0
-        return aux
         
 class ParagraphCountFeature(ParagraphBasedFeature):
     '''
@@ -97,9 +101,10 @@ class ParagraphCountFeature(ParagraphBasedFeature):
         self.int_paragraph_counter = self.int_paragraph_counter + 1
     
     def compute_feature(self,document):
-        aux =  self.int_paragraph_counter
+        return self.int_paragraph_counter
+    
+    def finish_document(self,document):
         self.int_paragraph_counter = 0
-        return aux
 
 
 class LargeParagraphCountFeature(WordBasedFeature):
@@ -126,7 +131,57 @@ class LargeParagraphCountFeature(WordBasedFeature):
             self.int_word_counter = 0
     
     def compute_feature(self,document):
-        aux = self.int_large_paragraph
+        return self.int_large_paragraph
+    
+    def finish_document(self,document):
         self.int_large_paragraph = 0
-        return aux
 
+class CharacterCountFeature(CharBasedFeature):
+    
+    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document):
+        super(CharBasedFeature,self).__init__(name,description,reference,visibility,text_format,feature_time_per_document)    
+        self.int_char_counter = 0
+    
+    def checkChar(self, document, char):
+        self.int_char_counter = self.int_char_counter + 1
+    
+    def compute_feature(self,document):
+        return self.int_char_counter
+    
+    def finish_document(self,document):
+        self.int_char_counter = 0
+        
+class SyllableCountFeature(WordBasedFeature):
+    
+    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document):
+        super(WordBasedFeature,self).__init__(name,description,reference,visibility,text_format,feature_time_per_document)    
+        self.int_syllable_counter = 0
+    
+    def checkWord(self, document, word):
+        syllable = hyphenator.hyphenate_word(word)
+        self.int_syllable_counter = self.int_syllable_counter + len(syllable)
+        
+    def compute_feature(self, document):
+        return self.int_syllable_counter
+    
+    def finish_document(self,document):
+        self.int_syllable_counter = 0
+
+class WordsSyllablesCountFeature(WordBasedFeature):
+    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document, syllables):
+        super(WordBasedFeature,self).__init__(name,description,reference,visibility,text_format,feature_time_per_document)    
+        self.int_syllables = syllables
+        self.int_complexword_counter = 0
+    
+    def checkWord(self, document, word):
+        syllable = hyphenator.hyphenate_word(word)
+        int_syllable_counter = len(syllable)
+        
+        if int_syllable_counter >= self.int_syllables:
+            self.int_complexword_counter = self.int_complexword_counter + 1
+    
+    def compute_feature(self, document):
+        return self.int_complexword_counter
+    
+    def finish_document(self,document):
+        self.int_complexword_counter = 0

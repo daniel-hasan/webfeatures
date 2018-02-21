@@ -19,16 +19,7 @@ class FeatureFactory(object):
     Cria as features de um determinado tipo.
     @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>  
     '''  
-    IS_LANGUAGE_DEPENDENT = False 
-    def class_language_dependent(self,str_class):
-        '''
-        resgata a classe com um vocabulario dependente de linguagem a ser usa
-        @todo: Nem todos as linguas sao implementadas, deve-se lançar uma exceção e 
-        assim não criar a feature caso nao encontre a classe
-        ''' 
-        module = __import__( "feature.feature_factory.language_dependent_words."+self.language.name+"_words" )
-        Klass = getattr(module,str_class)
-        return Klass
+    IS_LANGUAGE_DEPENDENT = False
     
     @abstractmethod
     def createFeatures(self):
