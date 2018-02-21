@@ -97,6 +97,7 @@ class TestSectionFeatures(unittest.TestCase):
             parser.feed(document.str_text)
             arrSizes = parser.feat.compute_feature(document)
             arrFeaturesResult.append(arrSizes)
+            parser.feat.finish_document(document)
             
         #teste seção
         for intI in range(len(arrResultPerDoc)):

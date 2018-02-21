@@ -126,13 +126,13 @@ class ParserTags(HTMLParser):
         self.feat = feat
         
     def handle_data(self,str_data):
-        pass
+        self.feat.data(self.document, str_data)
 
     def handle_starttag(self, tag, attrs):
-        self.feat.checkTag(self.document, tag)
+        self.feat.startTag(self.document, tag, attrs)
     
     def handle_endtag(self, tag):
-        self.feat.checkTag(self.document, tag)
+        self.feat.endTag(self.document, tag)
 
 class FeatureCalculatorManager(object):
 
@@ -363,9 +363,14 @@ class TagBasedFeature(FeatureCalculator):
     def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document):
         super(FeatureCalculator,self).__init__(name,description,reference,visibility,text_format,feature_time_per_document) 
     
-    def checkTag(self,document,tag):
-        raise NotImplemented
+    def startTag(self,tag, attrs):
+        pass
     
+    def endTag(self,tag, attrs):
+        pass
+    
+    def data(self,document,str_data):
+        pass
     
 class CharBasedFeature(FeatureCalculator):
     def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document):
