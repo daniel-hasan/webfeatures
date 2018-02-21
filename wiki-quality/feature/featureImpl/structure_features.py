@@ -10,15 +10,13 @@ import enum
 import html
 from statistics import stdev
 
+from feature.featureImpl.style_features import WordCountFeature, \
+    SentenceCountFeature
 from feature.features import TagBasedFeature, WordBasedFeature, \
-    SentenceBasedFeature, CharBasedFeature
+    SentenceBasedFeature, CharBasedFeature, FeatureVisibilityEnum
+from utils.basic_entities import FormatEnum, FeatureTimePerDocumentEnum
 
 
-class TypeOfLink(enum):
-    all_links=1
-    just_external=2
-    just_internal=3
-    
 class TagCountFeature(TagBasedFeature):
     
     def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document,setTagsToCount=None):
@@ -35,36 +33,69 @@ class TagCountFeature(TagBasedFeature):
             self.int_tag_counter = self.int_tag_counter + 1
   
     def compute_feature(self, document):
-        aux = self.int_tag_counter
+        return self.int_tag_counter
+    
+    def finish_document(self,document):
         self.int_tag_counter = 0
-        return aux
-
+        
 class LinkCountFeature(TagCountFeature):
     
-    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document,typeOfLink):
+    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document,bolExternal,bolInternalSameDomain,bolInternalSamePage):
         super().__init__(name,description,reference,visibility,text_format,feature_time_per_document,setTagsToCount=["a"])    
-        self.typeOfLink = typeOfLink
-        
+        self.bolExternal = bolExternal
+        self.bolInternalSameDomain = bolInternalSameDomain
+        self.bolInternalSamePage = bolInternalSamePage
     def startTag(self,document,tag,attrs):
-        if("href" not in attrs):
+        if("href" not in attrs or attrs["href"] == None):
             return
         
-        count = (self.typeOfLink == TypeOfLink.just_external and (attrs["href"].startswith("http://")) or (attrs["href"].startswith("https://"))) or self.typeOfLink == TypeOfLink.just_internal 
+        strHref = attrs["href"].strip 
+        count = (self.bolExternal and (strHref.startswith("http://")) or (strHref.startswith("https://")))
+        count = count or (self.bolInternalSamePage  and (strHref.startswith("#"))) or self.bolInternalSameDomain  
         
-        if count or self.typeOfLink == TypeOfLink.all_links:
+        if count:
             super().startTag(document, tag, attrs)
   
     
-class TagCountFeaturePerFeature(TagCountFeature,WordBasedFeature,CharBasedFeature,SentenceBasedFeature):
+class TagCountFeaturePerLengthFeature(TagCountFeature,WordBasedFeature,CharBasedFeature,SentenceBasedFeature):
     '''
     Created on 20 de fev de 2018
     Ratio between a tag count feature (current object) and another feature (another object)
     @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>  
     '''
-    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document,objFeature,setTagsToCount=None):
-        super().__init__(name,description,reference,visibility,text_format,feature_time_per_document,setTagsToCount)
-        self.objFeature = objFeature
+    WORD_LENGTH = 1
+    CHAR_LENGTH = 2
+    SENTENCE_LENGTH = 3
+    SECTION_LENGTH = 4
     
+    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document,intCountLengthType,intSectionLevel=2,setTagsToCount=None):
+        super().__init__(name,description,reference,visibility,text_format,feature_time_per_document,setTagsToCount)
+        self.intCountLengthType = intCountLengthType
+        self.intSectionLevel = intSectionLevel
+        #instancia de acordo com o tipo
+        self.objFeature = None
+        if(self.intCountLengthType == TagCountFeaturePerLengthFeature.WORD_LENGTH):
+            self.objFeature = WordCountFeature("Word Count","Word Count.",
+                        "",
+                        FeatureVisibilityEnum.public, 
+                        FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,[],False)
+        elif(self.intCountLengthType == TagCountFeaturePerLengthFeature.CHAR_LENGTH):
+            self.objFeature = CharCountFeature("Char Count","Char Count.",
+                                            "",
+                                            FeatureVisibilityEnum.public, 
+                                            FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,[],False)
+        elif(self.intCountLengthType == TagCountFeaturePerLengthFeature.SENTENCE_LENGTH):
+            self.objFeature = SentenceCountFeature("Sentence Count","Sentence Count.",
+                        "",
+                        FeatureVisibilityEnum.public, 
+                        FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,[],False)
+        elif(self.intCountLengthType == TagCountFeaturePerLengthFeature.SECTION_LENGTH):
+            self.objFeature = TagCountFeature("contagem de tags", "Feature que conta tags em HTML", "HTML", 
+                                         FeatureVisibilityEnum.public, 
+                                         FormatEnum.HTML, 
+                                         FeatureTimePerDocumentEnum.MILLISECONDS,["h"+str(self.intSectionLevel)])
+        
+        
     #### Tag based Feature overide #########
     def startTag(self,document,tag,attrs):
         super().startTag(document,tag,attrs)
@@ -86,6 +117,11 @@ class TagCountFeaturePerFeature(TagCountFeature,WordBasedFeature,CharBasedFeatur
         int_val_attr = self.objFeature.compute_feature(document) 
         return int_val_cur_obj/int_val_attr
     
+    def finish_document(self,document):
+        super().finish_document(document)
+        self.objFeature.finish_document(document)
+        
+        
     #### WordBasedFeature,CharBasedFeature,SentenceBasedFeature overide #########
     def checkWord(self, document, word):
         if(isinstance(self.objFeature,WordBasedFeature)):
@@ -170,6 +206,9 @@ class SectionSizeFeature(TagBasedFeature):
             self.sectionFinished()
         return 0
     
+    def finish_document(self,document):
+        pass
+        
 class AverageSectionSize(SectionSizeFeature):
     def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document,intSectionLevel):
         super().__init__(name,description,reference,visibility,text_format,feature_time_per_document,intSectionLevel)
@@ -179,12 +218,17 @@ class AverageSectionSize(SectionSizeFeature):
         self.intSumSizes =  self.intSumSizes+intSectionSize
         self.intNumSection = self.intNumSection + 1
         #print("Seção tamanho: "+str(intSectionSize))
+        
     def compute_feature(self, document):
         super().compute_feature(document)
-        aux = self.intSumSizes/self.intNumSection if self.intNumSection!=0 else 0 
+
+        return self.intSumSizes/self.intNumSection if self.intNumSection!=0 else 0
+    
+    def finish_document(self,document):
         self.intSumSizes = 0
         self.intNumSection = 0
-        return aux
+        super().finish_document(document)
+        
 class LargestSectionSize(SectionSizeFeature):
     def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document,intSectionLevel):
         super().__init__(name,description,reference,visibility,text_format,feature_time_per_document,intSectionLevel)
@@ -196,10 +240,12 @@ class LargestSectionSize(SectionSizeFeature):
     
     def compute_feature(self, document):
         super().compute_feature(document)
-        aux = self.intLargestSection
-        self.intLargestSection = 0
-        return aux
+        return self.intLargestSection
     
+    def finish_document(self,document):
+        self.intLargestSection = 0
+        super().finish_document(document)
+        
 class ShortestSectionSize(SectionSizeFeature):
     def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document,intSectionLevel):
         super().__init__(name,description,reference,visibility,text_format,feature_time_per_document,intSectionLevel)
@@ -211,10 +257,13 @@ class ShortestSectionSize(SectionSizeFeature):
     
     def compute_feature(self, document):
         super().compute_feature(document)
-        aux = self.intShortestSection if self.intShortestSection != float("inf") else 0
-        self.intShortestSection = float("inf")
-        return aux    
+        
+        return self.intShortestSection if self.intShortestSection != float("inf") else 0    
     
+    def finish_document(self,document):
+        self.intShortestSection = float("inf")
+        super().finish_document(document)
+        
 class StdDeviationSectionSize(SectionSizeFeature):
     def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document,intSectionLevel):
         super().__init__(name,description,reference,visibility,text_format,feature_time_per_document,intSectionLevel)
@@ -225,8 +274,10 @@ class StdDeviationSectionSize(SectionSizeFeature):
     
     def compute_feature(self, document):
         super().compute_feature(document)
-        stdevResult = stdev(self.arrSectionSizes) if len(self.arrSectionSizes) != 0 else 0
-        self.arrSectionSizes=[]
-        return stdevResult
+        
+        return stdev(self.arrSectionSizes) if len(self.arrSectionSizes) != 0 else 0
     
+    def finish_document(self,document):
+        self.arrSectionSizes=[]
+        super().finish_document(document)
     

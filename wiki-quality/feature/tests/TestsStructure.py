@@ -121,7 +121,7 @@ class TestSectionFeatures(unittest.TestCase):
                                          FeatureTimePerDocumentEnum.MILLISECONDS,1)
         
         self.assert_section_sizes(sizeLevel1, TestSectionFeatures.SECTION_SIZES, "O tamanho das seções (h1 tags) do documento {document_num} estao errados! Deveriam ser:{expected} e foi:{result}")
-
+        
         
         sizeLevel2 = SectionSizeTest("SubSection size", "SubSection size in array", "HTML", 
                                          FeatureVisibilityEnum.public, 
@@ -139,7 +139,7 @@ class TestSectionFeatures(unittest.TestCase):
         self.assert_section_sizes(avgSectionSize1, arrResultsSection, "Erro no calculo do(a) "+strMetricName+" das seções (h1 tags) do documento {document_num} estao errados! Deveria ser:{expected} e foi:{result}")
 
         
-        avgSectionSize2 = FeatureClass("Mean Sub-section Size", "The ratio between the subsection sizes (in chars) and the section count", "HTML",
+        avgSectionSize2 = FeatureClass(strMetricName+" Sub-section Size", "The ratio between the subsection sizes (in chars) and the section count", "HTML",
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.HTML, 
                                          FeatureTimePerDocumentEnum.MILLISECONDS,2)
@@ -161,7 +161,8 @@ class TestSectionFeatures(unittest.TestCase):
         #calcula e testa o desvio padrao
         arrResultsSection= [stdev(arrSizes) if len(arrSizes)!=0 else 0 for arrSizes in TestSectionFeatures.SECTION_SIZES]
         arrResultsSubSection= [stdev(arrSizes) if len(arrSizes)!=0 else 0 for arrSizes in TestSectionFeatures.SUB_SECTION_SIZES]
-        self.assert_section_feature(StdDeviationSectionSize, arrResultsSection, arrResultsSubSection, "desvio padrão")        
+        self.assert_section_feature(StdDeviationSectionSize, arrResultsSection, arrResultsSubSection, "desvio padrão")
+                
     def testMaxMinSizeFeature(self):
         '''
         Created on 20 de fev de 2018
@@ -195,7 +196,7 @@ class TestParserTags(unittest.TestCase):
         intValFeature = parser.feat.compute_feature(document)
         self.assertEqual(intValFeature, 2, "Nao foi contabilizado o numero de seções (h1) e paragrafos (p)"+
                          " no documento testado. Seriam 2 tags e o resultado foi: "+str(intValFeature))
-        
+
         
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'TestFeatureCalculator.testName']

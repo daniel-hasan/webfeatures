@@ -43,17 +43,33 @@ class StructureFeatureFactory(FeatureFactory):
     
     def createFeatures(self):
         
-        arrFeatures = [TagCountFeature("Section h1 Count", "Count the number of HTML h1 sections in the text", "reference", 
+        arrFeatures = [TagCountFeature("Section Count", "Count the number of sections (i.e. HTML h1 tags) in the text", "", 
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.HTML, 
-                                         FeatureTimePerDocumentEnum.MILLISECONDS,["h1"])]
-        
-        featTagCount = TagCountFeature("Section p Count", "Count the number of HTML p sections in the text", "reference", 
+                                         FeatureTimePerDocumentEnum.MILLISECONDS,["h1"]),
+                       TagCountFeature("Subsection Count", "Count the number of subsections (i.e. HTML h1 tags) in the text", "", 
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.HTML, 
-                                         FeatureTimePerDocumentEnum.MILLISECONDS,["p"])
+                                         FeatureTimePerDocumentEnum.MILLISECONDS,["h2"]),
+                       LinkCountFeature("Complete URL link Count", "Count the number of  HTML 'a' tag in which the 'href' attribute refers to a complete URL.", "", 
+                                         FeatureVisibilityEnum.public, 
+                                         FormatEnum.HTML, 
+                                         FeatureTimePerDocumentEnum.MILLISECONDS,["h2"],bolExternal=True,bolInternalSameDomain=False,bolInternalSamePage=False),
+                       LinkCountFeature("Relative URL link Count", "Count the number of  HTML 'a' tag in which the 'href' attribute refers to a relative URL (e.g. /images/cow.gif).", "", 
+                                         FeatureVisibilityEnum.public, 
+                                         FormatEnum.HTML, 
+                                         FeatureTimePerDocumentEnum.MILLISECONDS,["h2"],bolExternal=False,bolInternalSameDomain=True,bolInternalSamePage=False),
+                       LinkCountFeature("Same page link Count", "Count the number of links which refers to some other elements in the same page."+
+                                                                " In other words, count the number of HTML 'a' tags in which 'href' points to some html page id."+
+                                                                " For example, the value '#mainDiv' point to an element in the page which the id is 'mainDiv'.", "", 
+                                         FeatureVisibilityEnum.public, 
+                                         FormatEnum.HTML, 
+                                         FeatureTimePerDocumentEnum.MILLISECONDS,["h2"],bolExternal=False,bolInternalSameDomain=False,bolInternalSamePage=True)
+
+                       ]
         
-        arrFeatures.append(featTagCount)
+
+        
         
         featTagCount = TagCountFeature("Section div Count", "Count the number of HTML div sections in the text", "reference", 
                                          FeatureVisibilityEnum.public, 

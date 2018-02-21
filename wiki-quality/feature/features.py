@@ -194,7 +194,7 @@ class FeatureCalculatorManager(object):
                     arr_feat_result[aux] = feat.compute_feature(docText)
                 aux = aux + 1
                             
-        #considera apenas o que estiver dentro de <body> </body> (se esses elementos existirem)
+            #considera apenas o que estiver dentro de <body> </body> (se esses elementos existirem)
             str_text_lower = str_text.lower()
             int_pos_body = str_text_lower.find("<body>")
             int_pos_fim_body = str_text_lower.find("</body>")
