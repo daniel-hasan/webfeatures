@@ -7,6 +7,8 @@ Created on 15 de dez de 2017
 from abc import abstractmethod
 from django.db import models, transaction
 import time
+from django.utils import timezone
+
 
 from feature.features import FeatureCalculator
 from scheduler.utils import DatasetModelDocReader, DatasetModelDocWriter
@@ -31,30 +33,39 @@ class Scheduler(object):
 				
 		int_wait_minutes = int_wait_minutes*60;
 		i = 0
+		bolIsSleeping = True
 		while i<int_max_iterations:
 			bolFoundDataset = False
-			with transaction.atomic():
-				dataset = self.get_next()
-				
-				if dataset:
-					bolFoundDataset = True				
-					arr_feats_used = self.get_arr_features(dataset)
-									
-					doc_read = DatasetModelDocReader(dataset)
-					doc_write = DatasetModelDocWriter(dataset)
 
-					FeatureCalculator.featureManager.computeFeatureSetDocuments(datReader=doc_read,docWriter=doc_write,arr_features_to_extract=arr_feats_used,format=dataset.format.get_enum())
+			dataset = self.get_next()
+				
+			if dataset:
+				print("Peguei o dateaset: " + dataset.nam_dataset)
+				print("OI tudo bom")
+				bolIsSleeping = False
+				bolFoundDataset = True				
+				arr_feats_used = self.get_arr_features(dataset)
+									
+				doc_read = DatasetModelDocReader(dataset)
+				doc_write = DatasetModelDocWriter(dataset)
+
+				FeatureCalculator.featureManager.computeFeatureSetDocuments(datReader=doc_read,docWriter=doc_write,arr_features_to_extract=arr_feats_used,format=dataset.format.get_enum())
 					
-					dataset.status = Status.objects.get_enum(StatusEnum.COMPLETE)
+				dataset.status = Status.objects.get_enum(StatusEnum.COMPLETE)
 					
 					
-					for doc_delete in Document.objects.filter(dataset_id=dataset.id):
-						if DocumentText.objects.filter(document = doc_delete):
-							doc_delete.delete()
+				for doc_delete in Document.objects.filter(dataset_id=dataset.id):
+					if doc_delete.documenttext != None:
+						doc_delete.documenttext.delete()
 					
-					dataset.save()
+				dataset.end_dat_processing = timezone.now()
+				dataset.save()
+				print("fim run \n\n")
 					
-			if(bolFoundDataset):	
+			if bolFoundDataset is False:
+				if not bolIsSleeping: 	
+					print("dormiu")
+					bolIsSleeping = True
 				time.sleep(int_wait_minutes);
 
 			i = i+1

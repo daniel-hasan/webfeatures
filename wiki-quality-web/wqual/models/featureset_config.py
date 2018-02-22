@@ -225,7 +225,6 @@ class UsedFeatureManager(models.Manager):
                     if(name in arrParamsConstrutor):
                         if name not in ("visibility","text_format","feature_time_per_document"):
                             paramType,paramValue = self.from_obj_to_bd_type_val(value)
-
                             dictParamsToInsert[name]= {"nam_argument": name,
                                                        "val_argument": str(paramValue),
                                                        "type_argument":paramType,
@@ -272,9 +271,8 @@ class UsedFeature(models.Model):
     Relação das features usadas por um usuário
     '''
     ord_feature = models.IntegerField()
-
-    
-    feature_set = models.ForeignKey(FeatureSet, models.PROTECT)
+  
+    feature_set = models.ForeignKey(FeatureSet, models.CASCADE)
     feature = models.ForeignKey(Feature, models.PROTECT)
     feature_time_to_extract = models.ForeignKey(FeatureTimePerDocument,models.PROTECT)
     feature_visibility = models.ForeignKey(FeatureVisibility,models.PROTECT)
@@ -291,7 +289,8 @@ class UsedFeature(models.Model):
         for arg in self.usedfeatureargval_set.all():
             if arg.type_argument == UsedFeatureArgVal.INT:
                 param[arg.nam_argument] = int(arg.val_argument)
-            if arg.type_argument == UsedFeatureArgVal.FLOAT:
+                #print("nome " + arg.nam_argument + "Valor " + arg.val_argument)
+            elif arg.type_argument == UsedFeatureArgVal.FLOAT:
                 param[arg.nam_argument] = float(arg.val_argument)                
             elif arg.type_argument == UsedFeatureArgVal.BOOLEAN:
                 param[arg.nam_argument] = bool(arg.val_argument)
@@ -330,7 +329,7 @@ class UsedFeatureArgVal(models.Model):
     type_argument = models.CharField(max_length=10,choices=TIPOS_DADOS,default=STRING)
     
     is_configurable = models.BooleanField(default=False)
-    used_feature = models.ForeignKey(UsedFeature, models.PROTECT)
+    used_feature = models.ForeignKey(UsedFeature, models.CASCADE)
      
 class FeatureConfigurableParam(models.Model):
     '''

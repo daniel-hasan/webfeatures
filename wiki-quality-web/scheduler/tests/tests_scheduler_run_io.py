@@ -8,6 +8,7 @@ Created on 22 de jan de 2018
 
 from django.test.testcases import TestCase
 
+from django.utils import timezone
 from _datetime import datetime
 from scheduler.scheduler_impl import OldestFirstScheduler
 
@@ -35,7 +36,7 @@ class TestSchedulerRun(TestCase):
         
         self.objDataset0 = Dataset.objects.create(nam_dataset = "dataset_test0", 
                                                     dat_submitted = date0, 
-                                                    dat_valid_until = datetime.now(), 
+                                                    dat_valid_until = timezone.now()), 
                                                     format = self.objFormat,
                                                     feature_set=self.feature_set,
                                                     user=self.my_admin,
@@ -51,7 +52,7 @@ class TestSchedulerRun(TestCase):
         
         self.objDataset2 = Dataset.objects.create(nam_dataset = "dataset_test2", 
                                                     dat_submitted = date2, 
-                                                    dat_valid_until = datetime.now(), 
+                                                    dat_valid_until = timezone.now(), 
                                                     format = self.objFormat,
                                                     feature_set=self.feature_set,
                                                     user=self.my_admin,
