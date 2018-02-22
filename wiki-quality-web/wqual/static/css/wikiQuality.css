@@ -299,4 +299,17 @@ h1 {
 	opacity: 0.5;
 }
 /***************************** Fim do signup.html *****************************/
+/***************************** Início do footer *****************************/
+footer img {
+	position: fixed;
+	bottom: 0px;
+	left: 175px;
+	width: 100px;
+	height: 50px;
+}
+
+footer .piim-lab{
+	left: 50px;
+}
+/***************************** Fim do footer *****************************/
 ==== BASE ====
