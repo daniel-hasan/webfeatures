@@ -147,7 +147,7 @@ class WordCountFeature(WordBasedFeature):
     def finish_document(self,document):
         self.int_word_counter = 0
         
-class BeginningSentenceWordCountFeature(WordBasedFeature):
+class BeginningSentenceWordCountFeature(SentenceBasedFeature):
     '''
     Contabiliza a ocorrencia de uma determinada lista de palavras
     Parametros:
@@ -176,7 +176,7 @@ class BeginningSentenceWordCountFeature(WordBasedFeature):
         while(pos < len(sentence) and sentence[pos] not in word_divisors and pos != 0):
             word += sentence[pos]
             pos = pos + 1
-        word = word.lower if self.case_sensitive else word
+        word = word.lower() if self.case_sensitive else word
         
         #check if exists and count
         if word in self.setWordsToCount:

@@ -16,28 +16,101 @@ from feature.features import TagBasedFeature, WordBasedFeature, \
     SentenceBasedFeature, CharBasedFeature, FeatureVisibilityEnum
 from utils.basic_entities import FormatEnum, FeatureTimePerDocumentEnum
 
-
+class Proportional(enum):
+    WORD_COUNT = 1
+    CHAR_COUNT = 2
+    SENTENCE_COUNT = 3
+    SECTION_COUNT = 4
+    
+    @classmethod
+    def get_enum(int_val):
+        for enum in Proportional:
+            if(enum.value == int_val):
+                return enum
+        return None
+    
+    def get_feature(self):
+        self.objFeature = None
+        if(self == Proportional.WORD_COUNT):
+            self.objFeature = WordCountFeature("Word Count","Word Count.",
+                        "",
+                        FeatureVisibilityEnum.public, 
+                        FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,[],False)
+        elif(self == Proportional.CHAR_COUNT):
+            self.value = CharacterCountFeature("Char Count","Char Count.",
+                                            "",
+                                            FeatureVisibilityEnum.public, 
+                                            FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,[],False)
+        elif(self == Proportional.SENTENCE_COUNT):
+            self.value = SentenceCountFeature("Sentence Count","Sentence Count.",
+                        "",
+                        FeatureVisibilityEnum.public, 
+                        FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,[],False)
+        elif(self == Proportional.SECTION_COUNT):
+            self.value = TagCountFeature("contagem de tags", "Feature que conta tags em HTML", "HTML", 
+                                         FeatureVisibilityEnum.public, 
+                                         FormatEnum.HTML, 
+                                         FeatureTimePerDocumentEnum.MILLISECONDS,["h1"])
+        return None
 class TagCountFeature(TagBasedFeature):
     
-    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document,setTagsToCount=None):
+    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document,setTagsToCount=None,intPropotionalTo=None):
         super(TagBasedFeature,self).__init__(name,description,reference,visibility,text_format,feature_time_per_document)    
         if(setTagsToCount==None):
             setTagsToCount = []
         self.setTagsToCount = set([tag.lower() for tag in setTagsToCount])
         self.int_tag_counter = 0
         
+        if(intPropotionalTo!=None):
+            self.enumProportional = Proportional.get_enum(intPropotionalTo)
+            self.objFeature = self.enum.get_feature()
     
     
     def startTag(self,document,tag,attrs):
         if tag.lower() in self.setTagsToCount:
             self.int_tag_counter = self.int_tag_counter + 1
-  
+            
+        if(self.objFeature != None and isinstance(self.objFeature,TagBasedFeature)):
+            self.objFeature.startTag(document,tag,attrs)  
     def compute_feature(self, document):
-        return self.int_tag_counter
+        intNorm = None
+        if(self.objFeature != None):
+            intNorm = self.objFeature.compute_feature(document)
+        return self.int_tag_counter/intNorm if intNorm != None else self.int_tag_counter
     
     def finish_document(self,document):
         self.int_tag_counter = 0
+        if(self.objFeature!=None):
+            self.finish_document(document)
         
+    #### Tag based Feature overide #########
+    def data(self,document,str_data):
+        if(self.objFeature != None and isinstance(self.objFeature,TagBasedFeature)):
+            self.objFeature.data(document,str_data)
+            
+    def endTag(self,document,tag):
+        if(self.objFeature != None and isinstance(self.objFeature,TagBasedFeature)):
+            self.objFeature.endTag(document,tag)
+    
+    
+        
+        
+    #### WordBasedFeature,CharBasedFeature,SentenceBasedFeature overide #########
+    def checkWord(self, document, word):
+        if(self.objFeature != None and isinstance(self.objFeature,WordBasedFeature)):
+            self.objFeature.checkWord(document,word)
+    
+    def checkSentence(self, document, word):
+        if(self.objFeature != None and isinstance(self.objFeature,SentenceBasedFeature)):
+            self.objFeature.checkWord(document,word)
+            
+            
+    def checkChar(self, document, word):
+        if(self.objFeature != None and isinstance(self.objFeature,CharBasedFeature)):
+            self.objFeature.checkChar(document,word)
+    
+    
+    
 class LinkCountFeature(TagCountFeature):
     
     def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document,bolExternal,bolInternalSameDomain,bolInternalSamePage):
@@ -45,6 +118,7 @@ class LinkCountFeature(TagCountFeature):
         self.bolExternal = bolExternal
         self.bolInternalSameDomain = bolInternalSameDomain
         self.bolInternalSamePage = bolInternalSamePage
+    
     def startTag(self,document,tag,attrs):
         if("href" not in attrs or attrs["href"] == None):
             return
@@ -57,84 +131,8 @@ class LinkCountFeature(TagCountFeature):
             super().startTag(document, tag, attrs)
   
     
-class TagCountFeaturePerLengthFeature(TagCountFeature,WordBasedFeature,CharBasedFeature,SentenceBasedFeature):
-    '''
-    Created on 20 de fev de 2018
-    Ratio between a tag count feature (current object) and another feature (another object)
-    @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>  
-    '''
-    WORD_COUNT = 1
-    CHAR_COUNT = 2
-    SENTENCE_COUNT = 3
-    SECTION_COUNT = 4
-    
-    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document,intCountLengthType,intSectionLevel=2,setTagsToCount=None):
-        super().__init__(name,description,reference,visibility,text_format,feature_time_per_document,setTagsToCount)
-        self.intCountLengthType = intCountLengthType
-        self.intSectionLevel = intSectionLevel
-        #instancia de acordo com o tipo
-        self.objFeature = None
-        if(self.intCountLengthType == TagCountFeaturePerLengthFeature.WORD_COUNT):
-            self.objFeature = WordCountFeature("Word Count","Word Count.",
-                        "",
-                        FeatureVisibilityEnum.public, 
-                        FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,[],False)
-        elif(self.intCountLengthType == TagCountFeaturePerLengthFeature.CHAR_COUNT):
-            self.objFeature = CharacterCountFeature("Char Count","Char Count.",
-                                            "",
-                                            FeatureVisibilityEnum.public, 
-                                            FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,[],False)
-        elif(self.intCountLengthType == TagCountFeaturePerLengthFeature.SENTENCE_COUNT):
-            self.objFeature = SentenceCountFeature("Sentence Count","Sentence Count.",
-                        "",
-                        FeatureVisibilityEnum.public, 
-                        FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,[],False)
-        elif(self.intCountLengthType == TagCountFeaturePerLengthFeature.SECTION_COUNT):
-            self.objFeature = TagCountFeature("contagem de tags", "Feature que conta tags em HTML", "HTML", 
-                                         FeatureVisibilityEnum.public, 
-                                         FormatEnum.HTML, 
-                                         FeatureTimePerDocumentEnum.MILLISECONDS,["h"+str(self.intSectionLevel)])
         
-        
-    #### Tag based Feature overide #########
-    def startTag(self,document,tag,attrs):
-        super().startTag(document,tag,attrs)
-        if(isinstance(self.objFeature,TagBasedFeature)):
-            self.objFeature.startTag(document,tag,attrs)
-    
-    def data(self,document,str_data):
-        super().data(document,str_data)
-        if(isinstance(self.objFeature,TagBasedFeature)):
-            self.objFeature.data(document,str_data)
-            
-    def endTag(self,document,tag):
-        super().endTag(document,tag)
-        if(isinstance(self.objFeature,TagBasedFeature)):
-            self.objFeature.endTag(document,tag)
-    
-    def compute_feature(self, document):
-        int_val_cur_obj =super().compute_feature(document)
-        int_val_attr = self.objFeature.compute_feature(document) 
-        return int_val_cur_obj/int_val_attr
-    
-    def finish_document(self,document):
-        super().finish_document(document)
-        self.objFeature.finish_document(document)
-        
-        
-    #### WordBasedFeature,CharBasedFeature,SentenceBasedFeature overide #########
-    def checkWord(self, document, word):
-        if(isinstance(self.objFeature,WordBasedFeature)):
-            self.objFeature.checkWord(document,word)
-    
-    def checkSentence(self, document, word):
-        if(isinstance(self.objFeature,SentenceBasedFeature)):
-            self.objFeature.checkWord(document,word)
-            
-            
-    def checkChar(self, document, word):
-        if(isinstance(self.objFeature,CharBasedFeature)):
-            self.objFeature.checkChar(document,word)            
+
         
 
         

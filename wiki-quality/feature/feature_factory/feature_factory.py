@@ -13,7 +13,7 @@ from feature.features import  FeatureVisibilityEnum
 from utils.basic_entities import FormatEnum, FeatureTimePerDocumentEnum
 from django.contrib.sessions.backends import file
 
-
+ 
 class FeatureFactory(object):
     '''
     Cria as features de um determinado tipo.
@@ -46,16 +46,57 @@ class StructureFeatureFactory(FeatureFactory):
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.HTML, 
                                          FeatureTimePerDocumentEnum.MILLISECONDS,["h2"],bolExternal=True,bolInternalSameDomain=False,bolInternalSamePage=False),
+                       LinkCountFeature("Complete URL link Count per section", "Ration between number of  HTML 'a' tag in which the 'href' attribute refers to a complete URL and the number of sections.", "", 
+                                         FeatureVisibilityEnum.public, 
+                                         FormatEnum.HTML, 
+                                         FeatureTimePerDocumentEnum.MILLISECONDS,["h2"],
+                                         bolExternal=True,bolInternalSameDomain=False,bolInternalSamePage=False,
+                                         intPropotionalTo=Proportional.SECTION_COUNT
+                                        ),
+                       LinkCountFeature("Complete URL link Count per length", "Ration between number of  HTML 'a' tag in which the 'href' attribute refers to a complete URL and the number of characters in text.", "", 
+                                         FeatureVisibilityEnum.public, 
+                                         FormatEnum.HTML, 
+                                         FeatureTimePerDocumentEnum.MILLISECONDS,["h2"],
+                                         bolExternal=True,bolInternalSameDomain=False,bolInternalSamePage=False,
+                                         intPropotionalTo=Proportional.CHAR_COUNT
+                                        ),                       
                        LinkCountFeature("Relative URL link Count", "Count the number of  HTML 'a' tag in which the 'href' attribute refers to a relative URL (e.g. /images/cow.gif).", "", 
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.HTML, 
-                                         FeatureTimePerDocumentEnum.MILLISECONDS,["h2"],bolExternal=False,bolInternalSameDomain=True,bolInternalSamePage=False),
+                                         FeatureTimePerDocumentEnum.MILLISECONDS,["h2"],
+                                         bolExternal=False,bolInternalSameDomain=True,bolInternalSamePage=False),
+                       LinkCountFeature("Relative URL link Count per section", "Ratio between the number of  HTML 'a' tag in which the 'href' attribute refers to a relative URL (e.g. /images/cow.gif) and the number of sections.", "", 
+                                         FeatureVisibilityEnum.public, 
+                                         FormatEnum.HTML, 
+                                         FeatureTimePerDocumentEnum.MILLISECONDS,["h2"],
+                                         bolExternal=False,bolInternalSameDomain=True,bolInternalSamePage=False,
+                                         intPropotionalTo=Proportional.SECTION_COUNT
+                                         ),     
+                       LinkCountFeature("Relative URL link Count per length", "Ratio between the number of  HTML 'a' tag in which the 'href' attribute refers to a relative URL (e.g. /images/cow.gif) and the number of characters in text.", "", 
+                                         FeatureVisibilityEnum.public, 
+                                         FormatEnum.HTML, 
+                                         FeatureTimePerDocumentEnum.MILLISECONDS,["h2"],
+                                         bolExternal=False,bolInternalSameDomain=True,bolInternalSamePage=False,
+                                         intPropotionalTo=Proportional.CHAR_COUNT
+                                         ),                                           
                        LinkCountFeature("Same page link Count", "Count the number of links which refers to some other elements in the same page."+
                                                                 " In other words, count the number of HTML 'a' tags in which 'href' points to some html page id."+
                                                                 " For example, the value '#mainDiv' point to an element in the page which the id is 'mainDiv'.", "", 
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.HTML, 
                                          FeatureTimePerDocumentEnum.MILLISECONDS,["h2"],bolExternal=False,bolInternalSameDomain=False,bolInternalSamePage=True),
+                       LinkCountFeature("Same page link count per length", "The ratio between the number of links which refers to some other elements in the same page and the number of characters in text.", "", 
+                                         FeatureVisibilityEnum.public, 
+                                         FormatEnum.HTML, 
+                                         FeatureTimePerDocumentEnum.MILLISECONDS,["h2"],
+                                         bolExternal=False,bolInternalSameDomain=False,bolInternalSamePage=True,
+                                         intPropotionalTo=Proportional.CHAR_COUNT),
+                       LinkCountFeature("Same page link count per section", "The ratio between the number of links which refers to some other elements in the same page and the number of sections", "", 
+                                         FeatureVisibilityEnum.public, 
+                                         FormatEnum.HTML, 
+                                         FeatureTimePerDocumentEnum.MILLISECONDS,["h2"],
+                                         bolExternal=False,bolInternalSameDomain=False,bolInternalSamePage=True,
+                                         intPropotionalTo=Proportional.SECTION_COUNT),                                              
                        AverageSectionSize("Mean section size","The ratio between the section size (in characters) and the section count","",
                                           FeatureVisibilityEnum.public, 
                                           FormatEnum.HTML, 
@@ -77,31 +118,31 @@ class StructureFeatureFactory(FeatureFactory):
                                           FeatureTimePerDocumentEnum.MILLISECONDS,1
                                           ),
 
-                       TagCountFeaturePerLengthFeature("Links per length","Number of links (considering the 'a' HTML tag) per length (in characters)","",
+                       TagCountFeature("Links per length","Number of links (considering all the 'a' HTML tag) per length (in characters)","",
                                           FeatureVisibilityEnum.public, 
                                           FormatEnum.HTML, 
                                           FeatureTimePerDocumentEnum.MILLISECONDS,
-                                          intCountLengthType=TagCountFeaturePerLengthFeature.CHAR_COUNT,intSectionLevel=None,setTagsToCount=["a"]
+                                          intPropotionalTo=Proportional.CHAR_COUNT,setTagsToCount=["a"]
                                           ),
                         
-                        TagCountFeaturePerLengthFeature("Links per section","The ratio between the number of links (considering the 'a' HTML tag) and the section count","",
+                        TagCountFeature("Links per section","The ratio between the number of links (considering all the 'a' HTML tag) and the section count","",
                                           FeatureVisibilityEnum.public, 
                                           FormatEnum.HTML, 
                                           FeatureTimePerDocumentEnum.MILLISECONDS,
-                                          intCountLengthType=TagCountFeaturePerLengthFeature.SECTION_COUNT,intSectionLevel=None,setTagsToCount=["a"]
+                                          intPropotionalTo=Proportional.SECTION_COUNT,setTagsToCount=["a"]
                                           ),                       
                        
-                        TagCountFeaturePerLengthFeature("Images per length","Number of images (considering the 'img' HTML tag) per length (in characters)","",
+                        TagCountFeature("Images per length","Number of images (considering the 'img' HTML tag) per length (in characters)","",
                                           FeatureVisibilityEnum.public, 
                                           FormatEnum.HTML, 
                                           FeatureTimePerDocumentEnum.MILLISECONDS,
-                                          intCountLengthType=TagCountFeaturePerLengthFeature.CHAR_COUNT,intSectionLevel=None,setTagsToCount=["img"]
+                                          intPropotionalTo=Proportional.CHAR_COUNT,setTagsToCount=["img"]
                                           ),
-                        TagCountFeaturePerLengthFeature("Images per section","The ratio between the number of links (considering the  'img' HTML tag) and the section count","",
+                        TagCountFeature("Images per section","The ratio between the number of links (considering the  'img' HTML tag) and the section count","",
                                           FeatureVisibilityEnum.public, 
                                           FormatEnum.HTML, 
                                           FeatureTimePerDocumentEnum.MILLISECONDS,
-                                          intCountLengthType=TagCountFeaturePerLengthFeature.SECTION_COUNT,intSectionLevel=None,setTagsToCount=["img"]
+                                          intPropotionalTo=Proportional.SECTION_COUNT,setTagsToCount=["img"]
                                           ),                       
                        ]
         
@@ -119,9 +160,7 @@ class StyleFeatureFactory(FeatureFactory):
         '''
         Cria as features de estilo de escrita (numero de preposicoes, pronomes, etc).
         Parametros:
-            language: objeto da classe utils.Language
         '''
-        PosClassLang = self.class_language_dependent("PartOfSpeech")
         
         arrFeatures = []
         
@@ -137,11 +176,11 @@ class StyleFeatureFactory(FeatureFactory):
                                                                       "The sentence need to have (at least) this length (in words) in order to be considered a large phrase.",
                                                                       10,ParamTypeEnum.int))
         
-        featLargestSentenceSize = LargeSentenceSizeFeature("Largest phrase size","Compute the size of the largest phrase.",
+        featLargestSentenceSize = LargeSentenceSizeFeature("Largest phrase size","Compute the size (in words) of the largest phrase.",
                                                            "",FeatureVisibilityEnum.public,FormatEnum.text_plain,
-                                                           FeatureTimePerDocumentEnum.MICROSECONDS,10)
+                                                           FeatureTimePerDocumentEnum.MICROSECONDS)
         
-        featLargePhraseRate = PhraseRateMoreThanAvgFeature("Large phrase rate","Percentage of phrases whose length is t words more than the average phrase length. Where t is the parameter 'Size threshold'.",
+        featLargePhraseRate = PhraseRateMoreThanAvgFeature("Large phrase rate","Percentage of phrases whose length is t words more than the average phrase length (in words). Where t is the parameter 'Size threshold'.",
                                                            "",FeatureVisibilityEnum.public,FormatEnum.text_plain,
                                                            FeatureTimePerDocumentEnum.MICROSECONDS,10,bolLarge=True,intSize=10)
         featLargePhraseRate.addConfigurableParam(ConfigurableParam("intSize","Size threshold",
@@ -210,7 +249,7 @@ class WordsFeatureFactory(FeatureFactory):
         n = ""
         if(classe[0] in set(["a","e","i","o","u"])):
             n = "n"
-        objFeature = BeginningSentenceWordCountFeature("Sentences starting with a"+n+" "+str(classe).title(),"Count the number of phrases that starts with a"+n+" "+ classe +" in the text.",
+        objFeature = BeginningSentenceWordCountFeature("Sentences starting with a"+n+" "+str(classe).title(),"Count the number of phrases that starts with a"+n+" "+ classe +" in the text. ",
                         "Based on file style.c from the file diction-1.11.tar.gz in http://ftp.gnu.org/gnu/diction/",
                         FeatureVisibilityEnum.public, 
                         FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,listWords,False)
