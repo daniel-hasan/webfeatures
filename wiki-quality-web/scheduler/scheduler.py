@@ -5,16 +5,18 @@ Created on 15 de dez de 2017
 
 
 from abc import abstractmethod
-from django.db import models, transaction
+import threading
 import time
-from django.utils import timezone
 
+from django.db import models, transaction
+from django.utils import timezone
 
 from feature.features import FeatureCalculator
 from scheduler.utils import DatasetModelDocReader, DatasetModelDocWriter
 from wqual.models.featureset_config import UsedFeature
-from wqual.models.uploaded_datasets import StatusEnum, Status
 from wqual.models.uploaded_datasets import Document, DocumentText
+from wqual.models.uploaded_datasets import StatusEnum, Status
+
 
 class Scheduler(object):
 
@@ -33,15 +35,20 @@ class Scheduler(object):
 				
 		int_wait_minutes = int_wait_minutes*60;
 		i = 0
-		bolIsSleeping = True
+		bolIsSleeping = False
 		while i<int_max_iterations:
 			bolFoundDataset = False
-
+			if(not bolIsSleeping):
+				numth = threading.get_ident()
+				print(str(numth)+": Pegando o dataset")
+			
 			dataset = self.get_next()
+			
 				
+			if(dataset):
+				print(str(numth)+": Saiu status: "+dataset.status.name)
 			if dataset:
 				print("Peguei o dateaset: " + dataset.nam_dataset)
-				print("OI tudo bom")
 				bolIsSleeping = False
 				bolFoundDataset = True				
 				arr_feats_used = self.get_arr_features(dataset)
@@ -66,7 +73,7 @@ class Scheduler(object):
 				if not bolIsSleeping: 	
 					print("dormiu")
 					bolIsSleeping = True
-				time.sleep(int_wait_minutes);
+				time.sleep(int_wait_minutes)
 
 			i = i+1
 			

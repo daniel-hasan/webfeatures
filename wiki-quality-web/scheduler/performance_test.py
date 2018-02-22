@@ -102,7 +102,7 @@ class PerformanceTest(object):
             
         print("dps pa")
         objFeatureSet = self.create_feature_set()
-        self.create_dataset(13, objFeatureSet)
+        self.create_dataset(2, objFeatureSet)
         
         
 class Th(Thread):
