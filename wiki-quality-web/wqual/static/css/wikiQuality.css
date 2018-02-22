@@ -246,6 +246,7 @@ h1 {
 .password-eye {
 	width: 50px;
 	height: 25px;
+	display: none;
 }
 
 .password-eye-input {

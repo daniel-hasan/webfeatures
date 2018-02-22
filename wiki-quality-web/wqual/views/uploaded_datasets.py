@@ -6,28 +6,26 @@ Views relacionadas a upload dos datasets
 '''
 from _io import BytesIO
 from datetime import datetime
-
+from django.forms.utils import ErrorList
+from django.http import HttpResponse
 import json
 import lzma
 import os
 import uuid
-
-
-
-from django.forms.utils import ErrorList
-from django.http import HttpResponse
 import zipfile
+
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls.base import reverse
 from django.views.generic.base import View
 from django.views.generic.edit import CreateView, DeleteView
+
 from wqual.models import Dataset
 from wqual.models.exceptions import FileSizeException
 from wqual.models.uploaded_datasets import  Status, StatusEnum, DocumentText, \
     Document, DocumentResult
 
 
-
-class DatasetDownloadView(View):
+class DatasetDownloadView(LoginRequiredMixin, View):
     def get(self, request, dataset_id,format):
         
         txt_file_name = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))+"/tmp/"+str(uuid.uuid1())
@@ -83,7 +81,7 @@ class DatasetDownloadView(View):
 
         
         return resp
-class DatasetCreateView(CreateView):
+class DatasetCreateView(LoginRequiredMixin, CreateView):
     '''
     Created on 14 de ago de 2017
     
@@ -143,7 +141,7 @@ class DatasetCreateView(CreateView):
         }
         
              
-class DatasetDelete(DeleteView):
+class DatasetDelete(LoginRequiredMixin, DeleteView):
         '''
         Created on 7 dez de 2017
         
