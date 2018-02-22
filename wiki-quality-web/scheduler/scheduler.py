@@ -19,7 +19,8 @@ from wqual.models.uploaded_datasets import StatusEnum, Status
 
 
 class Scheduler(object):
-
+	SCHEDULER_DATASET_LOCK = threading.Lock()
+	
 	@abstractmethod
 	def get_next(self):
 		pass
@@ -31,7 +32,7 @@ class Scheduler(object):
 			arrFeatures.append(objUsedFeature.get_feature_instance())
 		return arrFeatures
 	
-	def run(self, int_wait_minutes,int_max_iterations = float('inf')):
+	def run(self, int_wait_minutes,int_max_iterations = float("inf")):
 				
 		int_wait_minutes = int_wait_minutes*60;
 		i = 0
@@ -40,13 +41,13 @@ class Scheduler(object):
 			bolFoundDataset = False
 			if(not bolIsSleeping):
 				numth = threading.get_ident()
-				print(str(numth)+": Pegando o dataset")
+				
 			
-			dataset = self.get_next()
+			with Scheduler.SCHEDULER_DATASET_LOCK:
+				dataset = self.get_next()
 			
 				
-			if(dataset):
-				print(str(numth)+": Saiu status: "+dataset.status.name)
+
 			if dataset:
 				print("Peguei o dateaset: " + dataset.nam_dataset)
 				bolIsSleeping = False

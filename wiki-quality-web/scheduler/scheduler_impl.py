@@ -5,10 +5,11 @@ Created on 15 de dez de 2017
 '''
 
 from _datetime import datetime
-import threading
-
 from django.db import transaction
 from django.db.models import Max
+import os
+import threading
+import time
 
 from scheduler.scheduler import Scheduler
 from wqual.models import UsedFeature
@@ -24,24 +25,29 @@ class OldestFirstScheduler(Scheduler):
 			Retorna o dataset mais antigo
 		'''
 		
-		objSubmited = Status.objects.get_enum(StatusEnum.SUBMITTED)
-		objProcessing = Status.objects.get_enum(StatusEnum.PROCESSING)
 		
-		numth = threading.get_ident()
 		
+		numth = str(threading.get_ident())+"("+str(os.getpid())+") "
+		dataset_oldest = None
 		#print(str(numth)+": Pegando doc  ")
-		
-		Dataset.objects.filter(status=objSubmited).order_by('dat_submitted').first().update(status=objProcessing)
-		if not dataset_oldest:
-			return None
-		print(str(numth)+": Atualizando status data set id: " + str(dataset_oldest.id))
-		dataset_oldest.status= Status.objects.get_enum(StatusEnum.PROCESSING)
-		#atualiza a data aqui
-		dataset_oldest.start_dat_processing=datetime.now()
-		print(str(numth)+": Salvando " + str(dataset_oldest.id))
-		dataset_oldest.save()
-		transaction.commit()
-		print(str(numth)+": Deu commit " + str(dataset_oldest.id))
+		with transaction.atomic():
+			objSubmited = Status.objects.get_enum(StatusEnum.SUBMITTED)
+			objProcessing = Status.objects.get_enum(StatusEnum.PROCESSING)
+			
+			dataset_oldest = Dataset.objects.select_for_update().filter(status=objSubmited).order_by('dat_submitted').first()
+			if not dataset_oldest:
+				return None
+			dataset_oldest.refresh_from_db()
+			print(str(numth)+": Atualizando status data set id: " + str(dataset_oldest.id)+" STATUS: "+str(dataset_oldest.status))
+			dataset_oldest.status= objProcessing
+			#atualiza a data aqui
+			dataset_oldest.start_dat_processing=datetime.now()
+			#print(str(numth)+": Salvando " + str(dataset_oldest.id))
+			dataset_oldest.save()
+			print(str(numth)+" Salvou o dataset: " + str(dataset_oldest.id))
+			#transaction.commit()
+			
+			
 		return dataset_oldest
 	
 

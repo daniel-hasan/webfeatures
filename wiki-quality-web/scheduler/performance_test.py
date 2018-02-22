@@ -4,17 +4,22 @@ Created on 16 de fev de 2018
 @author: Priscilla Raiane <priscilla.rm.carmo@gmail.com>
 '''
 
-from django.utils import timezone
-
 from django.contrib.auth.models import User
+from django.utils import timezone
+import multiprocessing
+from threading import Thread
+import threading
 
-from wqual.models.featureset_config import FeatureSet, Language, FeatureFactory, Feature, UsedFeature,\
+from scheduler.scheduler_impl import OldestFirstScheduler
+from wiki_quality_web.settings import BASE_DIR
+from wqual.models.featureset_config import FeatureSet, Language, FeatureFactory, Feature, UsedFeature, \
     FeatureTimePerDocument, FeatureVisibility
 from wqual.models.uploaded_datasets import Dataset, Format, Status
-from scheduler.scheduler_impl import OldestFirstScheduler
 
-import threading
-from threading import Thread
+
+def run_scheduler():
+    print("Rodando o processo...")
+    OldestFirstScheduler().run(0)
 
 class PerformanceTest(object):
     
@@ -22,6 +27,8 @@ class PerformanceTest(object):
     feature_heavy_id = 3
     
     def create_feature_set(self): 
+        if(User.objects.all().count()==0):
+            User.objects.create_superuser('myuser', 'myemail@test.com', "secret")
         obj_english = Language.objects.get(name="en")
         arrFeatSet = FeatureSet.objects.filter(nam_feature_set = "Performance Test",user = User.objects.all()[0])
         if(len(arrFeatSet)>0):
@@ -60,7 +67,8 @@ class PerformanceTest(object):
         self.num_dataset = num_dataset +1
         arr_end_compress_file = []
         for i in range(11):
-            arr_end_compress_file.append("/home/kira/git-wiki/txt"+str(i)+".zip")
+            #print("Base dir: "+BASE_DIR)
+            arr_end_compress_file.append(BASE_DIR+"/dummy_dataset_tests/txt_"+str(i)+".zip")
        
 
     
@@ -96,14 +104,21 @@ class PerformanceTest(object):
         #self.create_feature_set()
         print("antes parallel")
         #self.run_oldest_first(num_parallel_oldest)
+        jobs = []
         for i in range(num_parallel_oldest):
-            t = Th(i, 0)
-            t.start()
+            p = multiprocessing.Process(target=run_scheduler)
+            jobs.append(p)
+            p.start()
+        
+        #for i in range(num_parallel_oldest):
+        #    t = Th(i, 0)
+        #    t.start()
             
         print("dps pa")
         objFeatureSet = self.create_feature_set()
         self.create_dataset(2, objFeatureSet)
-        
+        print("Criu dataset!!! Começou diversão")
+
         
 class Th(Thread):
     def __init__(self, num_thread, int_wait_minutes):
