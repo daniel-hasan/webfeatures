@@ -1,11 +1,12 @@
 {% extends "../bases/base_main_site.html" %}
+{% load static %}
 
 {% block content %}
 	<section class="dataset-section">
 		<h1>Upload a compressed file</h1>
 		<form enctype="multipart/form-data" method="post" name='file_dataset' class="form">
 			{% csrf_token %}
-			<input name="file_dataset" type="file">
+			<input class="dataset-file" name="file_dataset" type="file">
 			{% for field in form %}
 				{% ifequal field.label "Format" %}
 					<span>Format Dataset:</span>
@@ -21,7 +22,7 @@
 					<p class="erro-p">{{ error }}</p>
 				{% endfor %}
 			{% endfor %}						
-			<button type="submit" class="submit_button">Submit</button>
+			<button type="submit" class="ui-button ui-widget ui-corner-all">Submit</button>
 		</form>
 	</section>
 	<table class="dataset-list">
@@ -42,10 +43,19 @@
     				<td>{{ dataset.nam_dataset }}</td>
     				<td>{{ dataset.status }}</td>
     				<td>{{ dataset.dat_submitted }}</td>
-  	  				<td>{{ dataset.dat_valid_until }}</td>
+    				{% ifequal dataset.dat_valid_until "" %}
+    					<td></td>
+    				{% else %}
+  	  					<td>{{ dataset.dat_valid_until }}</td>
+  	  				{% endifequal %}
     				<td>{{ dataset.feature_set }}</td>
     				<td>{{ dataset.format.name }}</td>
-					<td><a href="{% url "download_result" dataset.id "json" %}">json</a> <a href="{% url "download_result" dataset.id "xls" %}">xls</a></td>
+    				
+    				{% ifequal dataset.status "COMPLETED" %}
+						<td><a href="{% url "download_result" dataset.id "json" %}">json</a> <a href="{% url "download_result" dataset.id "xls" %}">xls</a></td>
+					{% else %}
+						<td></td>
+					{% endifequal %}
 					<td>
 						<form action="{% url "dataset_delete" dataset.id %}" method="post">
 							{% csrf_token %}
@@ -66,6 +76,7 @@
 			{% endfor %}
 		</tbody>
 	</table>
+	<script src="{% static "js/dataset_list.js" %}"></script>
 	<!-- <script type="text/javascript">
 		let mapFeatHTMLperFeatSet = {1: ["feature HTML1"], 2: ["feature HTML2"], 3: ["feature HTML3"]};
 		

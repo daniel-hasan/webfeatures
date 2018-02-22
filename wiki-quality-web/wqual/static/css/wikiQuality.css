@@ -143,17 +143,6 @@ h1 {
 	width: 50%;
 }
 
-.submit_button {
-	margin-top: 1.5%;
-	background-color: #ffd27f;
-	border: 1px solid #ffd27f;
-	border-radius: 5px;
-	display: block;
-	margin-right: auto;
-	margin-left: 15%;
-	color: white;
-}
-
 .erro-p {
 	color: red;
 	padding-top: 5px;
