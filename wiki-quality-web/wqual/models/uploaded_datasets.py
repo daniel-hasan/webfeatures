@@ -9,14 +9,15 @@ As tabelas relacionadas com o resultado desta extração também está neste arq
 '''
 
 from enum import IntEnum, Enum
-from django.contrib.auth.models import User, Group
-from django.db import models
 import lzma
-from utils.uncompress_data import CompressedFile
-from wqual.models.exceptions import FileSizeException
-from wqual.models import FeatureSet, Format
-from wqual.models.utils import EnumModel, EnumManager, CompressedTextField
 
+from django.contrib.auth.models import User, Group
+from django.db import models, transaction
+
+from utils.uncompress_data import CompressedFile
+from wqual.models import FeatureSet, Format
+from wqual.models.exceptions import FileSizeException
+from wqual.models.utils import EnumModel, EnumManager, CompressedTextField
 
 
 class StatusEnum(Enum):
@@ -44,7 +45,6 @@ class Status(EnumModel):
     def get_enum_class():
         return StatusEnum
     
-
    
 class Dataset(models.Model):
     '''
@@ -68,12 +68,8 @@ class Dataset(models.Model):
     status = models.ForeignKey(Status, models.PROTECT)
     dsc_result_header = models.TextField(blank=True, null=True)
     
-    
-
-    
-
-    
-    
+    num_proc_extractor = models.IntegerField(blank=True, null=True)
+         
     def save_compressed_file(self,comp_file_pointer):
             #validacao ser feita aqui
             
@@ -92,11 +88,12 @@ class Dataset(models.Model):
                 
             self.save()   
             for name,strFileTxt in objFileZip.read_each_file():
-                objDocumento = Document(nam_file=name,dataset=self)
-                objDocumento.save()
-                objDocumentoTexto = DocumentText(document=objDocumento,dsc_text=strFileTxt)
-                objDocumentoTexto.save()
-                self.document_set.add(objDocumento,bulk=False)
+                with transaction.atomic():
+                    objDocumento = Document(nam_file=name,dataset=self)
+                    objDocumento.save()
+                    objDocumentoTexto = DocumentText(document=objDocumento,dsc_text=strFileTxt)
+                    objDocumentoTexto.save()
+                    self.document_set.add(objDocumento,bulk=False)
                 
 
                 

@@ -87,7 +87,7 @@ DATABASES = {
         'CHARSET': 'utf8',
         'COLLATION': 'utf8_general_ci',
         'OPTIONS': {
-               "init_command": "SET default_storage_engine=MyISAM",
+               "init_command": "SET default_storage_engine=Innodb; SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED",
         },
         'TEST': {
             'CHARSET': 'utf8',

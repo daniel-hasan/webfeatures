@@ -5,7 +5,7 @@ Created on 31 de jan de 2018
 
 '''
 
-from _datetime import datetime
+from django.utils import timezone
 
 from django.test.testcases import TestCase
 from scheduler.scheduler_impl import SchedulerSmallJobFirst
@@ -42,7 +42,7 @@ class TestOldestScheduler(TestCase):
         
         self.objDataset0 = Dataset.objects.create(nam_dataset = "dataset_test0", 
                                                     dat_submitted = date0, 
-                                                    dat_valid_until = datetime.now(), 
+                                                    dat_valid_until = timezone.now(), 
                                                     format = self.objFormat,
                                                     feature_set=self.feature_set,
                                                     user=self.my_admin,
@@ -50,7 +50,7 @@ class TestOldestScheduler(TestCase):
         
         self.objDataset1 = Dataset.objects.create(nam_dataset = "dataset_test1", 
                                                     dat_submitted = date1, 
-                                                    dat_valid_until = datetime.now(),
+                                                    dat_valid_until = timezone.now(),
                                                     format = self.objFormat,
                                                     feature_set=self.feature_set1,
                                                     user=self.my_admin,
@@ -58,7 +58,7 @@ class TestOldestScheduler(TestCase):
         
         self.objDataset2 = Dataset.objects.create(nam_dataset = "dataset_test2", 
                                                     dat_submitted = date2, 
-                                                    dat_valid_until = datetime.now(), 
+                                                    dat_valid_until = timezone.now(), 
                                                     format = self.objFormat,
                                                     feature_set=self.feature_set,
                                                     user=self.my_admin,

@@ -1,0 +1,2 @@
+FeatSetName	#datasets(expected)	#schedulers	#datasets(real)	Total Proc. Time	Avg. Proc time per dataset	Max Proc. Time	Min Proc. Time	Doc. count	Avg. doc per dataset
+Performance Test	35	5	36	5.214279	0.14484108333333334	0.823998	0.393162	74	2.0555555555555554
