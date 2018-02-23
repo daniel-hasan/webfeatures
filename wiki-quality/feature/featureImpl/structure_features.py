@@ -6,7 +6,7 @@ Features de estrutura (como numero de seções, citações etc.)
 '''
 
 from abc import abstractmethod
-import enum
+from enum import Enum
 import html
 from statistics import stdev
 
@@ -16,7 +16,8 @@ from feature.features import TagBasedFeature, WordBasedFeature, \
     SentenceBasedFeature, CharBasedFeature, FeatureVisibilityEnum
 from utils.basic_entities import FormatEnum, FeatureTimePerDocumentEnum
 
-class Proportional(enum):
+
+class Proportional(Enum):
     WORD_COUNT = 1
     CHAR_COUNT = 2
     SENTENCE_COUNT = 3
@@ -24,9 +25,9 @@ class Proportional(enum):
     
     @classmethod
     def get_enum(int_val):
-        for enum in Proportional:
-            if(enum.value == int_val):
-                return enum
+        for enumFeat in Proportional:
+            if(enumFeat.value == int_val):
+                return enumFeat
         return None
     
     def get_feature(self):
@@ -60,9 +61,9 @@ class TagCountFeature(TagBasedFeature):
             setTagsToCount = []
         self.setTagsToCount = set([tag.lower() for tag in setTagsToCount])
         self.int_tag_counter = 0
-        
+        self.objFeature = None
         if(intPropotionalTo!=None):
-            self.enumProportional = Proportional.get_enum(intPropotionalTo)
+            self.enumProportional = Proportional.get_enum(intPropotionalTo) 
             self.objFeature = self.enum.get_feature()
     
     
@@ -113,8 +114,8 @@ class TagCountFeature(TagBasedFeature):
     
 class LinkCountFeature(TagCountFeature):
     
-    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document,bolExternal,bolInternalSameDomain,bolInternalSamePage):
-        super().__init__(name,description,reference,visibility,text_format,feature_time_per_document,setTagsToCount=["a"])    
+    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document,bolExternal,bolInternalSameDomain,bolInternalSamePage,intPropotionalTo=None):
+        super().__init__(name,description,reference,visibility,text_format,feature_time_per_document,setTagsToCount=["a"],intPropotionalTo=intPropotionalTo)    
         self.bolExternal = bolExternal
         self.bolInternalSameDomain = bolInternalSameDomain
         self.bolInternalSamePage = bolInternalSamePage

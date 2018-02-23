@@ -69,7 +69,18 @@ class TestFeatureCalculator(unittest.TestCase):
         featFactory = WordsFeatureFactory(LanguageEnum.en)
         featIntPronoum = featFactory.createBeginningOfSentenceFeatureObject("interrogativePronouns")
         featProunoums = featFactory.createBeginningOfSentenceFeatureObject("pronouns")
-                
+        
+        numIntPronoum = 1
+        numPronoums = 2
+        #testar tres vezes para verificar o funcionamento do finish e do compute features
+        for intI in range(3):
+            arrFeats = [featIntPronoum, featProunoums]
+            docText = Document(intI, "lala", strText)
+            arrResult = FeatureCalculator.featureManager.computeFeatureSet(docText, arrFeats, FormatEnum.HTML)
+            
+            self.assertEqual(arrResult[0], numIntPronoum, "Ao executar o "+str(intI)+"º documento, o numero de pronomes deveria ser "+str(numIntPronoum)+" e é: "+str(arrResult[0]))
+            self.assertEqual(arrResult[0], numPronoums, "Ao executar o "+str(intI)+"º documento, o numero de pronomes deveria ser "+str(numPronoums)+" e é: "+str(arrResult[0]))
+            
     def testParagraph(self):
         
         document = Document(1,"doc1","texto do paragrafo")
