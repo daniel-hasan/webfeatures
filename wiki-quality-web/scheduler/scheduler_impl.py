@@ -28,26 +28,40 @@ class OldestFirstScheduler(Scheduler):
 		
 		
 		numth = str(threading.get_ident())+"("+str(os.getpid())+") "
-		dataset_oldest = None
+		
 		#print(str(numth)+": Pegando doc  ")
-		with transaction.atomic():
-			objSubmited = Status.objects.get_enum(StatusEnum.SUBMITTED)
-			objProcessing = Status.objects.get_enum(StatusEnum.PROCESSING)
+
+		idDataset = None
+		
+		#print("Nova pesquisa...")
+		objSubmited = Status.objects.get_enum(StatusEnum.SUBMITTED)
+		objProcessing = Status.objects.get_enum(StatusEnum.PROCESSING)
 			
+		with transaction.atomic():
 			dataset_oldest = Dataset.objects.select_for_update().filter(status=objSubmited).order_by('dat_submitted').first()
 			if not dataset_oldest:
 				return None
-			dataset_oldest.refresh_from_db()
-			print(str(numth)+": Atualizando status data set id: " + str(dataset_oldest.id)+" STATUS: "+str(dataset_oldest.status))
+					#dataset_oldest.refresh_from_db()
 			dataset_oldest.status= objProcessing
-			#atualiza a data aqui
 			dataset_oldest.start_dat_processing=datetime.now()
-			#print(str(numth)+": Salvando " + str(dataset_oldest.id))
+			print(str(numth)+": Salvando " + str(dataset_oldest.id))
 			dataset_oldest.save()
-			print(str(numth)+" Salvou o dataset: " + str(dataset_oldest.id))
-			#transaction.commit()
-			
-			
+		
+		dataset_oldest_prox = Dataset.objects.filter(status=objSubmited).order_by('dat_submitted').first()
+		if(dataset_oldest_prox!=None):
+			objDataset = Dataset.objects.get(id=dataset_oldest_prox.id)
+			print(str(numth)+": O proxiiiimo é: "+str(dataset_oldest_prox.id)+" STATUS: "+str(objDataset.status))
+		#else:
+		#	objDataset = Dataset.objects.get(id=dataset_oldest.id)
+		#	print(str(numth)+": Nao achou mais proximo :( ultimo status: "+objDataset.status.name)
+		#print("SUBMITED: "+str(objSubmited.id))
+		#print("PROCESSING: "+str(objProcessing.id))
+		
+		#dataset_oldest_prox = Dataset.objects.filter(status=objSubmited).order_by('dat_submitted').first()
+		#if(dataset_oldest_prox!=None):
+		#	objDataset = Dataset.objects.get(id=dataset_oldest_prox.id)
+		#	print(str(numth)+": O prox é: "+str(dataset_oldest_prox.id)+" STATUS: "+str(objDataset.status))
+						
 		return dataset_oldest
 	
 

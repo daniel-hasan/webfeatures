@@ -19,7 +19,7 @@ class DatasetModelDocReader(FeatureDocumentsReader):
     def get_documents(self):
         
         for doc in self.dataset.document_set.all():
-            if doc.documenttext != None:
+            if hasattr(doc, "documenttext"):
                 yield DocumentFeature(doc.id, doc.nam_file, doc.documenttext.dsc_text)
             
 class DatasetModelDocWriter(FeatureDocumentsWriter):

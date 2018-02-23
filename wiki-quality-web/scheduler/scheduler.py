@@ -8,7 +8,7 @@ from abc import abstractmethod
 import threading
 import time
 
-from django.db import models, transaction
+
 from django.utils import timezone
 
 from feature.features import FeatureCalculator
@@ -33,23 +33,27 @@ class Scheduler(object):
 		return arrFeatures
 	
 	def run(self, int_wait_minutes,int_max_iterations = float("inf")):
-				
+		
+		
+		#print("AUTOCOMIT: "+str(transaction.get_autocommit()))
 		int_wait_minutes = int_wait_minutes*60;
 		i = 0
 		bolIsSleeping = False
+		#print("oioi dormindo por: "+str(int_wait_minutes))
 		while i<int_max_iterations:
 			bolFoundDataset = False
 			if(not bolIsSleeping):
 				numth = threading.get_ident()
 				
-			
+			dataset=None
 			with Scheduler.SCHEDULER_DATASET_LOCK:
+			#print("Prox dataset...")
 				dataset = self.get_next()
 			
 				
 
 			if dataset:
-				print("Peguei o dateaset: " + dataset.nam_dataset)
+				#print("Peguei o dateaset: " + dataset.nam_dataset)
 				bolIsSleeping = False
 				bolFoundDataset = True				
 				arr_feats_used = self.get_arr_features(dataset)
@@ -61,9 +65,9 @@ class Scheduler(object):
 					
 				dataset.status = Status.objects.get_enum(StatusEnum.COMPLETE)
 					
-					
+				#delete os textos do doc
 				for doc_delete in Document.objects.filter(dataset_id=dataset.id):
-					if doc_delete.documenttext != None:
+					if hasattr(doc_delete,"documenttext"):
 						doc_delete.documenttext.delete()
 					
 				dataset.end_dat_processing = timezone.now()

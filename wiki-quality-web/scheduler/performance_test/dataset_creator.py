@@ -1,36 +1,60 @@
 '''
-Created on 16 de fev de 2018
+Created on 22 de fev de 2018
 
-@author: Priscilla Raiane <priscilla.rm.carmo@gmail.com>
+@author: hasan
 '''
 
 from django.contrib.auth.models import User
+from django.db import transaction
 from django.utils import timezone
-import multiprocessing
-from threading import Thread
+import os
 import threading
 
 from scheduler.scheduler_impl import OldestFirstScheduler
-from wiki_quality_web.settings import BASE_DIR
-from wqual.models.featureset_config import FeatureSet, Language, FeatureFactory, Feature, UsedFeature, \
-    FeatureTimePerDocument, FeatureVisibility
-from wqual.models.uploaded_datasets import Dataset, Format, Status
+from wiki_quality_web.settings.development import BASE_DIR
+from wqual.models.featureset_config import Language, FeatureSet, FeatureFactory, \
+    UsedFeature
+from wqual.models.uploaded_datasets import Status, StatusEnum, Dataset
+from wqual.models.utils import Format
 
 
-def run_scheduler():
-    print("Rodando o processo...")
-    OldestFirstScheduler().run(0)
+#class Th(Thread):
+#    def __init__(self, num_thread, int_wait_minutes):
+#        Thread.__init__(self)
+#        self.num_thread = num_thread
+#        self.int_wait_minutes = int_wait_minutes
+#    def run(self):
+#        print("Threads iniciadas:"+str(self.num_thread))
+#        OldestFirstScheduler().run(self.int_wait_minutes)
+def test_multi_wait():
+    numth = "["+str(threading.get_ident())+"("+str(os.getpid())+") ]  "
+    objSubmited = Status.objects.get_enum(StatusEnum.SUBMITTED)
+    objProcessing = Status.objects.get_enum(StatusEnum.PROCESSING)
+    with transaction.atomic():
+        dataset_oldest = Dataset.objects.select_for_update().filter(status=objSubmited).order_by('dat_submitted').first()
+        print(numth+" Dataset: "+str(dataset_oldest.id))
+        if not dataset_oldest:
+            return None
+        dataset_oldest.status= objProcessing
+        dataset_oldest.save()
+        
+    dataset_oldest_prox = Dataset.objects.filter(status=objSubmited).order_by('dat_submitted').first()
 
+    
 class PerformanceTest(object):
     
     feature_light_id = 2
     feature_heavy_id = 3
     
     def create_feature_set(self): 
-        if(User.objects.all().count()==0):
-            User.objects.create_superuser('myuser', 'myemail@test.com', "secret")
+        user = None
+        
+        if(User.objects.filter(username="myuser").count()==0):
+            user = User.objects.create_superuser('myuser', 'myemail@test.com', "sdnsajdopsajkdpsjaodijwio")
+
+        user = User.objects.get(username="myuser")
         obj_english = Language.objects.get(name="en")
-        arrFeatSet = FeatureSet.objects.filter(nam_feature_set = "Performance Test",user = User.objects.all()[0])
+        arrFeatSet = FeatureSet.objects.filter(nam_feature_set = "Performance Test",user = user)
         if(len(arrFeatSet)>0):
             for objUsedFeat in arrFeatSet[0].usedfeature_set.all():
                 objUsedFeat.usedfeatureargval_set.all().delete()
@@ -41,7 +65,7 @@ class PerformanceTest(object):
         obj_featureset = FeatureSet.objects.create(nam_feature_set = "Performance Test",
                                                    dsc_feature_set = "dsc_feat",
                                                    language = obj_english,  
-                                                   user = User.objects.all()[0])
+                                                   user = user)
         
         arr_object_feature = FeatureFactory.objects.get_all_features_from_language(obj_english)
         if(len(arr_object_feature) == 0):
@@ -79,7 +103,7 @@ class PerformanceTest(object):
                                                      format = Format.objects.all()[0],
                                                      feature_set =obj_featureset,  #FeatureSet.objects.filter(id = self.feature_light_id)[0],
                                                      user = User.objects.all()[0],
-                                                     status = Status.objects.all()[0])
+                                                     status = Status.objects.get_enum(StatusEnum.SUBMITTED))
             x=i
             if (i >= len(arr_end_compress_file)-1):
                 x = i - ((i//10)*10)
@@ -97,54 +121,31 @@ class PerformanceTest(object):
             print("jkjk")
             self.threads.append(t)
             t.start()
-    
+
+
     def run_experiment(self, int_num_dataset, num_parallel_oldest = 2):
         arr_end_compress_files = []
         self.num_dataset = int_num_dataset
         #self.create_feature_set()
         print("antes parallel")
         #self.run_oldest_first(num_parallel_oldest)
-        jobs = []
-        for i in range(num_parallel_oldest):
-            p = multiprocessing.Process(target=run_scheduler)
-            jobs.append(p)
-            p.start()
-        
+        #jobs = []
         #for i in range(num_parallel_oldest):
-        #    t = Th(i, 0)
-        #    t.start()
+        #p = multiprocessing.Process(target=run_scheduler)
+        #p = threading.Thread(target=run_scheduler)
+        # jobs.append(p)
+        # p.start()
+        
+        
             
         print("dps pa")
         objFeatureSet = self.create_feature_set()
         self.create_dataset(2, objFeatureSet)
         print("Criu dataset!!! Começou diversão")
+        #transaction.set_autocommit(False)
+        for i in range(num_parallel_oldest):
+            t = Th(i, 0)
+            t.start()
 
-        
-class Th(Thread):
-    def __init__(self, num_thread, int_wait_minutes):
-        Thread.__init__(self)
-        self.num_thread = num_thread
-        self.int_wait_minutes = int_wait_minutes
-        
-    def run(self):
-        print(self.num_thread)
-        OldestFirstScheduler().run(self.int_wait_minutes)
-        
-    
-    
-def main():
-    PerformanceTest.run_experiment(7, 2)
 
-if __name__ == "__main__":
-    main()
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
+    
