@@ -1,3 +1,9 @@
+'''
+Created on 
+@author: Priscilla Raiane <priscilla.rm.carmo@gmail.com>
+
+'''
+
 import json
 
 from feature.features import Document as DocumentFeature, FeatureDocumentsReader, FeatureDocumentsWriter
@@ -13,17 +19,29 @@ class DatasetModelDocReader(FeatureDocumentsReader):
     def get_documents(self):
         
         for doc in self.dataset.document_set.all():
-          
-            yield DocumentFeature(doc.id, doc.nam_file, doc.documenttext.dsc_text)
+            if hasattr(doc, "documenttext"):
+                yield DocumentFeature(doc.id, doc.nam_file, doc.documenttext.dsc_text)
             
 class DatasetModelDocWriter(FeatureDocumentsWriter):
+        def __init__(self, dataset):
+            self.dataset = dataset
         
-        def write_document(self,document, arr_feats_used, arr_feats_result):    
+        def write_header(self,arr_features):
+            dictFeatureHeader = {}
+            for i,objFeature in enumerate(arr_features):
+                dictFeatureHeader[i] = {"name":objFeature.name,
+                                        "params":objFeature.get_params_str()}
+                
+            self.dataset.dsc_result_header = json.dumps(dictFeatureHeader)  
+            self.dataset.save()
+            
+        def write_document(self,document, arr_feats_used, arr_feats_result):  
             self.document = document
             self.arr_feats_used = arr_feats_used
-            self.arr_feats_result = json.dumps(arr_feats_result)
             
+            self.arr_feats_result = json.dumps(arr_feats_result)
+                                    
             doc=DocumentDataset.objects.get(id = self.document.int_doc_id)
-            doc_result = DocumentResult(dsc_result=arr_feats_result, document=doc)
+            doc_result = DocumentResult(dsc_result=self.arr_feats_result, document=doc)
             doc_result.save()
             

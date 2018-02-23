@@ -27,6 +27,7 @@ class FeatureFactoryDummy(FeatureFactory):
                                                                       "The sentence need to have (at least) this length (in words) in order to be considered a large phrase",
                                                                 10,ParamTypeEnum.int))
         arrFeatures.append(featLargeSentenceCount)
+        
         return arrFeatures
 class FeatureFactoryDummyLangDep(FeatureFactory):
     IS_LANGUAGE_DEPENDENT = True

@@ -1,37 +1,44 @@
-<!DOCTYPE html>
-{% load static %}
-<html>
-	<head>
-		<meta charset="utf-8">
-		<title>Sign Up</title>
-		<link rel="stylesheet" href="{% static "css/wikiQuality.css" %}">
-		<link href="https://fonts.googleapis.com/css?family=Fredericka+the+Great" rel="stylesheet"> 
-		<!-- <link href="{% static "css/jquery-ui.css" %}" rel="stylesheet">
-		<link href="{% static "css/jquery-ui.structure.css" %}" rel="stylesheet">
-		<link href="{% static "css/jquery-ui.theme.css" %}" rel="stylesheet">
-	    <script src="{% static "js/jquery.min.js" %}"></script>
-	    <script src="{% static "js/jquery-ui.js" %}"></script>
-	    <script src="{% static "js/jquery-ui.min.js" %}"></script>-->
-	</head>
-	<body>
-		<main class="home_sign-up_main">
-			<h1 class="home_sign-up_h1">WikiQuality</h1>
+{% extends "../bases/base_main_site.html" %}
+
+{% block content %}
+		<section class="home_sign-up_section">
+			{% if not user.is_authenticated %}
+				<h1 class="home_sign-up_h1">WikiQuality</h1>
 				<form method="post">
 					{% csrf_token %}
+					<section class="signup-error-section">
+						{% for field in form %}
+							{% for error in field.errors %}
+								{% ifequal error "This field is required." %}
+								{% else %}
+									<p>{{ error }}</p>
+								{% endifequal %}
+							{% endfor %}
+						{% endfor %}
+					</section>
 					{% for field in form %}
 						{% ifequal field.label "Username" %}
 							<input type="text" data-help="{{ field.help_text|safe }}" class="login_sign-up_input" for="id_username" name="username" placeholder="Username">
 						{% endifequal %}
+						
 						{% ifequal field.label "Password" %}
 							<input type="password" data-help="{{ field.help_text|safe }}" class="login_sign-up_input" for="id_password1" name="password1" placeholder="Password">
 						{% endifequal %}
-						{% ifequal field.label "Password" %}
+						
+						{% ifequal field.label "Password confirmation" %}
 							<input type="password" data-help="{{ field.help_text|safe }}" class="login_sign-up_input" for="id_password2" name="password2" placeholder="Confirm your password">
 						{% endifequal %}
+						
+						{% for error in field.errors %}
+							{% ifequal error "This field is required." %}
+								<p class="campo-requerido">{{ error }}</p>
+							{% endifequal %}
+						{% endfor %}
 					{% endfor %}
 					<button class="login_sign-up_button" type="submit">Sign up</button>
 				</form>
-		</main>
+			{% endif %}
+		</section>
 		<script type="text/javascript">
 			//Obtém todos os inputs da página.
 			let Arr_inputs = document.querySelectorAll('.login_sign-up_input');
@@ -66,6 +73,33 @@
 					form.removeChild(HTML_Temp_div);
 				})
 			});
+			
+			
+			
+			//OBSERVAÇÂO IMPORTANTE, O CÓDIGO A SEGUIR PODE SER USADO TAMBÉM NA PÁGINA DO HOME.HTML
+			//Obtém o erro que possui a mensagem "This field is required".
+			let Array_CamposRequeridos = document.querySelectorAll('.campo-requerido');
+			
+			//Se tiver, pelo menos, 1 elemento no vetor, são executadas as ações abaixo.
+			if(Array_CamposRequeridos.length > 0) {
+				//Para cada objeto anterior à mensagem de erro "This field is required", adiciona-se uma borda.
+				Array_CamposRequeridos.forEach(function(object) {
+					object.previousElementSibling.style.border = '1px solid rgb(255, 158, 158)';
+				})
+			}
+			
+			
+			
+			//Obtém todos os filhos da section de classe igual a errors. Como só tem uma nesta página, então não é necessário usar "document.querySelectorAll".
+			let SignupErrorSection = document.querySelector(".signup-error-section");
+			
+			//Estiliza a section de class igual a errors, quando ela tiver mais de um filho.
+			if(SignupErrorSection.children.length >= 1) {
+				SignupErrorSection.style.border = '2px solid rgb(255, 158, 158)';
+				SignupErrorSection.style.marginTop = '20px';
+				SignupErrorSection.style.marginBottom = '15px';
+				SignupErrorSection.style.padding = '5px';
+				SignupErrorSection.style.backgroundColor = 'rgb(255, 234, 234)';
+			}
 		</script>
-	</body>
-</html>
+{% endblock %}

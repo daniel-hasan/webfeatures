@@ -1,14 +1,18 @@
-from django.contrib.auth import login
+from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
 
-from django.shortcuts import render, redirect, render_to_response
-from django.urls.base import reverse
+from django.shortcuts import redirect, render_to_response, render
 from django.views.generic.edit import CreateView
-
-from wqual.views.authentication import authenticate
 
 
 class SignUpView(CreateView):
+    '''
+    Created on 25 de jan de 2018
+    
+    @author: Raphael Luiz
+    Cria um novo usuário.
+    '''
+    
     form_class = UserCreationForm
     template_name = 'content/signup.html'
     
@@ -20,7 +24,5 @@ class SignUpView(CreateView):
             raw_password = form.cleaned_data.get('password1')
             user = authenticate(username=username, password=raw_password)
             login(request, user)
-            return redirect('home')
-        else:
-            form = UserCreationForm()
-        return render_to_response('content/signup.html', {'form': form})
+            return redirect('/')
+        return render(request, self.template_name, {'form': form})

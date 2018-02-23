@@ -7,9 +7,12 @@ Classes que podem ser uteis nos modelos do app wqual
 '''
 from abc import abstractstaticmethod
 from django.db import models
+#from django.db.models import SubfieldBase
 from django.db.models.deletion import ProtectedError
 
 from utils.basic_entities import FormatEnum
+
+import base64, bz2, lzma
 
 
 #from wqual.models.utils import EnumModel
@@ -187,3 +190,37 @@ class Format(EnumModel):
     @staticmethod
     def get_enum_class():
         return FormatEnum
+    
+class CompressedTextField(models.TextField):
+
+    #__metaclass__ = models.SubfieldBase  #Algumas versoes django nao aceitam Subfield
+    def to_python(self, value):
+        if not value:
+            print("int")
+            return value
+
+        try:
+            return lzma.compress(bytes(value, 'utf-8')) 
+           
+        except Exception:     
+            return value
+
+    def get_prep_value(self, value):
+        if not value:
+            return value
+
+        try:
+            value.decode('base64')
+            return value
+        except Exception:
+            try:
+                tmp = lzma.decompress(value).decode('utf-8')
+                print("tmp")
+                print(tmp)
+            except Exception:
+                return value
+            else:
+                if len(tmp) > len(value):
+                    return value
+                return tmp
+ 
