@@ -5,16 +5,16 @@ Created on 15 de dez de 2017
 
 
 from abc import abstractmethod
+from datetime import datetime
+from django.utils import timezone
+import os
 import threading
 import time
-
-
-from django.utils import timezone
 
 from feature.features import FeatureCalculator
 from scheduler.utils import DatasetModelDocReader, DatasetModelDocWriter
 from wqual.models.featureset_config import UsedFeature
-from wqual.models.uploaded_datasets import Document, DocumentText
+from wqual.models.uploaded_datasets import Document, DocumentText, Dataset
 from wqual.models.uploaded_datasets import StatusEnum, Status
 
 
@@ -31,25 +31,30 @@ class Scheduler(object):
 		for objUsedFeature in arrUsedFeatures:
 			arrFeatures.append(objUsedFeature.get_feature_instance())
 		return arrFeatures
-	
-	def run(self, int_wait_minutes,int_max_iterations = float("inf")):
-		
-		
+	def is_onwer(self,dataset):
+		pass
+	def run(self, int_wait_seconds,int_max_iterations = float("inf")):
+		numth = str(threading.get_ident())+"("+str(os.getpid())+") "
+		objSubmited = Status.objects.get_enum(StatusEnum.SUBMITTED)
 		#print("AUTOCOMIT: "+str(transaction.get_autocommit()))
-		int_wait_minutes = int_wait_minutes*60;
+		
 		i = 0
 		bolIsSleeping = False
 		#print("oioi dormindo por: "+str(int_wait_minutes))
 		while i<int_max_iterations:
 			bolFoundDataset = False
-			if(not bolIsSleeping):
-				numth = threading.get_ident()
 				
 			dataset=None
-			with Scheduler.SCHEDULER_DATASET_LOCK:
-			#print("Prox dataset...")
-				dataset = self.get_next()
 			
+			#print("Prox dataset...")
+			while dataset == None or dataset.num_proc_extractor!=os.getpid():
+				dataset = self.get_next()
+				if(dataset != None):
+					dataset.refresh_from_db()
+					dataset = Dataset.objects.get(id = dataset.id)
+				else:
+					while(Dataset.objects.filter(status=objSubmited).count()==0):
+						time.sleep(int_wait_seconds)
 				
 
 			if dataset:
@@ -66,19 +71,14 @@ class Scheduler(object):
 				dataset.status = Status.objects.get_enum(StatusEnum.COMPLETE)
 					
 				#delete os textos do doc
-				for doc_delete in Document.objects.filter(dataset_id=dataset.id):
-					if hasattr(doc_delete,"documenttext"):
-						doc_delete.documenttext.delete()
+				DocumentText.objects.filter(document__dataset_id=dataset.id).delete()
+				
 					
 				dataset.end_dat_processing = timezone.now()
+				timeDeltaProc = dataset.end_dat_processing-dataset.start_dat_processing
 				dataset.save()
-				print("fim run \n\n")
+				print(str(numth)+": Dataset '"+dataset.nam_dataset+"' processed in "+str(timeDeltaProc))
 					
-			if bolFoundDataset is False:
-				if not bolIsSleeping: 	
-					print("dormiu")
-					bolIsSleeping = True
-				time.sleep(int_wait_minutes)
 
 			i = i+1
 			

@@ -1,7 +1,7 @@
 '''
-Created on 22 de fev de 2018
+Created on 16 de fev de 2018
 
-@author: hasan
+@author: Priscilla Raiane <priscilla.rm.carmo@gmail.com>
 '''
 
 from django.contrib.auth.models import User
@@ -46,15 +46,15 @@ class PerformanceTest(object):
     feature_light_id = 2
     feature_heavy_id = 3
     
-    def create_feature_set(self): 
+    def create_feature_set(self,user_name,feat_name): 
         user = None
         
-        if(User.objects.filter(username="myuser").count()==0):
-            user = User.objects.create_superuser('myuser', 'myemail@test.com', "sdnsajdopsajkdpsjaodijwio")
+        if(User.objects.filter(username=user_name).count()==0):
+            user = User.objects.create_superuser(user_name, 'myemail@test.com', "sdnsajdopsajkdpsjaodijwio")
 
-        user = User.objects.get(username="myuser")
+        user = User.objects.get(username=user_name)
         obj_english = Language.objects.get(name="en")
-        arrFeatSet = FeatureSet.objects.filter(nam_feature_set = "Performance Test",user = user)
+        arrFeatSet = FeatureSet.objects.filter(nam_feature_set = feat_name,user = user)
         if(len(arrFeatSet)>0):
             for objUsedFeat in arrFeatSet[0].usedfeature_set.all():
                 objUsedFeat.usedfeatureargval_set.all().delete()
@@ -62,7 +62,7 @@ class PerformanceTest(object):
             arrFeatSet[0].dataset_set.all().delete()
             arrFeatSet[0].delete()    
 
-        obj_featureset = FeatureSet.objects.create(nam_feature_set = "Performance Test",
+        obj_featureset = FeatureSet.objects.create(nam_feature_set = feat_name,
                                                    dsc_feature_set = "dsc_feat",
                                                    language = obj_english,  
                                                    user = user)
@@ -111,7 +111,7 @@ class PerformanceTest(object):
             f = open(arr_end_compress_file[x], 'rb')
             objDataset.save_compressed_file(f)
             f.close() 
-    
+            print("Dataset #"+str(i)+" created")
 
     def run_oldest_first(self, int_num_threads, int_wait_minutes=0):
         self.threads = []

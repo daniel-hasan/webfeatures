@@ -45,7 +45,6 @@ class Status(EnumModel):
     def get_enum_class():
         return StatusEnum
     
-
    
 class Dataset(models.Model):
     '''
@@ -69,7 +68,8 @@ class Dataset(models.Model):
     status = models.ForeignKey(Status, models.PROTECT)
     dsc_result_header = models.TextField(blank=True, null=True)
     
-
+    num_proc_extractor = models.IntegerField(blank=True, null=True)
+         
     def save_compressed_file(self,comp_file_pointer):
             #validacao ser feita aqui
             
