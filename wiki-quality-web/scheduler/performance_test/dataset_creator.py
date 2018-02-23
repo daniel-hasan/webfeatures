@@ -113,16 +113,6 @@ class PerformanceTest(object):
             f.close() 
             print("Dataset #"+str(i)+" created")
 
-    def run_oldest_first(self, int_num_threads, int_wait_minutes=0):
-        self.threads = []
-        for i in range(int_num_threads +1):
-            print("dentro")
-            t = threading.Thread(target = OldestFirstScheduler().run(int_wait_minutes))
-            print("jkjk")
-            self.threads.append(t)
-            t.start()
-
-
     def run_experiment(self, int_num_dataset, num_parallel_oldest = 2):
         arr_end_compress_files = []
         self.num_dataset = int_num_dataset
