@@ -4,23 +4,23 @@
 
 {% block content %}
 	<section class="dataset-section">
-		<h1>Upload a compressed file</h1>
+		<h1>Extract features</h1>
 		<div class="dataset-error-container"></div>
 		<form enctype="multipart/form-data" method="post" class="form">
 			{% csrf_token %}
 			<div class="form-group">
-				<span class="dataset-file-name">Please upload a file</span><!--
+				<span class="dataset-file-name">Upload a compressed file</span><!--
 			 --><label class="dataset-file" for="dataset-file-input" name="file_dataset">Upload</label>
 				<input id="dataset-file-input" name="file_dataset" type="file">
 			</div>
 			{% for field in form %}
 				<div class="form-group">
 					{% ifequal field.label "Format" %}
-						<span>Format Dataset:</span>
+						<span>Dataset format:</span>
 					{% endifequal %}
 				
 					{% ifequal field.label "Feature set" %}
-						<span>Feature Set Dataset: </span>
+						<span>Feature set to extract:</span>
 					{% endifequal %}
 					<div>
 						{{ field }}
@@ -49,17 +49,16 @@
 			{% for dataset in dataset_list|dictsortreversed:"dat_submitted" %}
    				<tr>
     				<td>{{ dataset.nam_dataset }}</td>
-    				<td>{{ dataset.status }}</td>
-    				<td>{{ dataset.dat_submitted }}</td>
-    				{% ifequal dataset.dat_valid_until "" %}
+    				<td>{{ dataset.status.name}}</td>
+    				<td>{{ dataset.dat_submitted|date:"d M. Y" }}</td>
+    				{% if dataset.dat_valid_until == None  %}
     					<td></td>
     				{% else %}
   	  					<td>{{ dataset.dat_valid_until }}</td>
-  	  				{% endifequal %}
+  	  				{% endif %}
     				<td>{{ dataset.feature_set }}</td>
     				<td>{{ dataset.format.name }}</td>
-    				
-    				{% ifequal dataset.status "COMPLETED" %}
+    				{% ifequal dataset.status.name "COMPLETED" %}
 						<td><a href="{% url "download_result" dataset.id "json" %}">json</a> <a href="{% url "download_result" dataset.id "xls" %}">xls</a></td>
 					{% else %}
 						<td></td>
