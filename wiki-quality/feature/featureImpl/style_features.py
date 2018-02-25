@@ -65,7 +65,7 @@ class WordCountFeature(WordBasedFeature):
     Parametros:
     setWordsToCount: Lista representando as palavras a serem contabilizadas
     '''
-    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document,setWordsToCount=None,case_sensitive=False):
+    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document,setWordsToCount=None,case_sensitive=False,ignore_punctuation=False):
         super(WordBasedFeature,self).__init__(name,description,reference,visibility,text_format,feature_time_per_document)    
         if(setWordsToCount==None):
             setWordsToCount = []
@@ -75,9 +75,13 @@ class WordCountFeature(WordBasedFeature):
         self.case_sensitive = case_sensitive
         self.setWordsToCount = set(setWordsToCount)
         self.int_word_counter = 0
+        self.ignore_punctuation = ignore_punctuation
     
      
     def checkWord(self,document,word):
+        if(self.ignore_punctuation and word in FeatureCalculator.word_divisors):
+            return 
+        
         if len(self.setWordsToCount) ==0 or word in self.setWordsToCount or (not self.case_sensitive and word.lower() in self.setWordsToCount):
             self.int_word_counter = self.int_word_counter + 1
     
@@ -138,11 +142,14 @@ class LargeParagraphCountFeature(WordBasedFeature):
 
 class CharacterCountFeature(CharBasedFeature):
     
-    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document):
+    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document, ignore_punctuation=False):
         super(CharBasedFeature,self).__init__(name,description,reference,visibility,text_format,feature_time_per_document)    
         self.int_char_counter = 0
+        self.ignore_punctuation = ignore_punctuation
     
     def checkChar(self, document, char):
+        if self.ignore_punctuation is True and char in FeatureCalculator.word_divisors:
+            return
         self.int_char_counter = self.int_char_counter + 1
     
     def compute_feature(self,document):
