@@ -122,10 +122,21 @@ h1 {
 }
 
 .dataset-section h1 {
-	color: rgb(128, 128, 128);
+	color: rgb(150, 150, 150);
+	padding-bottom: 10px;
+	margin-bottom: 10px;
 }
 
-@media (max-width: 752px) {
+@media all and (max-width: 763px) {
+	.dataset-file-name {
+		width: 85%;
+	}
+	.dataset-file {
+		width: 15%;
+	}
+}
+
+@media all and (max-width: 1029px) {
 	#id_feature_set {
 		width: 50%;
 	}
@@ -136,13 +147,25 @@ h1 {
 	.pre-form-h1 {
 		width: 95%;
 	}
+	.dataset-file-name {
+		width: 90%;
+	}
+	.dataset-file {
+		width: 10%;
+	}
 }
 
-@media (min-width: 752px) {
+@media all and (min-width: 1030px) {
 	.dataset-section {
 		float: left;
-		width: 35%;
-	}	
+		width: 32%;
+	}
+	.dataset-file-name {
+		width: 78.5%;
+	}
+	.dataset-file {
+		width: 21.5%;
+	}
 }
 
 .erro-p {
@@ -151,13 +174,52 @@ h1 {
 	padding-left: 5px;
 }
 
-.dataset-file-input {
+.dataset-error-container {
 	display: none;
+	border: 2px solid rgb(255, 220, 220);
+	margin-top: 20px;
+	margin-bottom: 15px;
+	padding: 5px;
+	background-color: rgb(255, 250, 250);
 }
 
-#id_feature_set, #id_format, .dataset-file {
-  display: block;
-  width: 100%;
+#dataset-file-input {
+	opacity: 0;
+	position: absolute;
+	z-index: -1;
+}
+
+.dataset-file, .dataset-file-name {
+	display: inline-block;
+}
+
+.dataset-file-name {
+	border-top-left-radius: 4px;
+	border-bottom-left-radius: 4px;
+}
+
+.dataset-file {
+	background-color: rgb(246, 246, 246);
+	border: 1px solid rgb(197, 197, 197);
+	color: rgb(69, 69, 69);
+	cursor: pointer;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	font-weight: 400;
+	line-height: 16px;
+	text-align: center;
+	border-top-right-radius: 4px;
+	border-bottom-right-radius: 4px;
+	padding: 8px 0px;
+}
+
+#id_feature_set, #id_format {
+	display: block;
+	width: 100%;
+	border-radius: 4px;
+}
+
+#id_feature_set, #id_format, .dataset-file-name {
   height: 34px;
   padding: 6px 12px;
   font-size: 14px;
@@ -166,7 +228,6 @@ h1 {
   background-color: #fff;
   background-image: none;
   border: 1px solid #ccc;
-  border-radius: 4px;
   -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
           box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
   -webkit-transition: border-color ease-in-out .15s, -webkit-box-shadow ease-in-out .15s;
@@ -174,23 +235,23 @@ h1 {
           transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
 }
 
-#id_feature_set:focus, #id_format:focus, , .dataset-file:focus {
+#id_feature_set:focus, #id_format:focus, , .dataset-file-name:focus {
   border-color: #66afe9;
   outline: 0;
   -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, .6);
           box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, .6);
 }
 
-#id_feature_set::-moz-placeholder, #id_format::-moz-placeholder, .dataset-file::-moz-placeholder {
+#id_feature_set::-moz-placeholder, #id_format::-moz-placeholder, .dataset-file-name::-moz-placeholder {
   color: #777;
   opacity: 1;
 }
 
-#id_feature_set:-ms-input-placeholder, #id_format:-ms-input-placeholder, .dataset-file:-ms-input-placeholder {
+#id_feature_set:-ms-input-placeholder, #id_format:-ms-input-placeholder, .dataset-file-name:-ms-input-placeholder {
   color: #777;
 }
 
-#id_feature_set::-webkit-input-placeholder, #id_format::-webkit-input-placeholder, .dataset-file::-webkit-input-placeholder {
+#id_feature_set::-webkit-input-placeholder, #id_format::-webkit-input-placeholder, .dataset-file-name::-webkit-input-placeholder {
   color: #777;
 }
 
@@ -200,9 +261,9 @@ fieldset[disabled] #id_feature_set,
 #id_format[disabled],
 #id_format[readonly],
 fieldset[disabled] #id_format,
-.dataset-file[disabled],
-.dataset-file[readonly],
-fieldset[disabled] .dataset-file {
+.dataset-file-name[disabled],
+.dataset-file-name[readonly],
+fieldset[disabled] .dataset-file-name {
   cursor: not-allowed;
   background-color: #eee;
   opacity: 1;
@@ -358,9 +419,8 @@ fieldset[disabled] .dataset-file {
 	border: 2px solid rgb(105, 156, 188);
 	opacity: 0.5;
 }
-/***************************** Fim do signup.html *****************************/
-/***************************** Início do signup.html e dataset_list.html *****************************/
-.signup-dataset-error-container {
+
+.signup-error-container {
 	display: none;
 	border: 2px solid rgb(255, 180, 180);
 	margin-top: 20px;
@@ -368,7 +428,8 @@ fieldset[disabled] .dataset-file {
 	padding: 5px;
 	background-color: rgb(255, 240, 240);
 }
-/***************************** Início do signup.html e dataset_list.html *****************************/
+
+/***************************** Fim do signup.html *****************************/
 /***************************** Início do footer *****************************/
 footer img {
 	position: fixed;

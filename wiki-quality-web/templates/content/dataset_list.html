@@ -5,13 +5,13 @@
 {% block content %}
 	<section class="dataset-section">
 		<h1>Upload a compressed file</h1>
-		<div class="signup-dataset-error-container"></div>
+		<div class="dataset-error-container"></div>
 		<form enctype="multipart/form-data" method="post" class="form">
 			{% csrf_token %}
 			<div class="form-group">
-				<!--<label class="dataset-file" for="dataset-file-input" name="file_dataset">Selecione um arquivo</label>-->
-				<input class="dataset-file-input" name="file_dataset" type="file">
-       			<!--<span class="dataset-file-name"></span>-->
+				<span class="dataset-file-name">Please upload a file</span><!--
+			 --><label class="dataset-file" for="dataset-file-input" name="file_dataset">Upload</label>
+				<input id="dataset-file-input" name="file_dataset" type="file">
 			</div>
 			{% for field in form %}
 				<div class="form-group">
