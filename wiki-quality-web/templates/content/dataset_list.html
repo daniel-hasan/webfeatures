@@ -1,27 +1,35 @@
 {% extends "../bases/base_main_site.html" %}
 {% load static %}
+{% block title %}Analyse Texts{% endblock %}
 
 {% block content %}
 	<section class="dataset-section">
 		<h1>Upload a compressed file</h1>
-		<form enctype="multipart/form-data" method="post" name='file_dataset' class="form">
+		<div class="signup-dataset-error-container"></div>
+		<form enctype="multipart/form-data" method="post" class="form">
 			{% csrf_token %}
-			<input class="dataset-file" name="file_dataset" type="file">
+			<div class="form-group">
+				<!--<label class="dataset-file" for="dataset-file-input" name="file_dataset">Selecione um arquivo</label>-->
+				<input class="dataset-file-input" name="file_dataset" type="file">
+       			<!--<span class="dataset-file-name"></span>-->
+			</div>
 			{% for field in form %}
-				{% ifequal field.label "Format" %}
-					<span>Format Dataset:</span>
-				{% endifequal %}
-			
-				{% ifequal field.label "Feature set" %}
-					<span>Feature Set Dataset: </span>
-				{% endifequal %}
-				<div>
-					{{ field }}
+				<div class="form-group">
+					{% ifequal field.label "Format" %}
+						<span>Format Dataset:</span>
+					{% endifequal %}
+				
+					{% ifequal field.label "Feature set" %}
+						<span>Feature Set Dataset: </span>
+					{% endifequal %}
+					<div>
+						{{ field }}
+					</div>
+					{% for error in field.errors %}
+						<p class="erro-p">{{ error }}</p>
+					{% endfor %}
 				</div>
-				{% for error in field.errors %}
-					<p class="erro-p">{{ error }}</p>
-				{% endfor %}
-			{% endfor %}						
+			{% endfor %}
 			<button type="submit" class="ui-button ui-widget ui-corner-all">Submit</button>
 		</form>
 	</section>
