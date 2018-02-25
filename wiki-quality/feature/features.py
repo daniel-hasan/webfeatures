@@ -187,15 +187,15 @@ class FeatureCalculatorManager(object):
         
         for feat in arr_features:
             arr_feat_result.append(None)
-        
+        str_text_for_char = str_text
         if format is FormatEnum.HTML:
             aux = 0
             for feat in arr_features:
                 if isinstance(feat, TagBasedFeature):
                     parser = ParserTags(feat, docText)
                     parser.feed(str_text)
-                    arr_feat_result[aux] = feat.compute_feature(docText)
-                    feat.finish_document(docText)
+                    #arr_feat_result[aux] = feat.compute_feature(docText)
+                    #feat.finish_document(docText)
                 aux = aux + 1
                             
             #considera apenas o que estiver dentro de <body> </body> (se esses elementos existirem)
@@ -209,7 +209,7 @@ class FeatureCalculatorManager(object):
             str_text_for_char = re.sub("<[^>]+>", "", str_text)
 	    #elimina as html entities
             str_text = html.unescape(str_text)
-            
+            str_text_for_char = html.unescape(str_text_for_char)
             
         
         #armazo as word based features e sentence based feature
@@ -274,13 +274,15 @@ class FeatureCalculatorManager(object):
         
         aux = 0
         for feat in arr_features:
-            if isinstance(feat, TagBasedFeature):
-                pass
-            else:
-                arr_feat_result[aux] = feat.compute_feature(docText)
-                feat.finish_document(docText)
+            arr_feat_result[aux] = feat.compute_feature(docText)
+            #if isinstance(feat, TagBasedFeature):
+            #    pass
+            #else:
+            #    arr_feat_result[aux] = feat.compute_feature(docText)
+                #feat.finish_document(docText)
             aux = aux + 1
-            
+        for feat in arr_features:
+            feat.finish_document(docText)
         return arr_feat_result
 
 class FeatureVisibilityEnum(Enum):
@@ -299,7 +301,7 @@ class FeatureCalculator(object):
         @author:  Daniel Hasan Dalip <hasan@decom.cefetmg.br>
     '''
     featureManager = FeatureCalculatorManager()
-    word_divisors = set([" ",",",".","!","?"])
+    word_divisors = set([" ",",",".","!","?","'"])
     sentence_divisors = set([".","!","?"])
     paragraph_divisor = set(["\n", os.linesep])
     
@@ -351,7 +353,7 @@ class WordBasedFeature(FeatureCalculator):
     @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
     '''
     def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document):
-        super(FeatureCalculator,self).__init__(name,description,reference,visibility,text_format,feature_time_per_document)   
+        super().__init__(name,description,reference,visibility,text_format,feature_time_per_document)   
     
     @abstractmethod
     def checkWord(self,document,word):
@@ -374,7 +376,7 @@ class TagBasedFeature(FeatureCalculator):
     
 class CharBasedFeature(FeatureCalculator):
     def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document):
-        super(FeatureCalculator,self).__init__(name,description,reference,visibility,text_format,feature_time_per_document) 
+        super().__init__(name,description,reference,visibility,text_format,feature_time_per_document) 
     
     @abstractmethod
     def checkChar(self,document,char):

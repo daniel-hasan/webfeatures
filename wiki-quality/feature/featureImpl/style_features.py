@@ -30,32 +30,6 @@ class SentenceCountFeature(SentenceBasedFeature):
     def finish_document(self,document):
         self.int_sentences_counter = 0
         
-class PhraseRateMoreThanAvgFeature(SentenceBasedFeature):
-    '''
-    Contabiliza a proporção de frases maiores do que a media (menos o tamanho passado como parametro)
-    
-    '''
-    
-    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document,bolLarge,intSize):
-        super(SentenceBasedFeature,self).__init__(name,description,reference,visibility,text_format,feature_time_per_document)    
-        self.arr_sentences = []
-        self.bolLarge = bolLarge
-        self.intSize = intSize
-        
-    def checkSentence(self,document,sentence):
-        self.arr_sentences.append(len(sentence))
-    
-    def compute_feature(self, document):
-        int_count = 0
-        avgSize = mean(self.arr_sentences)
-        for size in self.arr_sentences:
-            if((self.bolLarge and size > (avgSize+self.intSize)) or (size<(avgSize-self.intSize))):
-                int_count = int_count+1
-        return int_count/len(self.arr_sentences) if len(self.arr_sentences)>0 else 0
-    
-    def finish_document(self,document):
-        self.arr_sentences = []
-        
         
 class LargeSentenceCountFeature(WordBasedFeature):
     '''
@@ -143,9 +117,41 @@ class WordCountFeature(WordBasedFeature):
     
     def compute_feature(self,document):
         return self.int_word_counter
+    def reset_counter(self):
+        self.int_word_counter = 0
+        
+    def finish_document(self,document):
+        self.reset_counter()
+
+class PhraseRateMoreThanAvgFeature(SentenceBasedFeature,WordCountFeature):
+    '''
+    Contabiliza a proporção de frases maiores do que a media (menos o tamanho passado como parametro)
+    
+    '''
+    
+    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document,bolLarge,intSize):
+        super().__init__(name,description,reference,visibility,text_format,feature_time_per_document)    
+        
+        self.arr_sentences = []
+        self.bolLarge = bolLarge
+        self.intSize = intSize
+    
+
+    def checkSentence(self,document,sentence):
+        self.arr_sentences.append(self.int_word_counter)
+        self.reset_counter()
+    
+    def compute_feature(self, document):
+        int_count = 0
+        avgSize = mean(self.arr_sentences)
+        for size in self.arr_sentences:
+            if((self.bolLarge and size >= (avgSize+self.intSize)) or (not self.bolLarge and size<=(avgSize-self.intSize))):
+                int_count = int_count+1
+        return int_count/len(self.arr_sentences) if len(self.arr_sentences)>0 else 0
     
     def finish_document(self,document):
-        self.int_word_counter = 0
+        self.arr_sentences = []
+        
         
 class BeginningSentenceWordCountFeature(SentenceBasedFeature):
     '''
@@ -170,13 +176,14 @@ class BeginningSentenceWordCountFeature(SentenceBasedFeature):
         word_divisors = FeatureCalculator.word_divisors
         word = ""
         pos = 0
+        sentence = sentence.strip()
         if(len(sentence)<1):
             return
         
-        while(pos < len(sentence) and sentence[pos] not in word_divisors and pos != 0):
+        while(pos < len(sentence) and sentence[pos] not in word_divisors):
             word += sentence[pos]
             pos = pos + 1
-        word = word.lower() if self.case_sensitive else word
+        word = word.lower() if not self.case_sensitive else word
         
         #check if exists and count
         if word in self.setWordsToCount:

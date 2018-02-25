@@ -51,14 +51,14 @@ class StructureFeatureFactory(FeatureFactory):
                                          FormatEnum.HTML, 
                                          FeatureTimePerDocumentEnum.MILLISECONDS,
                                          bolExternal=True,bolInternalSameDomain=False,bolInternalSamePage=False,
-                                         intPropotionalTo=Proportional.SECTION_COUNT
+                                         intPropotionalTo=Proportional.SECTION_COUNT.value
                                         ),
                        LinkCountFeature("Complete URL link Count per length", "Ration between number of  HTML 'a' tag in which the 'href' attribute refers to a complete URL and the number of characters in text.", "", 
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.HTML, 
                                          FeatureTimePerDocumentEnum.MILLISECONDS,
                                          bolExternal=True,bolInternalSameDomain=False,bolInternalSamePage=False,
-                                         intPropotionalTo=Proportional.CHAR_COUNT
+                                         intPropotionalTo=Proportional.CHAR_COUNT.value
                                         ),                       
                        LinkCountFeature("Relative URL link Count", "Count the number of  HTML 'a' tag in which the 'href' attribute refers to a relative URL (e.g. /images/cow.gif).", "", 
                                          FeatureVisibilityEnum.public, 
@@ -70,33 +70,35 @@ class StructureFeatureFactory(FeatureFactory):
                                          FormatEnum.HTML, 
                                          FeatureTimePerDocumentEnum.MILLISECONDS,
                                          bolExternal=False,bolInternalSameDomain=True,bolInternalSamePage=False,
-                                         intPropotionalTo=Proportional.SECTION_COUNT
+                                         intPropotionalTo=Proportional.SECTION_COUNT.value
                                          ),     
                        LinkCountFeature("Relative URL link Count per length", "Ratio between the number of  HTML 'a' tag in which the 'href' attribute refers to a relative URL (e.g. /images/cow.gif) and the number of characters in text.", "", 
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.HTML, 
                                          FeatureTimePerDocumentEnum.MILLISECONDS,
                                          bolExternal=False,bolInternalSameDomain=True,bolInternalSamePage=False,
-                                         intPropotionalTo=Proportional.CHAR_COUNT
+                                         intPropotionalTo=Proportional.CHAR_COUNT.value
                                          ),                                           
                        LinkCountFeature("Same page link Count", "Count the number of links which refers to some other elements in the same page."+
                                                                 " In other words, count the number of HTML 'a' tags in which 'href' points to some html page id."+
                                                                 " For example, the value '#mainDiv' point to an element in the page which the id is 'mainDiv'.", "", 
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.HTML, 
-                                         FeatureTimePerDocumentEnum.MILLISECONDS,,bolExternal=False,bolInternalSameDomain=False,bolInternalSamePage=True),
-                       LinkCountFeature("Same page link count per length", "The ratio between the number of links which refers to some other elements in the same page and the number of characters in text.", "", 
-                                         FeatureVisibilityEnum.public, 
-                                         FormatEnum.HTML, 
                                          FeatureTimePerDocumentEnum.MILLISECONDS,
-                                         bolExternal=False,bolInternalSameDomain=False,bolInternalSamePage=True,
-                                         intPropotionalTo=Proportional.CHAR_COUNT),
+                                         bolExternal=False,bolInternalSameDomain=False,bolInternalSamePage=True),
+
                        LinkCountFeature("Same page link count per section", "The ratio between the number of links which refers to some other elements in the same page and the number of sections", "", 
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.HTML, 
                                          FeatureTimePerDocumentEnum.MILLISECONDS,
                                          bolExternal=False,bolInternalSameDomain=False,bolInternalSamePage=True,
-                                         intPropotionalTo=Proportional.SECTION_COUNT),                                              
+                                         intPropotionalTo=Proportional.SECTION_COUNT.value),
+                        LinkCountFeature("Same page link count per length", "The ratio between the number of links which refers to some other elements in the same page and the number of characters in text.", "", 
+                                         FeatureVisibilityEnum.public, 
+                                         FormatEnum.HTML, 
+                                         FeatureTimePerDocumentEnum.MILLISECONDS,
+                                         bolExternal=False,bolInternalSameDomain=False,bolInternalSamePage=True,
+                                         intPropotionalTo=Proportional.CHAR_COUNT.value),                      
                        AverageSectionSize("Mean section size","The ratio between the section size (in characters) and the section count","",
                                           FeatureVisibilityEnum.public, 
                                           FormatEnum.HTML, 
@@ -176,23 +178,24 @@ class StyleFeatureFactory(FeatureFactory):
                                                                       "The sentence need to have (at least) this length (in words) in order to be considered a large phrase.",
                                                                       10,ParamTypeEnum.int))
         
-        featLargestSentenceSize = LargeSentenceSizeFeature("Largest phrase size","Compute the size (in words) of the largest phrase.",
-                                                           "",FeatureVisibilityEnum.public,FormatEnum.text_plain,
-                                                           FeatureTimePerDocumentEnum.MICROSECONDS)
-        
-        featLargePhraseRate = PhraseRateMoreThanAvgFeature("Large phrase rate","Percentage of phrases whose length is t words more than the average phrase length (in words). Where t is the parameter 'Size threshold'.",
-                                                           "",FeatureVisibilityEnum.public,FormatEnum.text_plain,
-                                                           FeatureTimePerDocumentEnum.MICROSECONDS,10,bolLarge=True,intSize=10)
+        featLargestSentenceSize = LargeSentenceSizeFeature("Largest phrase size","Compute the size of the largest phrase.",
+                                                               "",FeatureVisibilityEnum.public,FormatEnum.text_plain,
+                                                               FeatureTimePerDocumentEnum.MICROSECONDS)
+            
+        featLargePhraseRate = PhraseRateMoreThanAvgFeature("Large phrase rate","Percentage of phrases whose length is t words more than the average phrase length. Where t is the parameter 'Size threshold'.",
+                                                               "",FeatureVisibilityEnum.public,FormatEnum.text_plain,
+                                                               FeatureTimePerDocumentEnum.MICROSECONDS,bolLarge=True,intSize=2)
+            
+        featShortPhraseRate = PhraseRateMoreThanAvgFeature("Short phrase rate","Percentage of phrases whose length is t words less than the average phrase length. Where t is the parameter 'Size threshold'.",
+                                                               "",FeatureVisibilityEnum.public,FormatEnum.text_plain,
+                                                               FeatureTimePerDocumentEnum.MICROSECONDS,bolLarge=False,intSize=2)                
         featLargePhraseRate.addConfigurableParam(ConfigurableParam("intSize","Size threshold",
                                                                       "The phrase need to have (at least) this length more than the average in order to be considered a large sentence. The length is calculated using the number of words.",
-                                                                      10,ParamTypeEnum.int))
+                                                                      2,ParamTypeEnum.int))
         
-        featShortPhraseRate = PhraseRateMoreThanAvgFeature("Short phrase rate","Percentage of phrases whose length is t words less than the average phrase length. Where t is the parameter 'Size threshold'.",
-                                                           "",FeatureVisibilityEnum.public,FormatEnum.text_plain,
-                                                           FeatureTimePerDocumentEnum.MICROSECONDS,10,bolLarge=True,intSize=5)
         featShortPhraseRate.addConfigurableParam(ConfigurableParam("intSize","Size threshold",
                                                                       "The phrase need to have (at most) this length less than the average in order to be considered a short sentence. The length is calculated using the number of words.",
-                                                                      5,ParamTypeEnum.int))        
+                                                                      2,ParamTypeEnum.int))        
                 
         featParagraphCount = ParagraphCountFeature("Paragraph Count","Count the number of paragraph at text",
                                          "reference",
@@ -214,7 +217,9 @@ class StyleFeatureFactory(FeatureFactory):
         arrFeatures.append(featLargeSentenceCount)
         arrFeatures.append(featParagraphCount)
         arrFeatures.append(featLargeParagraphCount)
-        
+        arrFeatures.append(featLargestSentenceSize)
+        arrFeatures.append(featLargePhraseRate)
+        arrFeatures.append(featShortPhraseRate)
         return  arrFeatures
         
 

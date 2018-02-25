@@ -24,7 +24,7 @@ class Proportional(Enum):
     SECTION_COUNT = 4
     
     @classmethod
-    def get_enum(int_val):
+    def get_enum(self,int_val):
         for enumFeat in Proportional:
             if(enumFeat.value == int_val):
                 return enumFeat
@@ -33,27 +33,27 @@ class Proportional(Enum):
     def get_feature(self):
         self.objFeature = None
         if(self == Proportional.WORD_COUNT):
-            self.objFeature = WordCountFeature("Word Count","Word Count.",
+            return WordCountFeature("Word Count","Word Count.",
                         "",
                         FeatureVisibilityEnum.public, 
                         FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,[],False)
         elif(self == Proportional.CHAR_COUNT):
-            self.value = CharacterCountFeature("Char Count","Char Count.",
+            return CharacterCountFeature("Char Count","Char Count.",
                                             "",
                                             FeatureVisibilityEnum.public, 
-                                            FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,[],False)
+                                            FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS)
         elif(self == Proportional.SENTENCE_COUNT):
-            self.value = SentenceCountFeature("Sentence Count","Sentence Count.",
+            return SentenceCountFeature("Sentence Count","Sentence Count.",
                         "",
                         FeatureVisibilityEnum.public, 
                         FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,[],False)
         elif(self == Proportional.SECTION_COUNT):
-            self.value = TagCountFeature("contagem de tags", "Feature que conta tags em HTML", "HTML", 
+            return TagCountFeature("contagem de tags", "Feature que conta tags em HTML", "HTML", 
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.HTML, 
                                          FeatureTimePerDocumentEnum.MILLISECONDS,["h1"])
         return None
-class TagCountFeature(TagBasedFeature):
+class TagCountFeature(TagBasedFeature,WordBasedFeature,SentenceBasedFeature,CharBasedFeature):
     
     def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document,setTagsToCount=None,intPropotionalTo=None):
         super(TagBasedFeature,self).__init__(name,description,reference,visibility,text_format,feature_time_per_document)    
@@ -64,11 +64,11 @@ class TagCountFeature(TagBasedFeature):
         self.objFeature = None
         if(intPropotionalTo!=None):
             self.enumProportional = Proportional.get_enum(intPropotionalTo) 
-            self.objFeature = self.enum.get_feature()
+            self.objFeature = self.enumProportional.get_feature()
     
+    def startTag(self,document,tag,attrs,ignoreCount=False):
     
-    def startTag(self,document,tag,attrs):
-        if tag.lower() in self.setTagsToCount:
+        if not ignoreCount and tag.lower() in self.setTagsToCount:
             self.int_tag_counter = self.int_tag_counter + 1
             
         if(self.objFeature != None and isinstance(self.objFeature,TagBasedFeature)):
@@ -77,12 +77,13 @@ class TagCountFeature(TagBasedFeature):
         intNorm = None
         if(self.objFeature != None):
             intNorm = self.objFeature.compute_feature(document)
-        return self.int_tag_counter/intNorm if intNorm != None else self.int_tag_counter
+        
+        return self.int_tag_counter/intNorm if intNorm != None and intNorm != 0 else self.int_tag_counter
     
     def finish_document(self,document):
         self.int_tag_counter = 0
         if(self.objFeature!=None):
-            self.finish_document(document)
+            self.objFeature.finish_document(document)
         
     #### Tag based Feature overide #########
     def data(self,document,str_data):
@@ -121,15 +122,24 @@ class LinkCountFeature(TagCountFeature):
         self.bolInternalSamePage = bolInternalSamePage
     
     def startTag(self,document,tag,attrs):
-        if("href" not in attrs or attrs["href"] == None):
+        str_href = ""
+        for att in attrs:
+            if(att[0].lower() == "href"):
+                str_href = att[1]
+            
+        if str_href == "" or str_href == None:
+            super().startTag(document, tag, attrs,ignoreCount=True)
             return
         
-        strHref = attrs["href"].strip 
-        count = (self.bolExternal and (strHref.startswith("http://")) or (strHref.startswith("https://")))
-        count = count or (self.bolInternalSamePage  and (strHref.startswith("#"))) or self.bolInternalSameDomain  
+        str_href = str_href.strip()
+        bolIsExternal = str_href.startswith("http://") or str_href.startswith("https://")
+        bolIsSamePage = str_href.startswith("#")
+        bolIsSameDomain = not bolIsExternal and not bolIsSamePage
+        count = (bolIsExternal and self.bolExternal) or \
+                (bolIsSamePage and self.bolInternalSamePage) or \
+                (bolIsSameDomain and self.bolInternalSameDomain)
         
-        if count:
-            super().startTag(document, tag, attrs)
+        super().startTag(document, tag, attrs,ignoreCount=not count)
   
     
         
