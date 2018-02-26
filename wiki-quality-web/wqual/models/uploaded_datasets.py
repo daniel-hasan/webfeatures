@@ -86,9 +86,16 @@ class Dataset(models.Model):
                 if int_file_size > int_limit:
                     raise FileSizeException("The file "+name+" exceeds the limit of "+str(int_limit)+" bytes")
                 
-            self.save()   
+            self.save()
+            i = 0   
             for name,strFileTxt in objFileZip.read_each_file():
                 with transaction.atomic():
+                    i = i+1
+                    print(name+": "+str(i))
+                    if(name == "1095706.html"):
+                        a=1
+                        a = a+1
+                        pass
                     objDocumento = Document(nam_file=name,dataset=self)
                     objDocumento.save()
                     objDocumentoTexto = DocumentText(document=objDocumento,dsc_text=strFileTxt)
@@ -131,10 +138,17 @@ class DocumentText(models.Model):
     @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
     Texto do documento
     '''
-    dsc_text = models.TextField()
+    dsc_text_bin = models.BinaryField()    
     document = models.OneToOneField(Document, models.CASCADE)
     
-    
+    @property
+    def dsc_text(self):
+        return lzma.decompress(self.dsc_text_bin).decode("utf-8")
+
+    @dsc_text.setter
+    def dsc_text(self, dsc_result):
+        dsc_text_bytes = bytes(str(dsc_result), 'utf-8')        
+        self.dsc_text_bin = lzma.compress(dsc_text_bytes)    
 class DocumentResult(models.Model):
     '''
     Created on 14 de ago de 2017

@@ -12,6 +12,7 @@ if __name__ == '__main__':
     from scheduler.performance_test.performance_test import create_database, \
     run_scheduler, write_performance_test
     
+
     parser = argparse.ArgumentParser()
     parser.add_argument("action", help="Action: create a database (createdb) or run the scheduler (runscheduler) or save processment statistics (savestatistics)")
     parser.add_argument("datasets", help="Number of datasets to add/added",type=int)
