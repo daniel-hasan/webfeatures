@@ -1,2 +1,4 @@
 FeatSetName	#datasets(expected)	#schedulers	#datasets(real)	Total Proc. Time	Avg. Proc time per dataset	Max Proc. Time	Min Proc. Time	Doc. count	Avg. doc per dataset
-Performance Test	35	5	36	5.214279	0.14484108333333334	0.823998	0.393162	74	2.0555555555555554
+Performance Test	1	1	These datasets are incomplete: dataset_test0; dataset_test0; dataset_test0
+Performance Test	5	3	6	1.12693	0.18782166666666666	0.640077	0.322718	14	2.3333333333333335
+Performance Test	3	3	4	3.050306	0.7625765	1.787002	1.094212	10	2.5
