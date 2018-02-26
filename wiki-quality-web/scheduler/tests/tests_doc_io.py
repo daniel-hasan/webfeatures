@@ -10,7 +10,7 @@ Created on 30/10/2017
 
 
 '''
-from _datetime import datetime
+from django.utils import timezone
 
 from django.contrib.auth.models import User
 from django.test.testcases import TestCase
@@ -43,8 +43,8 @@ class TestDocIO(TestCase):
                                                      user=self.my_admin)
         
         self.objDataset = Dataset.objects.create(nam_dataset = "dataset_test", 
-                                                 dat_submitted = datetime.now(), 
-                                                 dat_valid_until = datetime.now(), 
+                                                 dat_submitted = timezone.now(), 
+                                                 dat_valid_until = timezone.now(), 
                                                  format = self.objFormat,
                                                  feature_set=self.feature_set,
                                                  user=self.my_admin,
@@ -86,7 +86,7 @@ class TestDocIO(TestCase):
         
     
     def testWriter(self):
-        d = DatasetModelDocWriter()
+        d = DatasetModelDocWriter(self.objDataset)
         arr_feats_used = ["Texto das features usadas"]
         arr_feats_result = [{'Teste': 'feat1', 'teste2': 'feat2'}] #
                 

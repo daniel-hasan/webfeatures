@@ -26,13 +26,41 @@ class TestReadability(unittest.TestCase):
         self.assertEqual(objValueCache, cacheChar, "As permissões de dono não estão sendo atribuídas")
         
     def test(self):
+        
+        doc1 = Document(1,"doc1","I do not do this thing at the right way. The alligator is in the lake.")
+        
         objari = ARIFeature("ARI Feature","Compute ARI metric","reference", FeatureVisibilityEnum.public,
-                            FormatEnum.text_plain, FeatureTimePerDocumentEnum.MILLISECONDS)
+                            FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS)
         
         objcl = ColemanLiauFeature("CL Feature","Compute CL metric","reference", FeatureVisibilityEnum.public,
-                            FormatEnum.text_plain, FeatureTimePerDocumentEnum.MILLISECONDS)
+                            FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS)
+        
+        objfre = FleschReadingEaseFeature("FRE Feature","Compute FRE metric","reference", FeatureVisibilityEnum.public,
+                            FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS)
+                
+        objfkf = FleschKincaidFeature("FRE Feature","Compute FK metric","reference", FeatureVisibilityEnum.public,
+                            FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS)
         
         objgfi = GunningFogIndexFeature("GFI Feature","Compute GFI metric","reference", FeatureVisibilityEnum.public,
-                            FormatEnum.text_plain, FeatureTimePerDocumentEnum.MILLISECONDS)
+                            FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS)
+        
+        objlbi = LasbarhetsindexFeature("LBI Feature","Compute LBI metric","reference", FeatureVisibilityEnum.public,
+                            FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS)
+        
+        objsmog = SmogGradingFeature("SMOG Feature","Compute SMOG metric","reference", FeatureVisibilityEnum.public,
+                            FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS)
+        
+        arr_features = [objari]
+        arr_features.append(objcl)
+        arr_features.append(objfre)
+        arr_features.append(objfkf)
+        arr_features.append(objgfi)
+        arr_features.append(objlbi)
+        arr_features.append(objsmog)
+        
+        arr_result = FeatureCalculator.featureManager.computeFeatureSet(doc1, arr_features, FormatEnum.HTML)
+        
+        #print(*arr_result)
+        
 if __name__ == "__main__":
     unittest.main()

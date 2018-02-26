@@ -194,20 +194,18 @@ class FeatureCalculatorManager(object):
                 if isinstance(feat, TagBasedFeature):
                     parser = ParserTags(feat, docText)
                     parser.feed(str_text)
-                    #arr_feat_result[aux] = feat.compute_feature(docText)
-                    #feat.finish_document(docText)
                 aux = aux + 1
                             
-            #considera apenas o que estiver dentro de <body> </body> (se esses elementos existirem)
+            '''considera apenas o que estiver dentro de <body> </body> (se esses elementos existirem)'''
             str_text_lower = str_text.lower()
             int_pos_body = str_text_lower.find("<body>")
             int_pos_fim_body = str_text_lower.find("</body>")
             if(int_pos_body >=0 and int_pos_fim_body>=0):
                 str_text = str_text[int_pos_body+6:int_pos_fim_body]
-            #str_text = parser.str_plain_text
+            '''str_text = parser.str_plain_text'''
             str_text = re.sub("<[^>]+>", " ", str_text)
             str_text_for_char = re.sub("<[^>]+>", "", str_text)
-	    #elimina as html entities
+            '''elimina as html entities'''
             str_text = html.unescape(str_text)
             str_text_for_char = html.unescape(str_text_for_char)
             
@@ -275,11 +273,7 @@ class FeatureCalculatorManager(object):
         aux = 0
         for feat in arr_features:
             arr_feat_result[aux] = feat.compute_feature(docText)
-            #if isinstance(feat, TagBasedFeature):
-            #    pass
-            #else:
-            #    arr_feat_result[aux] = feat.compute_feature(docText)
-                #feat.finish_document(docText)
+ 
             aux = aux + 1
         for feat in arr_features:
             feat.finish_document(docText)
@@ -301,7 +295,7 @@ class FeatureCalculator(object):
         @author:  Daniel Hasan Dalip <hasan@decom.cefetmg.br>
     '''
     featureManager = FeatureCalculatorManager()
-    word_divisors = set([" ",",",".","!","?","'"])
+    word_divisors = set([" ",",",".","!","?",";","%","&","*","(",")","-","@","#","+","/","=","[","]","}","{","\n","|","\"","'"])
     sentence_divisors = set([".","!","?"])
     paragraph_divisor = set(["\n", os.linesep])
     
@@ -352,8 +346,6 @@ class WordBasedFeature(FeatureCalculator):
     
     @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
     '''
-    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document):
-        super().__init__(name,description,reference,visibility,text_format,feature_time_per_document)   
     
     @abstractmethod
     def checkWord(self,document,word):
@@ -361,9 +353,6 @@ class WordBasedFeature(FeatureCalculator):
             
 
 class TagBasedFeature(FeatureCalculator):
-    
-    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document):
-        super(FeatureCalculator,self).__init__(name,description,reference,visibility,text_format,feature_time_per_document) 
     
     def startTag(self,tag, attrs):
         pass
@@ -375,8 +364,6 @@ class TagBasedFeature(FeatureCalculator):
         pass
     
 class CharBasedFeature(FeatureCalculator):
-    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document):
-        super().__init__(name,description,reference,visibility,text_format,feature_time_per_document) 
     
     @abstractmethod
     def checkChar(self,document,char):

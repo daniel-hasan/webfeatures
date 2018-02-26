@@ -16,7 +16,7 @@ para rodar:  python3 manage.py shell < scheduler/tests/tests_UsedFeature_io.py
 from django.template import Template, Context
 from django.conf import settings
 
-from _datetime import datetime
+from django.utils import timezone
 from wqual.models.uploaded_datasets import Format, Dataset
 from wqual.models.featureset_config import UsedFeature, UsedFeatureArgVal
 import unittest

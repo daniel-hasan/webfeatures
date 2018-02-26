@@ -5,13 +5,17 @@ Created on 8 de ago de 2017
 @author: hasan
 '''
 from abc import abstractmethod
+from django.contrib.sessions.backends import file
 
 from feature import ConfigurableParam, ParamTypeEnum
-from feature.featureImpl.style_features import *
+from feature.featureImpl.readability_features import ARIFeature, \
+    ColemanLiauFeature, FleschReadingEaseFeature, FleschKincaidFeature, \
+    GunningFogIndexFeature, LasbarhetsindexFeature, \
+    SmogGradingFeature
 from feature.featureImpl.structure_features import *
+from feature.featureImpl.style_features import *
 from feature.features import  FeatureVisibilityEnum
 from utils.basic_entities import FormatEnum, FeatureTimePerDocumentEnum
-from django.contrib.sessions.backends import file
 
  
 class FeatureFactory(object):
@@ -170,11 +174,11 @@ class StyleFeatureFactory(FeatureFactory):
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.text_plain, FeatureTimePerDocumentEnum.MILLISECONDS)
         
-        featLargeSentenceCount = LargeSentenceCountFeature("Large phrase Count","Count the number of phrases larger than a specified threshold.",
+        featLargeSentenceCount = LargeSentenceCountFeature("Large Phrase Count","Count the number of phrases larger than a specified threshold.",
                                                            "reference",FeatureVisibilityEnum.public,FormatEnum.text_plain,
                                                            FeatureTimePerDocumentEnum.MICROSECONDS,10)
         
-        featLargeSentenceCount.addConfigurableParam(ConfigurableParam("intSize","Sentence size",
+        featLargeSentenceCount.addConfigurableParam(ConfigurableParam("int_size","Sentence Size",
                                                                       "The sentence need to have (at least) this length (in words) in order to be considered a large phrase.",
                                                                       10,ParamTypeEnum.int))
         
@@ -207,7 +211,7 @@ class StyleFeatureFactory(FeatureFactory):
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.text_plain, FeatureTimePerDocumentEnum.MILLISECONDS,16)
         
-        featLargeSentenceCount.addConfigurableParam(ConfigurableParam("int_paragraph_size","Paragraph Size",
+        featLargeSentenceCount.addConfigurableParam(ConfigurableParam("size","Paragraph Size",
                                                                       "The paragraph need to have (at least) this length (in words) in order to be considered a large paragraph.",
                                                                       16,ParamTypeEnum.int))
         
@@ -245,7 +249,7 @@ class WordsFeatureFactory(FeatureFactory):
         objFeature = WordCountFeature(str(classe).title() + " Count","Count the number of "+ classe +" in the text.",
                         "Based on file style.c from the file diction-1.11.tar.gz in http://ftp.gnu.org/gnu/diction/",
                         FeatureVisibilityEnum.public, 
-                        FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,listWords,False)
+                        FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,listWords,case_sensitive=False)
         
         return objFeature
     
@@ -270,4 +274,50 @@ class WordsFeatureFactory(FeatureFactory):
         
         arrFeatures = [self.createFeatureObject(classe) for classe in part_of_speech]
         [arrFeatures.append(self.createBeginningOfSentenceFeatureObject(classe)) for classe in part_of_speech]
+        return arrFeatures
+
+
+class ReadabilityFeatureFactory(FeatureCalculator):
+    
+    def createFeatures(self):
+        
+        arrFeatures = []
+        
+        featARI = ARIFeature("ARI Readability Feature","Compute ARI metric",
+                  "Based on Daniel Hasan Dalip's PhD thesis", FeatureVisibilityEnum.public,
+                  FormatEnum.text_plain, FeatureTimePerDocumentEnum.MILLISECONDS)
+        
+        featColemanLiau = ColemanLiauFeature("Coleman-Liau Readability Feature","Compute Coleman-Liau metric",
+                            "Based on file style from the file diction-1.11.tar.gz in http://ftp.gnu.org/gnu/diction/"
+                             + " and based on Coleman, et al. article 'A computer readability formula designed for machine scoring' - Journal of Applied Psychology (1975)",FeatureVisibilityEnum.public,
+                            FormatEnum.text_plain, FeatureTimePerDocumentEnum.MILLISECONDS)
+        
+        featFleschReadingEase = FleschReadingEaseFeature("Flesch Reading Ease Readability Feature","Compute Flesch Reading Ease metric",
+                            "Based on Daniel Hasan Dalip's PhD thesis", FeatureVisibilityEnum.public,
+                            FormatEnum.text_plain, FeatureTimePerDocumentEnum.MILLISECONDS)
+                
+        featFleschKincaid = FleschKincaidFeature("Flesch Kincaid Readability Feature","Compute Flesch Kincaid metric",
+                            "Based on Daniel Hasan Dalip's PhD thesis", FeatureVisibilityEnum.public,
+                            FormatEnum.text_plain, FeatureTimePerDocumentEnum.MILLISECONDS)
+        
+        featGunningFogIndex = GunningFogIndexFeature("Gunning Fog Index Readability Feature","Compute Gunning Fog Index metric",
+                            "Based on Daniel Hasan Dalip's PhD thesis", FeatureVisibilityEnum.public,
+                            FormatEnum.text_plain, FeatureTimePerDocumentEnum.MILLISECONDS)
+        
+        featLasbarhetsindex = LasbarhetsindexFeature("Lasbarhetsindex Readability Feature","Compute Lasbarhetsindex metric",
+                            "Based on Daniel Hasan Dalip's PhD thesis", FeatureVisibilityEnum.public,
+                            FormatEnum.text_plain, FeatureTimePerDocumentEnum.MILLISECONDS)
+        
+        featSmogGrading = SmogGradingFeature("Smog Grading Readability Feature","Compute Smog Grading metric",
+                            "Based on Daniel Hasan Dalip's PhD thesis", FeatureVisibilityEnum.public,
+                            FormatEnum.text_plain, FeatureTimePerDocumentEnum.MILLISECONDS)
+        
+        arrFeatures.append(featARI)
+        arrFeatures.append(featColemanLiau)
+        arrFeatures.append(featFleschReadingEase)
+        arrFeatures.append(featFleschKincaid)
+        arrFeatures.append(featGunningFogIndex)
+        arrFeatures.append(featLasbarhetsindex)
+        arrFeatures.append(featSmogGrading)
+        
         return arrFeatures
