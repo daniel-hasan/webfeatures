@@ -70,7 +70,7 @@ class FeatureFactoryManager(models.Manager):
                 objFeatureFactory = FeatureFactoryClass()
             
             #add all the features from factory
-            print("Feature: "+featFactory.nam_factory_class+" array: "+str(objFeatureFactory.createFeatures()))
+            #print("Feature: "+featFactory.nam_factory_class+" array: "+str(objFeatureFactory.createFeatures()))
             [arr_features.append(objFeature) for objFeature in objFeatureFactory.createFeatures()]
         return arr_features
             
