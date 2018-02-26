@@ -1,7 +1,7 @@
 from feature.featureImpl.style_features import *
 from feature.features import *
 from utils.basic_entities import FeatureTimePerDocumentEnum, FormatEnum
-from cmath import sqrt
+from math import sqrt
 
 class ReadabilityBasedFeature(CharBasedFeature, WordBasedFeature, SentenceBasedFeature):
     
@@ -129,13 +129,19 @@ class WFCountFeature(WordBasedFeature):
         self.int_wf = 0
         
     def checkWord(self,document,word):
-        if word in FeatureCalculator.sentence_divisors and self.int_word_counter <= 100:
+        if word in FeatureCalculator.sentence_divisors and self.int_word_counter < 100:
             self.int_sentence_counter = self.int_sentence_counter + 1
-        else:
+        
+        elif self.int_word_counter == 100:
             self.int_wf = self.int_wf + 1
             self.int_word_counter = 0
+            
+        self.int_word_counter = self.int_word_counter + 1
     
     def compute_feature(self,document):
+        if self.int_wf == 0:
+            return self.int_sentence_counter
+        
         return self.int_sentence_counter/self.int_wf
     
     def finish_document(self, document):
@@ -146,7 +152,7 @@ class WFCountFeature(WordBasedFeature):
 class ColemanLiauFeature(ReadabilityBasedFeature):
     def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document):
         super().__init__(name,description,reference,visibility,text_format,feature_time_per_document,
-        [ReadabilityBasedFeature.CHARCOUNT,ReadabilityBasedFeature.WORDCOUNT])
+        [ReadabilityBasedFeature.CHARCOUNT,ReadabilityBasedFeature.WORDCOUNT,ReadabilityBasedFeature.SENTENCECOUNT])
         self.objwf = WFCountFeature("WF Count","Count the average of sentences in each fragment of 100 words in the text.","reference",
                                     FeatureVisibilityEnum.public, FormatEnum.text_plain, FeatureTimePerDocumentEnum.MILLISECONDS)
     
@@ -158,10 +164,12 @@ class ColemanLiauFeature(ReadabilityBasedFeature):
         
         objCharCount = document.obj_cache.getCacheItem(ReadabilityBasedFeature.CHARCOUNT)
         objWordCount = document.obj_cache.getCacheItem(ReadabilityBasedFeature.WORDCOUNT)
+        objSentenceCount = document.obj_cache.getCacheItem(ReadabilityBasedFeature.SENTENCECOUNT)
         charCount = objCharCount.compute_feature(document)
         wordCount = objWordCount.compute_feature(document)
+        sentenceCount = objSentenceCount.compute_feature(document)
         int_wf = self.objwf.compute_feature(document)
-        return 5.89*(charCount/wordCount) + 0.3*int_wf - 15.48
+        return 5.87*(charCount/wordCount) - 29.58*(sentenceCount/wordCount) - 15.80
 
 
 class FleschReadingEaseFeature(ReadabilityBasedFeature):

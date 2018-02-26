@@ -141,7 +141,7 @@ class WordsFeatureFactory(FeatureFactory):
         objFeature = WordCountFeature(str(classe).title() + " Count","Count the number of "+ classe +" in the text.",
                         "Based on file style.c from the file diction-1.11.tar.gz in http://ftp.gnu.org/gnu/diction/",
                         FeatureVisibilityEnum.public, 
-                        FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,listWords,False)
+                        FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,listWords,case_sensitive=False)
         
         return objFeature
     
@@ -166,7 +166,8 @@ class ReadabilityFeatureFactory(FeatureCalculator):
                   FormatEnum.text_plain, FeatureTimePerDocumentEnum.MILLISECONDS)
         
         featColemanLiau = ColemanLiauFeature("Coleman-Liau Readability Feature","Compute Coleman-Liau metric",
-                            "Based on Daniel Hasan Dalip's PhD thesis", FeatureVisibilityEnum.public,
+                            "Based on file style from the file diction-1.11.tar.gz in http://ftp.gnu.org/gnu/diction/"
+                             + " and based on Coleman, et al. article 'A computer readability formula designed for machine scoring' - Journal of Applied Psychology (1975)",FeatureVisibilityEnum.public,
                             FormatEnum.text_plain, FeatureTimePerDocumentEnum.MILLISECONDS)
         
         featFleschReadingEase = FleschReadingEaseFeature("Flesch Reading Ease Readability Feature","Compute Flesch Reading Ease metric",

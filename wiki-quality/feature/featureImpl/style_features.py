@@ -175,9 +175,9 @@ class SyllableCountFeature(WordBasedFeature):
         self.int_syllable_counter = 0
 
 class WordsSyllablesCountFeature(WordBasedFeature):
-    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document, syllables):
+    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document, int_syllables):
         super(WordBasedFeature,self).__init__(name,description,reference,visibility,text_format,feature_time_per_document)    
-        self.int_syllables = syllables
+        self.int_syllables = int_syllables
         self.int_complexword_counter = 0
     
     def checkWord(self, document, word):
