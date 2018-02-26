@@ -5,13 +5,17 @@ Created on 8 de ago de 2017
 @author: hasan
 '''
 from abc import abstractmethod
+from django.contrib.sessions.backends import file
 
 from feature import ConfigurableParam, ParamTypeEnum
-from feature.featureImpl.style_features import *
+from feature.featureImpl.readability_features import ARIFeature, \
+    ColemanLiauFeature, FleschReadingEaseFeature, FleschKincaidFeature, \
+    GunningFogIndexFeature, LasbarhetsindexFeature, \
+    SmogGradingFeature
 from feature.featureImpl.structure_features import *
+from feature.featureImpl.style_features import *
 from feature.features import  FeatureVisibilityEnum
 from utils.basic_entities import FormatEnum, FeatureTimePerDocumentEnum
-from django.contrib.sessions.backends import file
 
 
 class FeatureFactory(object):
@@ -19,16 +23,7 @@ class FeatureFactory(object):
     Cria as features de um determinado tipo.
     @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>  
     '''  
-    IS_LANGUAGE_DEPENDENT = False 
-    def class_language_dependent(self,str_class):
-        '''
-        resgata a classe com um vocabulario dependente de linguagem a ser usa
-        @todo: Nem todos as linguas sao implementadas, deve-se lançar uma exceção e 
-        assim não criar a feature caso nao encontre a classe
-        ''' 
-        module = __import__( "feature.feature_factory.language_dependent_words."+self.language.name+"_words" )
-        Klass = getattr(module,str_class)
-        return Klass
+    IS_LANGUAGE_DEPENDENT = False
     
     @abstractmethod
     def createFeatures(self):
@@ -43,17 +38,33 @@ class StructureFeatureFactory(FeatureFactory):
     
     def createFeatures(self):
         
-        arrFeatures = [TagCountFeature("Section h1 Count", "Count the number of HTML h1 sections in the text", "reference", 
+        arrFeatures = [TagCountFeature("Section Count", "Count the number of sections (i.e. HTML h1 tags) in the text", "", 
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.HTML, 
-                                         FeatureTimePerDocumentEnum.MILLISECONDS,["h1"])]
-        
-        featTagCount = TagCountFeature("Section p Count", "Count the number of HTML p sections in the text", "reference", 
+                                         FeatureTimePerDocumentEnum.MILLISECONDS,["h1"]),
+                       TagCountFeature("Subsection Count", "Count the number of subsections (i.e. HTML h1 tags) in the text", "", 
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.HTML, 
-                                         FeatureTimePerDocumentEnum.MILLISECONDS,["p"])
+                                         FeatureTimePerDocumentEnum.MILLISECONDS,["h2"]),
+                       LinkCountFeature("Complete URL link Count", "Count the number of  HTML 'a' tag in which the 'href' attribute refers to a complete URL.", "", 
+                                         FeatureVisibilityEnum.public, 
+                                         FormatEnum.HTML, 
+                                         FeatureTimePerDocumentEnum.MILLISECONDS,["h2"],bolExternal=True,bolInternalSameDomain=False,bolInternalSamePage=False),
+                       LinkCountFeature("Relative URL link Count", "Count the number of  HTML 'a' tag in which the 'href' attribute refers to a relative URL (e.g. /images/cow.gif).", "", 
+                                         FeatureVisibilityEnum.public, 
+                                         FormatEnum.HTML, 
+                                         FeatureTimePerDocumentEnum.MILLISECONDS,["h2"],bolExternal=False,bolInternalSameDomain=True,bolInternalSamePage=False),
+                       LinkCountFeature("Same page link Count", "Count the number of links which refers to some other elements in the same page."+
+                                                                " In other words, count the number of HTML 'a' tags in which 'href' points to some html page id."+
+                                                                " For example, the value '#mainDiv' point to an element in the page which the id is 'mainDiv'.", "", 
+                                         FeatureVisibilityEnum.public, 
+                                         FormatEnum.HTML, 
+                                         FeatureTimePerDocumentEnum.MILLISECONDS,["h2"],bolExternal=False,bolInternalSameDomain=False,bolInternalSamePage=True)
+
+                       ]
         
-        arrFeatures.append(featTagCount)
+
+        
         
         featTagCount = TagCountFeature("Section div Count", "Count the number of HTML div sections in the text", "reference", 
                                          FeatureVisibilityEnum.public, 
@@ -68,7 +79,7 @@ class StyleFeatureFactory(FeatureFactory):
         Parametros:
             language: objeto da classe utils.Language
         '''
-        PosClassLang = self.class_language_dependent("PartOfSpeech")
+        '''PosClassLang = self.class_language_dependent("PartOfSpeech")'''
         
         arrFeatures = []
         
@@ -80,7 +91,7 @@ class StyleFeatureFactory(FeatureFactory):
                                                            "reference",FeatureVisibilityEnum.public,FormatEnum.text_plain,
                                                            FeatureTimePerDocumentEnum.MICROSECONDS,10)
         
-        featLargeSentenceCount.addConfigurableParam(ConfigurableParam("int_sentence_size","Sentence Size",
+        featLargeSentenceCount.addConfigurableParam(ConfigurableParam("int_size","Sentence Size",
                                                                       "The sentence need to have (at least) this length (in words) in order to be considered a large phrase.",
                                                                       10,ParamTypeEnum.int))
         
@@ -94,7 +105,7 @@ class StyleFeatureFactory(FeatureFactory):
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.text_plain, FeatureTimePerDocumentEnum.MILLISECONDS,16)
         
-        featLargeSentenceCount.addConfigurableParam(ConfigurableParam("int_paragraph_size","Paragraph Size",
+        featLargeSentenceCount.addConfigurableParam(ConfigurableParam("size","Paragraph Size",
                                                                       "The paragraph need to have (at least) this length (in words) in order to be considered a large paragraph.",
                                                                       16,ParamTypeEnum.int))
         
@@ -130,7 +141,7 @@ class WordsFeatureFactory(FeatureFactory):
         objFeature = WordCountFeature(str(classe).title() + " Count","Count the number of "+ classe +" in the text.",
                         "Based on file style.c from the file diction-1.11.tar.gz in http://ftp.gnu.org/gnu/diction/",
                         FeatureVisibilityEnum.public, 
-                        FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,listWords,False)
+                        FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,listWords,case_sensitive=False)
         
         return objFeature
     
@@ -141,4 +152,50 @@ class WordsFeatureFactory(FeatureFactory):
                           "relativePronouns","subordinatingConjunctions","toBeVerbs"]
         
         arrFeatures = [self.createFeatureObject(classe) for classe in part_of_speech]
+        return arrFeatures
+
+
+class ReadabilityFeatureFactory(FeatureCalculator):
+    
+    def createFeatures(self):
+        
+        arrFeatures = []
+        
+        featARI = ARIFeature("ARI Readability Feature","Compute ARI metric",
+                  "Based on Daniel Hasan Dalip's PhD thesis", FeatureVisibilityEnum.public,
+                  FormatEnum.text_plain, FeatureTimePerDocumentEnum.MILLISECONDS)
+        
+        featColemanLiau = ColemanLiauFeature("Coleman-Liau Readability Feature","Compute Coleman-Liau metric",
+                            "Based on file style from the file diction-1.11.tar.gz in http://ftp.gnu.org/gnu/diction/"
+                             + " and based on Coleman, et al. article 'A computer readability formula designed for machine scoring' - Journal of Applied Psychology (1975)",FeatureVisibilityEnum.public,
+                            FormatEnum.text_plain, FeatureTimePerDocumentEnum.MILLISECONDS)
+        
+        featFleschReadingEase = FleschReadingEaseFeature("Flesch Reading Ease Readability Feature","Compute Flesch Reading Ease metric",
+                            "Based on Daniel Hasan Dalip's PhD thesis", FeatureVisibilityEnum.public,
+                            FormatEnum.text_plain, FeatureTimePerDocumentEnum.MILLISECONDS)
+                
+        featFleschKincaid = FleschKincaidFeature("Flesch Kincaid Readability Feature","Compute Flesch Kincaid metric",
+                            "Based on Daniel Hasan Dalip's PhD thesis", FeatureVisibilityEnum.public,
+                            FormatEnum.text_plain, FeatureTimePerDocumentEnum.MILLISECONDS)
+        
+        featGunningFogIndex = GunningFogIndexFeature("Gunning Fog Index Readability Feature","Compute Gunning Fog Index metric",
+                            "Based on Daniel Hasan Dalip's PhD thesis", FeatureVisibilityEnum.public,
+                            FormatEnum.text_plain, FeatureTimePerDocumentEnum.MILLISECONDS)
+        
+        featLasbarhetsindex = LasbarhetsindexFeature("Lasbarhetsindex Readability Feature","Compute Lasbarhetsindex metric",
+                            "Based on Daniel Hasan Dalip's PhD thesis", FeatureVisibilityEnum.public,
+                            FormatEnum.text_plain, FeatureTimePerDocumentEnum.MILLISECONDS)
+        
+        featSmogGrading = SmogGradingFeature("Smog Grading Readability Feature","Compute Smog Grading metric",
+                            "Based on Daniel Hasan Dalip's PhD thesis", FeatureVisibilityEnum.public,
+                            FormatEnum.text_plain, FeatureTimePerDocumentEnum.MILLISECONDS)
+        
+        arrFeatures.append(featARI)
+        arrFeatures.append(featColemanLiau)
+        arrFeatures.append(featFleschReadingEase)
+        arrFeatures.append(featFleschKincaid)
+        arrFeatures.append(featGunningFogIndex)
+        arrFeatures.append(featLasbarhetsindex)
+        arrFeatures.append(featSmogGrading)
+        
         return arrFeatures
