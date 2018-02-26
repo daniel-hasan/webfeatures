@@ -134,8 +134,13 @@ class TestUsedFeatures(TestCase):
         
         #sort
         arrExpected = ["Largest Phrase Count","Largest Phrase Count "+objEnglish.name,"Preposition Count","Preposition Count "+objEnglish.name]
-        
-        self.assertListEqual(arrFeatureNames, arrExpected)    
+        for str_expected_feature_name in arrExpected:
+            bolEncontrou = False
+            for feature in arrFeatures:
+                if(str_expected_feature_name == feature.name):
+                    bolEncontrou = True
+            self.assertTrue(bolEncontrou, "Could not found the feature: "+str_expected_feature_name)
+            
     
     def test_feature_add(self):
         wordCount = WordCountFeature("Preposition Count","Count the number of prepositions in the text","ref",FeatureVisibilityEnum.public,FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,setWordsToCount=["de","do","du"])

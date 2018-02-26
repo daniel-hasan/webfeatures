@@ -123,44 +123,30 @@ class StructureFeatureFactory(FeatureFactory):
                                           FormatEnum.HTML, 
                                           FeatureTimePerDocumentEnum.MILLISECONDS,1
                                           ),
-
-                       TagCountFeature("Links per length","Number of links (considering all the 'a' HTML tag) per length (in characters)","",
-                                          FeatureVisibilityEnum.public, 
-                                          FormatEnum.HTML, 
-                                          FeatureTimePerDocumentEnum.MILLISECONDS,
-                                          intPropotionalTo=Proportional.CHAR_COUNT,setTagsToCount=["a"]
-                                          ),
-                        
-                        TagCountFeature("Links per section","The ratio between the number of links (considering all the 'a' HTML tag) and the section count","",
-                                          FeatureVisibilityEnum.public, 
-                                          FormatEnum.HTML, 
-                                          FeatureTimePerDocumentEnum.MILLISECONDS,
-                                          intPropotionalTo=Proportional.SECTION_COUNT,setTagsToCount=["a"]
-                                          ),                       
                        
                         TagCountFeature("Images per length","Number of images (considering the 'img' HTML tag) per length (in characters)","",
                                           FeatureVisibilityEnum.public, 
                                           FormatEnum.HTML, 
                                           FeatureTimePerDocumentEnum.MILLISECONDS,
-                                          intPropotionalTo=Proportional.CHAR_COUNT,setTagsToCount=["img"]
+                                          intPropotionalTo=Proportional.CHAR_COUNT.value,setTagsToCount=["img"]
                                           ),
                         TagCountFeature("Images per section","The ratio between the number of links (considering the  'img' HTML tag) and the section count","",
                                           FeatureVisibilityEnum.public, 
                                           FormatEnum.HTML, 
                                           FeatureTimePerDocumentEnum.MILLISECONDS,
-                                          intPropotionalTo=Proportional.SECTION_COUNT,setTagsToCount=["img"]
+                                          intPropotionalTo=Proportional.SECTION_COUNT.value,setTagsToCount=["img"]
                                           ),                       
                        ]
         
 
         
         
-        featTagCount = TagCountFeature("Section div Count", "Count the number of HTML div sections in the text", "reference", 
-                                         FeatureVisibilityEnum.public, 
-                                         FormatEnum.HTML, 
-                                         FeatureTimePerDocumentEnum.MILLISECONDS,["div"])
-        arrFeatures.append(featTagCount)
-    
+        #featTagCount = TagCountFeature("Section div Count", "Count the number of HTML div sections in the text", "reference", 
+        #                                 FeatureVisibilityEnum.public, 
+        #                                 FormatEnum.HTML, 
+        #                                 FeatureTimePerDocumentEnum.MILLISECONDS,["div"])
+        #arrFeatures.append(featTagCount)
+        return arrFeatures
 class StyleFeatureFactory(FeatureFactory):
     def createFeatures(self):
         '''
@@ -202,16 +188,16 @@ class StyleFeatureFactory(FeatureFactory):
                                                                       2,ParamTypeEnum.int))        
                 
         featParagraphCount = ParagraphCountFeature("Paragraph Count","Count the number of paragraph at text",
-                                         "reference",
+                                         "",
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.text_plain, FeatureTimePerDocumentEnum.MILLISECONDS)
         
         featLargeParagraphCount = LargeParagraphCountFeature("Large Paragraph Count","The number of paragraphs larger than a specified threshold",
-                                         "reference",
+                                         "",
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.text_plain, FeatureTimePerDocumentEnum.MILLISECONDS,16)
         
-        featLargeSentenceCount.addConfigurableParam(ConfigurableParam("size","Paragraph Size",
+        featLargeParagraphCount.addConfigurableParam(ConfigurableParam("size","Paragraph Size",
                                                                       "The paragraph need to have (at least) this length (in words) in order to be considered a large paragraph.",
                                                                       16,ParamTypeEnum.int))
         
@@ -237,15 +223,18 @@ class WordsFeatureFactory(FeatureFactory):
     
     
     def getClasseGramatical(self, str_classe):
-        
-        fileClasseGramatical = self.BASE_DIR+"/partOfSpeech/"+self.objLanguage.name+"/" + str_classe + ".txt"
-        with open(fileClasseGramatical) as file:
-            listPrepositions = file.read().split(",")
-        
+        try: 
+            fileClasseGramatical = self.BASE_DIR+"/partOfSpeech/"+self.objLanguage.name+"/" + str_classe + ".txt"
+            with open(fileClasseGramatical) as file:
+                listPrepositions = file.read().split(",")
+        except FileNotFoundError:
+            return None
         return listPrepositions
     
     def createFeatureObject(self,classe):
         listWords = self.getClasseGramatical(classe)
+        if(listWords == None):
+            return None
         objFeature = WordCountFeature(str(classe).title() + " Count","Count the number of "+ classe +" in the text.",
                         "Based on file style.c from the file diction-1.11.tar.gz in http://ftp.gnu.org/gnu/diction/",
                         FeatureVisibilityEnum.public, 
@@ -255,6 +244,8 @@ class WordsFeatureFactory(FeatureFactory):
     
     def createBeginningOfSentenceFeatureObject(self,classe):
         listWords = self.getClasseGramatical(classe)
+        if(listWords == None):
+            return None
         n = ""
         if(classe[0] in set(["a","e","i","o","u"])):
             n = "n"
@@ -271,13 +262,20 @@ class WordsFeatureFactory(FeatureFactory):
                           "indefinitePronouns","interrogativePronouns","prepositions","pronouns",
                           "relativePronouns","subordinatingConjunctions","toBeVerbs"]
         
-        
-        arrFeatures = [self.createFeatureObject(classe) for classe in part_of_speech]
-        [arrFeatures.append(self.createBeginningOfSentenceFeatureObject(classe)) for classe in part_of_speech]
+        arrFeatures = [ ]
+        for classe in part_of_speech:
+            objFeature = self.createFeatureObject(classe)
+            if(objFeature!=None):
+                arrFeatures.append(objFeature)
+                
+        for classe in part_of_speech:
+            objFeature = self.createBeginningOfSentenceFeatureObject(classe)
+            if(objFeature != None):
+                arrFeatures.append(objFeature)
         return arrFeatures
 
 
-class ReadabilityFeatureFactory(FeatureCalculator):
+class ReadabilityFeatureFactory(FeatureFactory):
     
     def createFeatures(self):
         
