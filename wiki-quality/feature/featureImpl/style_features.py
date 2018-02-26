@@ -5,6 +5,8 @@ Features de estrutura (como numero de seções, citações etc.)
 @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>  
 '''
 
+from statistics import mean
+
 from feature.features import *
 from feature.hyphenate import *
 
@@ -27,11 +29,11 @@ class SentenceCountFeature(SentenceBasedFeature):
     
     def finish_document(self,document):
         self.int_sentences_counter = 0
-
+        
+        
 class LargeSentenceCountFeature(WordBasedFeature):
     '''
     Verifica a quantidade de frases grandes
-    
     '''
     
     def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document,int_size):
@@ -58,6 +60,38 @@ class LargeSentenceCountFeature(WordBasedFeature):
     def finish_document(self,document):
         self.int_large_sentence = 0
         self.int_word_counter = 0
+        
+class LargeSentenceSizeFeature(WordBasedFeature):
+    '''
+    Retorna o tamanho da maior frase
+    '''
+    
+    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document):
+        super(WordBasedFeature,self).__init__(name,description,reference,visibility,text_format,feature_time_per_document)    
+        self.int_large_sentence = 0
+        self.int_word_counter = 0
+    
+    def checkWord(self,document,word):
+        if word in FeatureCalculator.sentence_divisors:
+            self.large_sentence(self.int_word_counter)
+            
+        elif word not in FeatureCalculator.word_divisors:
+            self.int_word_counter = self.int_word_counter + 1
+            
+    def large_sentence(self,int_sentence_size):
+        if(int_sentence_size >= self.int_large_sentence):
+            self.int_large_sentence = int_sentence_size
+            self.int_word_counter = 0
+    
+    def compute_feature(self, document):
+        return self.int_large_sentence
+    
+    def finish_document(self,document):
+        self.int_large_sentence = 0
+        self.int_word_counter = 0
+        
+
+        
         
 class WordCountFeature(WordBasedFeature):
     '''
@@ -87,9 +121,83 @@ class WordCountFeature(WordBasedFeature):
     
     def compute_feature(self,document):
         return self.int_word_counter
+    def reset_counter(self):
+        self.int_word_counter = 0
+        
+    def finish_document(self,document):
+        self.reset_counter()
+
+class PhraseRateMoreThanAvgFeature(SentenceBasedFeature,WordCountFeature):
+    '''
+    Contabiliza a proporção de frases maiores do que a media (menos o tamanho passado como parametro)
+    
+    '''
+    
+    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document,bolLarge,intSize):
+        super().__init__(name,description,reference,visibility,text_format,feature_time_per_document)    
+        
+        self.arr_sentences = []
+        self.bolLarge = bolLarge
+        self.intSize = intSize
+    
+
+    def checkSentence(self,document,sentence):
+        self.arr_sentences.append(self.int_word_counter)
+        self.reset_counter()
+    
+    def compute_feature(self, document):
+        int_count = 0
+        avgSize = mean(self.arr_sentences)
+        for size in self.arr_sentences:
+            if((self.bolLarge and size >= (avgSize+self.intSize)) or (not self.bolLarge and size<=(avgSize-self.intSize))):
+                int_count = int_count+1
+        return int_count/len(self.arr_sentences) if len(self.arr_sentences)>0 else 0
     
     def finish_document(self,document):
+        self.arr_sentences = []
+        
+        
+class BeginningSentenceWordCountFeature(SentenceBasedFeature):
+    '''
+    Contabiliza a ocorrencia de uma determinada lista de palavras
+    Parametros:
+    setWordsToCount: Lista representando as palavras a serem contabilizadas
+    '''
+    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document,setWordsToCount=None,case_sensitive=False):
+        super().__init__(name,description,reference,visibility,text_format,feature_time_per_document)    
+        if(setWordsToCount==None):
+            setWordsToCount = []
+        if(not case_sensitive):
+            setWordsToCount = [word.lower() for word in setWordsToCount]
+        
+        self.case_sensitive = case_sensitive
+        self.setWordsToCount = set(setWordsToCount)
         self.int_word_counter = 0
+    
+     
+    def checkSentence(self,document,sentence):
+        #get the first sentence word
+        word_divisors = FeatureCalculator.word_divisors
+        word = ""
+        pos = 0
+        sentence = sentence.strip()
+        if(len(sentence)<1):
+            return
+        
+        while(pos < len(sentence) and sentence[pos] not in word_divisors):
+            word += sentence[pos]
+            pos = pos + 1
+        word = word.lower() if not self.case_sensitive else word
+        
+        #check if exists and count
+        if word in self.setWordsToCount:
+            self.int_word_counter = self.int_word_counter + 1
+    
+    def compute_feature(self,document):
+        return self.int_word_counter
+    
+    def finish_document(self,document):
+        self.int_word_counter = 0        
         
 class ParagraphCountFeature(ParagraphBasedFeature):
     '''

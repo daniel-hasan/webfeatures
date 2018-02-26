@@ -8,11 +8,14 @@ import unittest
 
 from feature.featureImpl.style_features import WordCountFeature, \
     SentenceCountFeature, LargeSentenceCountFeature, ParagraphCountFeature, \
-    LargeParagraphCountFeature, CharacterCountFeature, SyllableCountFeature,\
-    WordsSyllablesCountFeature
+    LargeParagraphCountFeature, CharacterCountFeature, SyllableCountFeature, \
+    WordsSyllablesCountFeature, LargeSentenceSizeFeature, \
+    PhraseRateMoreThanAvgFeature
+from feature.feature_factory.feature_factory import WordsFeatureFactory
 from feature.features import FeatureVisibilityEnum, Document, \
-    SentenceBasedFeature
-from utils.basic_entities import FormatEnum, FeatureTimePerDocumentEnum
+    SentenceBasedFeature, FeatureCalculator
+from utils.basic_entities import FormatEnum, FeatureTimePerDocumentEnum, \
+    LanguageEnum
 
 
 class TestFeatureCalculator(unittest.TestCase):
@@ -31,7 +34,54 @@ class TestFeatureCalculator(unittest.TestCase):
         '''
         pass
     
-    
+    def testPhraseFeatures(self):
+        strText = "Tres pratos de tigre para três trigos tristes. Esta é uma frase. Esta é outra frase. Esta  frase deve ser bem grande para conseguir ficar aqui com a frase maior da media. Esta é."
+                    #frases 8,4,4, 16, 2
+                    #maior frase 16
+                    #media: 6,8 num de frases: 5
+        size_largest_phrase = 16
+        large_phrase_rate = 0.20
+        short_phrase_rate = 0.6
+            
+        featLargestSentenceSize = LargeSentenceSizeFeature("Largest phrase size","Compute the size of the largest phrase.",
+                                                               "",FeatureVisibilityEnum.public,FormatEnum.text_plain,
+                                                               FeatureTimePerDocumentEnum.MICROSECONDS)
+            
+        featLargePhraseRate = PhraseRateMoreThanAvgFeature("Large phrase rate","Percentage of phrases whose length is t words more than the average phrase length. Where t is the parameter 'Size threshold'.",
+                                                               "",FeatureVisibilityEnum.public,FormatEnum.text_plain,
+                                                               FeatureTimePerDocumentEnum.MICROSECONDS,bolLarge=True,intSize=2)
+            
+        featShortPhraseRate = PhraseRateMoreThanAvgFeature("Short phrase rate","Percentage of phrases whose length is t words less than the average phrase length. Where t is the parameter 'Size threshold'.",
+                                                               "",FeatureVisibilityEnum.public,FormatEnum.text_plain,
+                                                               FeatureTimePerDocumentEnum.MICROSECONDS,bolLarge=False,intSize=2)                
+        #testar tres vezes para verificar o funcionamento do finish e do compute features
+        for intI in range(3):
+            #calcula as features
+            arrFeats = [featLargestSentenceSize, featLargePhraseRate, featShortPhraseRate]
+            docText = Document(intI, "lala", strText)
+            arrResult = FeatureCalculator.featureManager.computeFeatureSet(docText, arrFeats, FormatEnum.HTML)
+            
+            #verifica o resultado
+            self.assertEqual(arrResult[0], size_largest_phrase, "Ao executar o "+str(intI)+"º documento, o tamanho da maior frase deveria ser "+str(size_largest_phrase)+" e é: "+str(arrResult[0]))
+            self.assertEqual(arrResult[1], large_phrase_rate, "Ao executar o "+str(intI)+"º documento, o 'large phrase rate' deveria ser "+str(large_phrase_rate)+" e é: "+str(arrResult[1]))
+            self.assertEqual(arrResult[2], short_phrase_rate, "Ao executar o "+str(intI)+"º documento, o 'short phrase rate' deveria ser "+str(short_phrase_rate)+" e é: "+str(arrResult[2]))
+    def testBegginingOfPhraseFeatures(self):
+        strText = "My name is Dani. I'm me. Hi! How are you?"
+        featFactory = WordsFeatureFactory(LanguageEnum.en)
+        featIntPronoum = featFactory.createBeginningOfSentenceFeatureObject("interrogativePronouns")
+        featProunoums = featFactory.createBeginningOfSentenceFeatureObject("pronouns")
+        
+        numIntPronoum = 1
+        numPronoums = 2
+        #testar tres vezes para verificar o funcionamento do finish e do compute features
+        for intI in range(3):
+            arrFeats = [featIntPronoum, featProunoums]
+            docText = Document(intI, "lala", strText)
+            arrResult = FeatureCalculator.featureManager.computeFeatureSet(docText, arrFeats, FormatEnum.HTML)
+            
+            self.assertEqual(arrResult[0], numIntPronoum, "Ao executar o "+str(intI)+"º documento, o numero de pronomes interrogativos deveria ser "+str(numIntPronoum)+" e é: "+str(arrResult[0]))
+            self.assertEqual(arrResult[1], numPronoums, "Ao executar o "+str(intI)+"º documento, o numero de pronomes deveria ser "+str(numPronoums)+" e é: "+str(arrResult[0]))
+            
     def testParagraph(self):
         
         document = Document(1,"doc1","texto do paragrafo")

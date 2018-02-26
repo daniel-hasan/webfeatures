@@ -3,13 +3,15 @@ Created on 13 de nov de 2017
 Testes da contagem de tags em HTML
 @author: Beatriz Souza da Silva beatrizsouza_dasilva@hotmail.com
 '''
+import re
 from statistics import mean, stdev
 import unittest
 
 from feature.featureImpl.structure_features import TagCountFeature, \
     SectionSizeFeature, AverageSectionSize, StdDeviationSectionSize, \
-    LargestSectionSize, ShortestSectionSize
-from feature.features import FeatureVisibilityEnum, Document, TagBasedFeature
+    LargestSectionSize, ShortestSectionSize, LinkCountFeature, Proportional
+from feature.features import FeatureVisibilityEnum, Document, TagBasedFeature, \
+    FeatureCalculator
 from feature.features import ParserTags
 from utils.basic_entities import FormatEnum, FeatureTimePerDocumentEnum
 
@@ -30,6 +32,86 @@ class TestTagCounter(unittest.TestCase):
         '''
         pass
     
+    def testLinkCount(self):
+        arrFeatures = [LinkCountFeature("Complete URL link Count", "Count the number of  HTML 'a' tag in which the 'href' attribute refers to a complete URL.", "", 
+                                         FeatureVisibilityEnum.public, 
+                                         FormatEnum.HTML, 
+                                         FeatureTimePerDocumentEnum.MILLISECONDS,bolExternal=True,bolInternalSameDomain=False,bolInternalSamePage=False),
+                       LinkCountFeature("Complete URL link Count per section", "Ration between number of  HTML 'a' tag in which the 'href' attribute refers to a complete URL and the number of sections.", "", 
+                                         FeatureVisibilityEnum.public, 
+                                         FormatEnum.HTML, 
+                                         FeatureTimePerDocumentEnum.MILLISECONDS,
+                                         bolExternal=True,bolInternalSameDomain=False,bolInternalSamePage=False,
+                                         intPropotionalTo=Proportional.SECTION_COUNT.value
+                                        ),
+                       LinkCountFeature("Complete URL link Count per length", "Ration between number of  HTML 'a' tag in which the 'href' attribute refers to a complete URL and the number of characters in text.", "", 
+                                         FeatureVisibilityEnum.public, 
+                                         FormatEnum.HTML, 
+                                         FeatureTimePerDocumentEnum.MILLISECONDS,
+                                         bolExternal=True,bolInternalSameDomain=False,bolInternalSamePage=False,
+                                         intPropotionalTo=Proportional.CHAR_COUNT.value
+                                        ),                       
+                       LinkCountFeature("Relative URL link Count", "Count the number of  HTML 'a' tag in which the 'href' attribute refers to a relative URL (e.g. /images/cow.gif).", "", 
+                                         FeatureVisibilityEnum.public, 
+                                         FormatEnum.HTML, 
+                                         FeatureTimePerDocumentEnum.MILLISECONDS,
+                                         bolExternal=False,bolInternalSameDomain=True,bolInternalSamePage=False),
+                       LinkCountFeature("Relative URL link Count per section", "Ratio between the number of  HTML 'a' tag in which the 'href' attribute refers to a relative URL (e.g. /images/cow.gif) and the number of sections.", "", 
+                                         FeatureVisibilityEnum.public, 
+                                         FormatEnum.HTML, 
+                                         FeatureTimePerDocumentEnum.MILLISECONDS,
+                                         bolExternal=False,bolInternalSameDomain=True,bolInternalSamePage=False,
+                                         intPropotionalTo=Proportional.SECTION_COUNT.value
+                                         ),     
+                       LinkCountFeature("Relative URL link Count per length", "Ratio between the number of  HTML 'a' tag in which the 'href' attribute refers to a relative URL (e.g. /images/cow.gif) and the number of characters in text.", "", 
+                                         FeatureVisibilityEnum.public, 
+                                         FormatEnum.HTML, 
+                                         FeatureTimePerDocumentEnum.MILLISECONDS,
+                                         bolExternal=False,bolInternalSameDomain=True,bolInternalSamePage=False,
+                                         intPropotionalTo=Proportional.CHAR_COUNT.value
+                                         ),                                           
+                       LinkCountFeature("Same page link Count", "Count the number of links which refers to some other elements in the same page."+
+                                                                " In other words, count the number of HTML 'a' tags in which 'href' points to some html page id."+
+                                                                " For example, the value '#mainDiv' point to an element in the page which the id is 'mainDiv'.", "", 
+                                         FeatureVisibilityEnum.public, 
+                                         FormatEnum.HTML, 
+                                         FeatureTimePerDocumentEnum.MILLISECONDS,
+                                         bolExternal=False,bolInternalSameDomain=False,bolInternalSamePage=True),
+
+                       LinkCountFeature("Same page link count per section", "The ratio between the number of links which refers to some other elements in the same page and the number of sections", "", 
+                                         FeatureVisibilityEnum.public, 
+                                         FormatEnum.HTML, 
+                                         FeatureTimePerDocumentEnum.MILLISECONDS,
+                                         bolExternal=False,bolInternalSameDomain=False,bolInternalSamePage=True,
+                                         intPropotionalTo=Proportional.SECTION_COUNT.value),
+                        LinkCountFeature("Same page link count per length", "The ratio between the number of links which refers to some other elements in the same page and the number of characters in text.", "", 
+                                         FeatureVisibilityEnum.public, 
+                                         FormatEnum.HTML, 
+                                         FeatureTimePerDocumentEnum.MILLISECONDS,
+                                         bolExternal=False,bolInternalSameDomain=False,bolInternalSamePage=True,
+                                         intPropotionalTo=Proportional.CHAR_COUNT.value),
+                        ]
+        strText = "<h1>oioi</h1>sod<h2>io</h2>as<a href='/casa/oi'></a><a href='casinha/verde.txt'></a>id<a href='#inside'></a>lalalla<h1></h1><a href='http://xsadoi'></a><a href='http://xsadoi'></a><a href='http://xsadoi'></a>"
+        length = len(re.sub("<[^>]+>", " ", strText))
+        numSections = 2
+        samePageLink = 1
+        intLink = 2
+        extLink = 3
+        arrExpectedResult = [extLink,extLink/numSections,extLink/length,
+                      intLink,intLink/numSections,intLink/length,
+                      samePageLink,samePageLink/numSections,samePageLink/length]
+        for intI in range(3):
+            #calcula as features
+
+            docText = Document(intI, "lala", strText)
+            arrResult = FeatureCalculator.featureManager.computeFeatureSet(docText, arrFeatures, FormatEnum.HTML)
+            
+            #verifica o resultado
+            for intJ,feature in enumerate(arrFeatures):
+                print("Asserting feature #"+str(intJ)+": "+feature.name+" for doc #"+str(intI))
+                self.assertEqual(arrResult[intJ],arrExpectedResult[intJ] , "Ao executar o "+str(intI)+"º documento, a feature '"+feature.name+"' deveria ser "+str(arrExpectedResult[intJ])+" e é: "+str(arrResult[intJ]))
+                print("ok")
+            
     def testTagCounter(self):
         '''
         Created on 13 de nov de 2017
