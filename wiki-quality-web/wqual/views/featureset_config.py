@@ -56,7 +56,7 @@ class FeatureSetInsert(CreateView):
     Lista todos os conjunto de features criados.
     '''
     fields=["nam_feature_set","dsc_feature_set", "language"]
-    initial = { 'language': Language.objects.get(name=LanguageEnum.en.name) }
+#    initial = { 'language': Language.objects.get(name=LanguageEnum.en.name) }
     
     model = FeatureSet
     template_name = "content/feature_set_update_insert.html"
