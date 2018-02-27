@@ -25,8 +25,10 @@ from django.contrib.auth import views as auth_views
 urlpatterns = [
     url(r'^publications$', views.PublicationList.as_view(), name='publications'),
     url(r'^featureSetConfigNew$', views.FeatureSetInsert.as_view(), name='feature_set_insert'),
+    url(r'^featureSetConfigajaxNew$', views.FeatureSetInsertAJAX.as_view(), name='feature_set_insertAJAX'),
     url(r'^featureSetConfig/(?P<nam_feature_set>.*)/delete/$', views.FeatureSetDelete.as_view(), name='feature_set_delete'),
     url(r'^featureSetConfig/(?P<nam_feature_set>.*)$', views.FeatureSetEdit.as_view(), name='feature_set_edit'),
+    url(r'^featureSetConfigajax$', views.FeatureSetEditAJAX.as_view(), name='feature_set_editAJAX'),
     url(r'^f(?P<nam_feature_set>.*)/insert_features/$', views.InsertUsedFeaturesView.as_view(), name='insert_used_features'),
     url(r'^getAllFeatures/(?P<nam_language>.*)$', views.ListFeaturesView.as_view(), name='list_all_features'),
     url(r'^featureSetConfig/(?P<nam_feature_set>[^#]*)#featuresEdit$', views.FeatureSetEdit.as_view(), name='feature_set_edit_features'),
@@ -38,10 +40,12 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^publications$', views.PublicationList.as_view(), name='publications'),
     url(r'^usedFeatures/(?P<nam_feature_set>.*)$', views.UsedFeatureListView.as_view(), name='usedFeatures.js'),
-    url(r'^usedFeatureIsConfigurable/(?P<used_feature_id>.*)$', views.UsedFeatureIsConfigurableForm.as_view(), name='usedFeaturesIsConfigurableForm'),
+    url(r'^usedFeatureIsConfigurable$', views.UsedFeatureIsConfigurableForm.as_view(), name='usedFeaturesIsConfigurableForm'),
     url(r'^used_features.js$', views.UsedFeatureListView.as_view(), name='used_feature_js'),
     url(r'^used_features.html', views.UsedFeatureListViewTeste.as_view(), name='used_features'),
     url(r'^$', auth_views.LoginView.as_view(template_name='content/home.html'), name="home"),
     url(r'^signup/', views.SignUpView.as_view(), name='signup'),
     url(r'^logout/', views.LogoutView.as_view(), name='logout'),
-]
+    url(r'^usedFeatureDelete$', views.UsedFeatureDelete.as_view(), name='usedFeaturesDelete'),
+
+] 

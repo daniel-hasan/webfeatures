@@ -131,7 +131,7 @@ class FeatureSet(models.Model):
     
     
     def __str__(self):
-        return "{name} : {description} ".format(name=self.nam_feature_set, description=self.dsc_feature_set)
+        return "{name} : {description} : {id} ".format(name=self.nam_feature_set, description=self.dsc_feature_set, id=self.id)
 
     
     class Meta:
@@ -241,11 +241,13 @@ class UsedFeatureManager(models.Manager):
                             #TODO: se for choices, armazenas as alternativas (arr_choices) no campo apropriado
                             
                         dictArgValToInsert["val_argument"] = objConfigurableFeature.default_value
+                        dictArgValToInsert["dsc_argument"] = objConfigurableFeature.description
                         dictArgValToInsert["is_configurable"] = True
                         
                 for dictArgValToInsert in dictParamsToInsert.values():
                     UsedFeatureArgVal.objects.create(    nam_argument = dictArgValToInsert["nam_argument"],
                                                                  val_argument = dictArgValToInsert["val_argument"],
+                                                                 dsc_argument = dictArgValToInsert["dsc_argument"] if "dsc_argument" in dictArgValToInsert else "", 
                                                                  type_argument=dictArgValToInsert["type_argument"],
                                                                  is_configurable = dictArgValToInsert["is_configurable"],
                                                                  used_feature=objFeatUsed,
