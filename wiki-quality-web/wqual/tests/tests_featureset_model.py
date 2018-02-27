@@ -195,10 +195,10 @@ class TestUsedFeatures(TestCase):
         return arrFeatures
     def assert_feature_add(self,client,str_url,arrFeatNames,arr_num_of_config_args):
         
-        strPostFeatNames = "|".join(arrFeatNames)
+        strPostFeatNames = json.dumps(arrFeatNames)
         response = client.post(str_url, {"hidUsedFeaturesToInsert":strPostFeatNames})
         self.assertEqual(response.status_code, 200, "could not obtain a status 200")
-        
+    
         #check if found the feature names
         arrUsedFeatures = response.json()['arrUsedFeatures']
         intI = 0
