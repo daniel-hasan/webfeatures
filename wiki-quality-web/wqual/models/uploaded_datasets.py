@@ -81,7 +81,7 @@ class Dataset(models.Model):
             #save
             objFileZip = CompressedFile.get_compressed_file(comp_file_pointer)
             
-            int_limit = 50*(1024*1024)
+            int_limit = 20*(1024*1024)
             for name,int_file_size in objFileZip.get_each_file_size():
                 if int_file_size > int_limit:
                     raise FileSizeException("The file "+name+" exceeds the limit of "+str(int_limit)+" bytes")
