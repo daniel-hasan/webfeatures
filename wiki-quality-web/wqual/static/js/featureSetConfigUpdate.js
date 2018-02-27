@@ -18,7 +18,7 @@ $( function() {
 	          for(let intI=0; intI < arr_checked.length; intI++){
 	          	arrFeaturesNames.push(arr_checked[intI].value);
 	          }
-	         
+	         	         
 	         let strFeatureSet = "";
 	         
 	         strFeatureSet = $('#id_nam_feature_set').val();
@@ -54,12 +54,10 @@ $( function() {
 	     getFeatureList( list[0] ,lingua);
 	
 	});
-});
 
-$( function() {
+
 	$('#id_nam_feature_set').addClass('form-control');
 	$('#id_dsc_feature_set').addClass('form-control');
-	$('#id_language').addClass('form-control');
 	
     $.widget( "custom.combobox", {
       _create: function() {
@@ -192,10 +190,6 @@ $( function() {
     });
  
     $( "#id_language" ).combobox();
-    
-    $( function() {
-	    $( "#tabs" ).tabs();
-	});   
-    
+        
  } );
  

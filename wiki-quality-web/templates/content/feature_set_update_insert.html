@@ -4,13 +4,18 @@
   
 {% block content %}
 
-<script src="{% static "js/featureSetConfigUpdate.js" %}"></script>
-
 <script>
 	function cancelEditFeature(){
 		window.location.href = '{% url "feature_set_list" %}';
 	}
+	
+	$( function() {
+	    $( "#tabs" ).tabs();
+	});   
+	
 </script>
+
+<script src="{% static "js/insert_used_feature.js"%}"></script>
 
 <div id="tabs">
   <ul>
@@ -22,7 +27,7 @@
   		{% if object.id %}
   				<form id="updateFeatureForm" action="{% url "feature_set_edit" object.nam_feature_set %}" method="post">{% csrf_token %}
   			{% else %}
-  				<form onsubmit="return false" action="{% url "feature_set_insert" %}" method="post">{% csrf_token %}
+  				<form id="updateFeatureForm" onsubmit="return false" action="{% url "feature_set_insert" %}" method="post">{% csrf_token %}
   		{% endif %}
 				{% for field in form %}
 					{{ field.errors }}
@@ -56,23 +61,18 @@
   
   <!-- form create/update via ajax --> 
   <script>
-  		
   		let href_button_clicked = "";
-  		let boolChange=false;
   		
-  		$("#updateFeatureForm :input").change(function() {
+  		$("#updateFeatureForm").change(function() {
 		   $("#updateFeatureForm").data("changed",true);
 		});
-		
+			
   		$( "#configureFeatureSet" ).click(function() {
 			href_button_clicked = "";
 			$(this).removeAttr( "href" );
 	  		if ($("#updateFeatureForm").data("changed")) {
 	  			href_button_clicked = "{% url "feature_set_list"%}";
 	 			$( "#alertSaveFeature" ).dialog( "open" );
-	 		} else if($(".custom-combobox-input").change()){
-	 			href_button_clicked = "{% url "feature_set_list"%}";
-	 			$( "#alertSaveFeature" ).dialog( "open" );	 		
 	 		} else {
 	 			$( "#configureFeatureSet" ).attr("href","{% url "feature_set_list"%}");
 	 		}
@@ -84,9 +84,6 @@
 	  		if ($("#updateFeatureForm").data("changed")) {
 	 			href_button_clicked = "{% url "extract_features" %}";
 	 			$( "#alertSaveFeature" ).dialog( "open" );
-	 		} else if($(".custom-combobox-input").change()){
-	 			href_button_clicked = "{% url "extract_features" %}";
-	 			$( "#alertSaveFeature" ).dialog( "open" );	 		
 	 		} else {
 	 			$( "#analyseTexts" ).attr("href","{% url "extract_features" %}");
 	 		}
@@ -98,19 +95,8 @@
 	  		if ($("#updateFeatureForm").data("changed")) {
 	  			href_button_clicked = "{% url "publications" %}";
 	 			$( "#alertSaveFeature" ).dialog( "open" );
-	 		} else if($(".custom-combobox-input").change()){
-	 			href_button_clicked = "{% url "publications" %}";
-	 			$( "#alertSaveFeature" ).dialog( "open" );	 		
 	 		} else {
 	 			$( "#publications" ).attr("href","{% url "publications"%}");
-	 		}
-  		});
-  		
-  		$( "#FeaturesSets" ).click(function() {
-			if ($("#updateFeatureForm").data("changed")) {
-				salveData();
-	 		} else if($(".custom-combobox-input").change()){
-	 			salveData();	 		
 	 		}
   		});
   		
@@ -123,18 +109,24 @@
 			    height: 'auto',
 			    buttons: {
 			        "Yes": function() {
-			          salveData();
-			          window.location.href = href_button_clicked;
-			          $( this ).dialog( "close" );
+			          	salveData();
+			          	window.location.href = href_button_clicked;
+			          	$( this ).dialog( "close" );
 			          },
 			        
 			        "No": function() {
-			          window.location.href = href_button_clicked;
-			          $( this ).dialog( "close" );
+			          	window.location.href = href_button_clicked;
+			          	$( this ).dialog( "close" );
 			          }
 			      }	
 			 });	
 		});	
+		
+		$( "#FeaturesSets" ).click(function() {
+			if ($("#updateFeatureForm").data("changed")) {
+				salveData();
+	 		} 
+  		});
 		
 		function salveData(){
 			let idNamFeaturesSet = "{{object.nam_feature_set}}";
@@ -159,8 +151,6 @@
 	  		salveData();
 		});
 	  
-	  //window.location.hash
-	  
 		function createFeatureSet(arrCreateElementsFeatureSet){			
 			$.ajax({
 				  url: "{% url "feature_set_insertAJAX" %}",
@@ -168,20 +158,12 @@
 				  type: "POST",
 			  	  data: { "arrCreateElementsFeatureSet" : JSON.stringify(arrCreateElementsFeatureSet)},
 				  success: function(response) {
-				  		alert("Deu certo");
-				  		console.log("It is working");
+				  		let name_feature = response.arrCreateFeatureSet;
 				  		gUsedFeaturesNames = {};
-				  		
-				  		$( "#insert" ).on( "click", function() {						    
-						     $( "#add-form" ).dialog( "open" );
-						     let combo = $('#id_language')[0];
-						     let textoCombo = combo.options[combo.selectedIndex].text;
-						     let lingua = textoCombo.substring(1, 3);
-						     let list = $("#featureList");
-						     getFeatureList( list[0] ,lingua);
-						
-						});
-				  	
+				  		/*let scriptInsetFeature = document.querySelector('#scriptInsertFeature');
+				  		let str_url = "{% url "usedFeatures.js"  name_feature.nam_feature_set%}" + name_feature.nam_feature_set;
+				  		scriptInsetFeature.src = str_url;
+				  		window.location.href =  "/featureSetConfig/" + name_feature.nam_feature_set;*/
 				  },
 				  error: function(xhr,status,error){
 				  		alert("An error occured when trying to save the new configurations:\n"+error);
@@ -207,7 +189,7 @@
   </script>
     
   <div id="tabs-2">
-  	<a><button id="insert">Add Feature</button></a>
+  	<button id="insert" class="ui-button ui-widget ui-corner-all">Add Feature</button>
   	<br><br>
   	<ul id='div'></ul>
   	
@@ -223,7 +205,11 @@
   			imagemConfirm.id = "imgConfirm";
 		
   		</script>
+  		{% if object.id %}
   			<script src="{% url "usedFeatures.js" object.nam_feature_set %}"></script>
+  			{% else %}
+  			<script id="scriptInsertFeature" src=""></script>
+  		{% endif %}
   		</div>
 </div>
 

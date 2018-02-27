@@ -57,7 +57,9 @@ let HTMLEl_temp_div_add_feature = document.createElement('div');
 function insertNewFeatureItem(objFeatureItem){
 	
 	if(objFeatureItem.name in gUsedFeaturesNames){
-		return;					
+		if(gUsedFeaturesNames[objFeatureItem.name]){
+			return;
+		}				
 	}
 	
 	let HTMLEl_temp_div = document.querySelector('#add-form');
@@ -98,19 +100,23 @@ function getFeatureList(domFeatureList,strLanguageCode){
 	  type: "POST",
 	  success: function(response) {
 	    let featureList = response.arrFeatures;
-	    
-		//clean the feature lista data and, for each feature in featureList, insert in insertNewFeatureItem  
-		domFeatureList.innerHTML = "";
+	   
+	   	//clean the feature lista data and, for each feature in featureList, insert in insertNewFeatureItem  
+		//domFeatureList.innerHTML = "";
+		
 		let contEncontrouTodos = 0;
 		for(intI =0 ; intI<featureList.length ; intI++){
 			if(featureList[intI].name in gUsedFeaturesNames){
-				contEncontrouTodos++;					
+				if(gUsedFeaturesNames[featureList[intI].name]){
+					contEncontrouTodos++;
+				}					
 			}
-		}
-		console.log(contEncontrouTodos);
+		}		
+		
 		if(contEncontrouTodos == featureList.length){
 			document.getElementById("add-form").innerHTML = "All the features were used.";	
 		}else{
+			document.getElementById("add-form").innerHTML = "";	
 	    	featureList.forEach(insertNewFeatureItem);
 	    }    
 	    
@@ -120,3 +126,76 @@ function getFeatureList(domFeatureList,strLanguageCode){
 	  }
 	});
 }
+/**
+ * Update the form at usedFeature
+ * @author Aline Cristina Pinto.
+ * @since  09/02/2018
+ */
+function create_post(arrElementsArgVal, id_used_feature){
+	
+	$.ajax({
+		  url: "{% url "usedFeaturesIsConfigurableForm" %}",
+		  dataType: 'json',
+		  type: "POST",
+	  	  data: { "id_ArgVal" : JSON.stringify(arrElementsArgVal)},
+		  success: function(response) {
+		  	let arr_new_date = response.arrValueArgVal;
+		  			  	
+		  	for(let intI = 0; intI < arrFeaturesToForm.length; intI++){
+		  		if(arrFeaturesToForm[intI].id == id_used_feature){
+		  			for(feature in arrFeaturesToForm[intI].arrParams){		  			
+		  				for(let intJ = 0; intJ < arr_new_date.length; intJ++){
+		  					if(arrFeaturesToForm[intI].arrParams[feature].id == arr_new_date[intJ].idArgVal){
+		  						arrFeaturesToForm[intI].arrParams[feature].val_argument = arr_new_date[intJ].valueArgVal;
+		  					}
+		  				}		  			
+		  			}		  				
+		  		}
+		  	}
+		  	
+		  	setTimeout(function(){
+          		posiImagem.innerHTML = "";
+		  		posiImagem.appendChild(imagemConfirm);
+        	}, 1000);
+        	
+        	setTimeout(function(){
+          		$( HTMLEl_temp_div_is_configurable_form ).dialog( "close" );
+        	}, 1000);
+            	
+		  },
+		  error: function(xhr,status,error){
+		  	setTimeout(function(){
+          		posiImagem.innerHTML = "";
+		  		alert("An error occured when trying to save the new configurations:\n"+error);
+        	}, 1000);
+		  }
+		});
+}
+/**
+ * Remove the usedFeature
+ * @author Aline Cristina Pinto.
+ * @since  09/02/2018
+ */
+function remove_feature(e, used_feature_id, used_featureName) {
+    $.ajax({
+    	type: 'post',
+    	url: "{% url "usedFeaturesDelete" %}",
+    	data: { "used_feature_id": used_feature_id },
+    	success: function() {
+        	console.log('Object deleted!');
+        	gUsedFeaturesNames[used_featureName] = false;
+   	 	},
+		error: function(xhr,status,error){
+			alert("An error occured when trying to delete the usedFeature:\n"+error);
+        }
+	});
+    
+    //Obtém o elemento pai do button, que será o ul criado anteriormente (HTMLEl_temp_ul_pai).
+    ul_pai = e.currentTarget.parentNode;
+    
+    //Pega o pai do ul criado anteriormente (HTMLEl_temp_ul_pai) para remover o filho (elemento pai do button selecionado, HTMLEl_temp_ul_pai).
+    ul_pai.parentNode.removeChild(ul_pai);
+}
+
+
+

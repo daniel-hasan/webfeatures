@@ -129,7 +129,7 @@ class DatasetCreateView(CreateView):
 
         except FileSizeException as e:
             errors = form._errors.setdefault("feature_set", ErrorList())
-            errors.append(u"Ação não permitida. O tamanho do arquivo ultrapassa o limite.")           
+            errors.append(u"Ação não permitida. O tamanho do arquivo ultrapassa o limite de 50MB.")           
             return super(CreateView, self).form_invalid(form)
         return super(CreateView, self).form_valid(form)
     
