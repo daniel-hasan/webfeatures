@@ -1,25 +1,63 @@
 $( function() {
+	
 	$( "#add-form" ).dialog({
+	
 	     autoOpen: false,
-	     height: 300,
-	     width: 600,
 	     modal: true,
+	     width: 400, 
+		 height: 'auto',
+		 fluid: true, 
+		 resizable: false,
+	     
 	     buttons: {
+	        "Save": function() {
+	          $( this ).dialog( "close" );
+	          let arr_checked = $('input[type=checkbox]:checked');
+	          let arrFeaturesNames = new Array();
+	         
+	          for(let intI=0; intI < arr_checked.length; intI++){
+	          	arrFeaturesNames.push(arr_checked[intI].value);
+	          }
+	         	         
+	         let strFeatureSet = "";
+	         
+	         strFeatureSet = $('#id_nam_feature_set').val();
+	         
+	         if(arrFeaturesNames.length != 0){
+	         	insertFeatures(arrFeaturesNames,strFeatureSet);
+	         }
+	          
+	          HTMLEl_temp_div_add_feature.innerHTML = "";
+	        },
+	        
 	        Cancel: function() {
 	          $( this ).dialog( "close" );
+	          HTMLEl_temp_div_add_feature.innerHTML = "";
 	        }
-      	}
+	      }
+	
+	});
+	
+	$( ".ui-dialog-titlebar-close" ).on( "click", function() {
+		
+		HTMLEl_temp_div_add_feature.innerHTML = "";
+	        
 	});
 	 
 	$( "#insert" ).on( "click", function() {
+	    
 	     $( "#add-form" ).dialog( "open" );
+	     let combo = $('#id_language')[0];
+	     let textoCombo = combo.options[combo.selectedIndex].text;
+	     let lingua = textoCombo.substring(1, 3);
+	     let list = $("#featureList");
+	     getFeatureList( list[0] ,lingua);
+	
 	});
-} );
 
-$( function() {
+
 	$('#id_nam_feature_set').addClass('form-control');
 	$('#id_dsc_feature_set').addClass('form-control');
-	$('#id_language').addClass('form-control');
 	
     $.widget( "custom.combobox", {
       _create: function() {
@@ -152,10 +190,6 @@ $( function() {
     });
  
     $( "#id_language" ).combobox();
-    
-    $( function() {
-	    $( "#tabs" ).tabs();
-	});   
-    
+        
  } );
  

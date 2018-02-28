@@ -6,18 +6,17 @@ Views relacionadas a upload dos datasets
 '''
 from _io import BytesIO
 from datetime import datetime
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.forms.utils import ErrorList
 from django.http import HttpResponse, request
+from django.urls.base import reverse
+from django.views.generic.base import View
+from django.views.generic.edit import CreateView, DeleteView
 import json
 import lzma
 import os
 import uuid
 import zipfile
-
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.urls.base import reverse
-from django.views.generic.base import View
-from django.views.generic.edit import CreateView, DeleteView
 
 from wqual.models import Dataset
 from wqual.models.exceptions import FileSizeException, FileCompressionException
@@ -118,25 +117,26 @@ class DatasetCreateView(LoginRequiredMixin, CreateView):
         return context    
         
     def form_valid(self, form):
+        
+        form.instance.user = self.request.user
+        form.instance.nam_dataset = self.request.FILES['file_dataset'].name
+        form.instance.status = Status.objects.get_enum(StatusEnum.SUBMITTED)
+        form.instance.dat_submitted = datetime.now()
+        
+        #save (tratar a exceção: e adicionar erro na lista de erro e retornar form_invalid se houver exceção)
         try:
-            form.instance.user = self.request.user
-            form.instance.nam_dataset = self.request.FILES['file_dataset'].name
-            form.instance.status = Status.objects.get_enum(StatusEnum.SUBMITTED)
-            form.instance.dat_submitted = datetime.now()
+            form.instance.save_compressed_file(self.request.FILES['file_dataset'])
             
-            #save (tratar a exceção: e adicionar erro na lista de erro e retornar form_invalid se houver exceção)
-            try:
-                form.instance.save_compressed_file(self.request.FILES['file_dataset'])
-    
-            except FileSizeException as e:
-                errors = form._errors.setdefault("feature_set", ErrorList())
-                errors.append(u"Action not allowed. The file's size is higher than the limit.")           
-                return super(CreateView, self).form_invalid(form)
-            
+        except FileSizeException as e:
+            errors = form._errors.setdefault("feature_set", ErrorList())
+            errors.append(u"Action not allowed. Each file in the compressed file need to have at most 10MB")           
+            return super(CreateView, self).form_invalid(form)
+        
         except FileCompressionException as e:
             errors = form._errors.setdefault("feature_set", ErrorList())
             errors.append(u"Action not allowed. The file isn't a zip file.")           
             return super(CreateView, self).form_invalid(form)
+            
         return super(CreateView, self).form_valid(form)
     
     def get_success_url(self):

@@ -4,25 +4,30 @@
   
 {% block content %}
 
-<script src="{% static "js/featureSetConfigUpdate.js" %}"></script>
-
 <script>
 	function cancelEditFeature(){
 		window.location.href = '{% url "feature_set_list" %}';
 	}
+	
+	$( function() {
+	    $( "#tabs" ).tabs();
+	});   
+	
 </script>
+
+<script src="{% static "js/insert_used_feature.js"%}"></script>
 
 <div id="tabs">
   <ul>
-    <li><a href="#tabs-1">Description</a></li>
-    <li><a href="#tabs-2">Features Set</a></li>
+    <li><a class="styletabs" href="#tabs-1">Description</a></li>
+    <li><a class="styletabs" id="FeaturesSets" href="#tabs-2">Features Set</a></li>
   </ul>
   <div id="tabs-1">
   	<div class = "col-md-6">	
   		{% if object.id %}
-  				<form action="{% url "feature_set_edit" object.nam_feature_set %}" method="post">{% csrf_token %}
+  				<form id="updateFeatureForm" action="{% url "feature_set_edit" object.nam_feature_set %}" method="post">{% csrf_token %}
   			{% else %}
-  				<form action="{% url "feature_set_insert" %}" method="post">{% csrf_token %}
+  				<form id="updateFeatureForm" onsubmit="return false" action="{% url "feature_set_insert" %}" method="post">{% csrf_token %}
   		{% endif %}
 				{% for field in form %}
 					{{ field.errors }}
@@ -44,31 +49,174 @@
 	                   </div>
 	                </div>
 	    		{% endfor %}
-	    		<button type="submit" class="ui-button ui-widget ui-corner-all">Save</button>
+	    		<button type="submit" id="saveButton" class="ui-button ui-widget ui-corner-all">Save</button>
 	    		<input type="button" class="ui-button ui-widget ui-corner-all" onclick="cancelEditFeature()" value = "Cancel" />
 		</form>
 	</div>
   </div>
+  
+  <div id="alertSaveFeature">
+  	<p>Do you want to save your changes?</p>
+  </div>
+  
+  <!-- form create/update via ajax --> 
+  <script>
+  		let href_button_clicked = "";
+  		
+  		$("#updateFeatureForm").change(function() {
+		   $("#updateFeatureForm").data("changed",true);
+		});
+			
+  		$( "#configureFeatureSet" ).click(function() {
+			href_button_clicked = "";
+			$(this).removeAttr( "href" );
+	  		if ($("#updateFeatureForm").data("changed")) {
+	  			href_button_clicked = "{% url "feature_set_list"%}";
+	 			$( "#alertSaveFeature" ).dialog( "open" );
+	 		} else {
+	 			$( "#configureFeatureSet" ).attr("href","{% url "feature_set_list"%}");
+	 		}
+	 	});
+	 	
+	 	$( "#analyseTexts" ).click(function() {
+	 		href_button_clicked = "";
+	 		$(this).removeAttr( "href" );
+	  		if ($("#updateFeatureForm").data("changed")) {
+	 			href_button_clicked = "{% url "extract_features" %}";
+	 			$( "#alertSaveFeature" ).dialog( "open" );
+	 		} else {
+	 			$( "#analyseTexts" ).attr("href","{% url "extract_features" %}");
+	 		}
+  		});
+		
+		$( "#publications" ).click(function() {
+			href_button_clicked = "";
+			$(this).removeAttr( "href" );
+	  		if ($("#updateFeatureForm").data("changed")) {
+	  			href_button_clicked = "{% url "publications" %}";
+	 			$( "#alertSaveFeature" ).dialog( "open" );
+	 		} else {
+	 			$( "#publications" ).attr("href","{% url "publications"%}");
+	 		}
+  		});
+  		
+  		$( function() {
+	         $("#alertSaveFeature").dialog({
+			    autoOpen: false,
+			    modal: true,
+			    title: 'Configure Feature Set ',
+			    width: 400, 
+			    height: 'auto',
+			    buttons: {
+			        "Yes": function() {
+			          	salveData();
+			          	window.location.href = href_button_clicked;
+			          	$( this ).dialog( "close" );
+			          },
+			        
+			        "No": function() {
+			          	window.location.href = href_button_clicked;
+			          	$( this ).dialog( "close" );
+			          }
+			      }	
+			 });	
+		});	
+		
+		$( "#FeaturesSets" ).click(function() {
+			if ($("#updateFeatureForm").data("changed")) {
+				salveData();
+	 		} 
+  		});
+		
+		function salveData(){
+			let idNamFeaturesSet = "{{object.nam_feature_set}}";
+		  	let arrElementsFeatureSet = [];
+		  	let arrCreateElementsFeatureSet = [];
+		  	
+			arrElementsFeatureSet.push({"id_nam_feature_set":idNamFeaturesSet,"nam_feature_set": $('#id_nam_feature_set').val(),"dsc_feature_set":$('#id_dsc_feature_set').val(), "language":$('#id_language').val()});
+			arrCreateElementsFeatureSet.push({"nam_feature_set": $('#id_nam_feature_set').val(),"dsc_feature_set":$('#id_dsc_feature_set').val(), "language":$('#id_language').val()});
+		
+			{% if object.id %}
+				
+				updateFeatureSet(arrElementsFeatureSet);
+				
+				{% else %}
+	  		
+	  			createFeatureSet(arrCreateElementsFeatureSet);
+	  			
+	  		{% endif %}	
+		}
+		  		
+	  	$( "#saveButton" ).click(function() {
+	  		salveData();
+		});
+	  
+		function createFeatureSet(arrCreateElementsFeatureSet){			
+			$.ajax({
+				  url: "{% url "feature_set_insertAJAX" %}",
+				  dataType: 'json',
+				  type: "POST",
+			  	  data: { "arrCreateElementsFeatureSet" : JSON.stringify(arrCreateElementsFeatureSet)},
+				  success: function(response) {
+				  		let name_feature = response.arrCreateFeatureSet;
+				  		gUsedFeaturesNames = {};
+				  		/*let scriptInsetFeature = document.querySelector('#scriptInsertFeature');
+				  		let str_url = "{% url "usedFeatures.js"  name_feature.nam_feature_set%}" + name_feature.nam_feature_set;
+				  		scriptInsetFeature.src = str_url;
+				  		window.location.href =  "/featureSetConfig/" + name_feature.nam_feature_set;*/
+				  },
+				  error: function(xhr,status,error){
+				  		alert("An error occured when trying to save the new configurations:\n"+error);
+		       	  }
+				});
+		}
+		
+		function updateFeatureSet(arrElementsFeatureSet){			
+			$.ajax({
+				  url: "{% url "feature_set_editAJAX" %}",
+				  dataType: 'json',
+				  type: "POST",
+			  	  data: { "arrEditElementsFeatureSet" : JSON.stringify(arrElementsFeatureSet)},
+				  success: function(response) {
+				  		console.log("It is working");
+				  },
+				  error: function(xhr,status,error){
+				  		alert("An error occured when trying to save the new configurations:\n"+error);
+		       	  }
+				});
+		}
+		
+  </script>
+    
   <div id="tabs-2">
-  	<a><button id="insert">Add Feature</button></a>
+  	<button id="insert" class="ui-button ui-widget ui-corner-all">Add Feature</button>
   	<br><br>
   	<ul id='div'></ul>
-  	{% if object.id %}
-  		<script src="{% url "usedFeatures.js" object.nam_feature_set %}"></script>
-  	{% else %}
-  		<script src="{% url "used_features" %}"></script>
-  	{% endif %}
-  		<script src="{% url "insert_list_used_features" %}"></script>
-  		<script src="{% static "js/csrf_token_ajax.js" %}"></script>
-  </div>
+  	
+  		<script>
+  		//Insert gif loading
+  			var imagem = document.createElement('img');
+  			imagem.src = "{% static "imgs/ajax-loader.gif" %}";
+  			imagem.id = "imgLoader";
+  		
+  		// Insert image confirm	
+  			var imagemConfirm = document.createElement('img');
+  			imagemConfirm.src = "{% static "imgs/ajax-confirm.png" %}";
+  			imagemConfirm.id = "imgConfirm";
+		
+  		</script>
+  		{% if object.id %}
+  			<script src="{% url "usedFeatures.js" object.nam_feature_set %}"></script>
+  			{% else %}
+  			<script id="scriptInsertFeature" src=""></script>
+  		{% endif %}
+  		</div>
 </div>
 
 <div id="add-form" title="Add Feature Set">
-  <form action="" method="post">{% csrf_token %}
-	 <span class="ui-icon  ui-icon-search"></span>
-	 <input type="text" name="search" placeholder="search..."><br><br>
-				
-  </form>
+	<div id="featureList"></div>
+	 <script src="{% url "insert_list_used_features" %}"></script>
+	 <script src="{% static "js/csrf_token_ajax.js" %}"></script>
 </div>
 
 {% endblock %}

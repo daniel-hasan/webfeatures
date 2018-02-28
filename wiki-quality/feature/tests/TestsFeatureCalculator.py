@@ -40,6 +40,22 @@ class DocWriterForTest(FeatureDocumentsWriter):
     def write_document(self,document, arr_feats_used, arr_feats_result):
         self.result[document.str_doc_name] = arr_feats_result
 
+class CharTestFeature(CharBasedFeature):
+    '''
+    Classe para usar no teste que verifica se o CharBasedFeature está funcionando. 
+    '''
+    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document):
+        super(CharBasedFeature,self).__init__(name,description,reference,visibility,text_format,feature_time_per_document)
+        self.arr_str_char = [] 
+        
+    def checkChar(self,document,char):
+        self.arr_str_char.append(char)
+    
+    def compute_feature(self,document):
+        arr_aux = self.arr_str_char
+        self.arr_str_char = []      
+        return arr_aux
+
 class WordTestFeature(WordBasedFeature):
     '''
     Classe para usar no teste que verifica se o WordBasedFeature está funcionando. 
@@ -163,6 +179,11 @@ class TestFeatureCalculator(unittest.TestCase):
                                          "SILVA Ola. Contando Olas. Conferencia dos Hello World", 
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.HTML,
+                                         FeatureTimePerDocumentEnum.MILLISECONDS),
+                        CharTestFeature("char legal feature", "Essa feature é divertitida", 
+                                         "SILVA Ola. Contando Olas. Conferencia dos Hello World", 
+                                         FeatureVisibilityEnum.public, 
+                                         FormatEnum.HTML,
                                          FeatureTimePerDocumentEnum.MILLISECONDS)
                         ]
         obj_writer = DocWriterForTest()
@@ -186,8 +207,19 @@ class TestFeatureCalculator(unittest.TestCase):
         self.assertListEqual(map_result["doc6"][3], ["Meu","teste","de","palavras","."], "A leitura do texto está incorreto")
         
         '''Testam o checkTag'''
-        self.assertListEqual(map_result["doc5"][4], ["p","p"],"A leitura das tags está incorreta")
-        self.assertListEqual(map_result["doc6"][4], ["head","head","body","p","p","p","p","body"],"A leitura das tags está incorreta")
+        self.assertListEqual(map_result["doc5"][4], ["p"],"A leitura das tags está incorreta")
+        self.assertListEqual(map_result["doc6"][4], ["head","body","p","p"],"A leitura das tags está incorreta")
+        
+        '''Testam charBased'''
+        self.assertListEqual(map_result["doc4"][5], 
+        ["l","a","l","a","l","a",".","\n","M","e","u"," ","t","e","s","t","e"," ","t","e","m"," ",
+         "t","r","e","s"," ","p","a","r","a","g","r","a","f","o","s",".","\n","E","s","s","e"," ",
+         "é"," ","o"," ","ú","l","t","i","m","o"], "A leitura dos caracteres está incorreta")
+        self.assertListEqual(map_result["doc5"][5], 
+        ["O","l","a"," "," "," "," "," "," "," "," ",","," "," "," "," "," "," ","m","e","u"," ","n",
+         "o","m","e"," ","é"," ","h","a","s","a","n","."], "A leitura dos caracteres está incorreta")
+        self.assertListEqual(map_result["doc6"][5],
+        ["M","e","u","t","e","s","t","e"," ","d","e"," ","p","a","l","a","v","r","a","s","."], "A leitura dos caracteres está incorreta")
         
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'TestFeatureCalculator.testName']

@@ -59,6 +59,7 @@ class FeatureFactoryManager(models.Manager):
     def get_all_features_from_language(self,obj_language):
         arr_features = []
         for featFactory in self.all():
+            
             #instantiate feature factory class
             FeatureFactoryClass = get_class_by_name(featFactory.nam_module+"."+featFactory.nam_factory_class) 
             
@@ -69,6 +70,7 @@ class FeatureFactoryManager(models.Manager):
                 objFeatureFactory = FeatureFactoryClass()
             
             #add all the features from factory
+            #print("Feature: "+featFactory.nam_factory_class+" array: "+str(objFeatureFactory.createFeatures()))
             [arr_features.append(objFeature) for objFeature in objFeatureFactory.createFeatures()]
         return arr_features
             
@@ -129,7 +131,7 @@ class FeatureSet(models.Model):
     
     
     def __str__(self):
-        return "{name} : {description} ".format(name=self.nam_feature_set, description=self.dsc_feature_set)
+        return "{name} : {description} : {id} ".format(name=self.nam_feature_set, description=self.dsc_feature_set, id=self.id)
 
     
     class Meta:
@@ -225,7 +227,6 @@ class UsedFeatureManager(models.Manager):
                     if(name in arrParamsConstrutor):
                         if name not in ("visibility","text_format","feature_time_per_document"):
                             paramType,paramValue = self.from_obj_to_bd_type_val(value)
-
                             dictParamsToInsert[name]= {"nam_argument": name,
                                                        "val_argument": str(paramValue),
                                                        "type_argument":paramType,
@@ -240,11 +241,13 @@ class UsedFeatureManager(models.Manager):
                             #TODO: se for choices, armazenas as alternativas (arr_choices) no campo apropriado
                             
                         dictArgValToInsert["val_argument"] = objConfigurableFeature.default_value
+                        dictArgValToInsert["dsc_argument"] = objConfigurableFeature.description
                         dictArgValToInsert["is_configurable"] = True
                         
                 for dictArgValToInsert in dictParamsToInsert.values():
                     UsedFeatureArgVal.objects.create(    nam_argument = dictArgValToInsert["nam_argument"],
                                                                  val_argument = dictArgValToInsert["val_argument"],
+                                                                 dsc_argument = dictArgValToInsert["dsc_argument"] if "dsc_argument" in dictArgValToInsert else "", 
                                                                  type_argument=dictArgValToInsert["type_argument"],
                                                                  is_configurable = dictArgValToInsert["is_configurable"],
                                                                  used_feature=objFeatUsed,
@@ -272,9 +275,8 @@ class UsedFeature(models.Model):
     Relação das features usadas por um usuário
     '''
     ord_feature = models.IntegerField()
-
-    
-    feature_set = models.ForeignKey(FeatureSet, models.PROTECT)
+  
+    feature_set = models.ForeignKey(FeatureSet, models.CASCADE)
     feature = models.ForeignKey(Feature, models.PROTECT)
     feature_time_to_extract = models.ForeignKey(FeatureTimePerDocument,models.PROTECT)
     feature_visibility = models.ForeignKey(FeatureVisibility,models.PROTECT)
@@ -291,7 +293,8 @@ class UsedFeature(models.Model):
         for arg in self.usedfeatureargval_set.all():
             if arg.type_argument == UsedFeatureArgVal.INT:
                 param[arg.nam_argument] = int(arg.val_argument)
-            if arg.type_argument == UsedFeatureArgVal.FLOAT:
+                #print("nome " + arg.nam_argument + "Valor " + arg.val_argument)
+            elif arg.type_argument == UsedFeatureArgVal.FLOAT:
                 param[arg.nam_argument] = float(arg.val_argument)                
             elif arg.type_argument == UsedFeatureArgVal.BOOLEAN:
                 param[arg.nam_argument] = bool(arg.val_argument)
@@ -330,7 +333,7 @@ class UsedFeatureArgVal(models.Model):
     type_argument = models.CharField(max_length=10,choices=TIPOS_DADOS,default=STRING)
     
     is_configurable = models.BooleanField(default=False)
-    used_feature = models.ForeignKey(UsedFeature, models.PROTECT)
+    used_feature = models.ForeignKey(UsedFeature, models.CASCADE)
      
 class FeatureConfigurableParam(models.Model):
     '''

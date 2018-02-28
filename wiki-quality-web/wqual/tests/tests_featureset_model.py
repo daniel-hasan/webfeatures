@@ -27,6 +27,7 @@ class FeatureFactoryDummy(FeatureFactory):
                                                                       "The sentence need to have (at least) this length (in words) in order to be considered a large phrase",
                                                                 10,ParamTypeEnum.int))
         arrFeatures.append(featLargeSentenceCount)
+        
         return arrFeatures
 class FeatureFactoryDummyLangDep(FeatureFactory):
     IS_LANGUAGE_DEPENDENT = True
@@ -133,8 +134,13 @@ class TestUsedFeatures(TestCase):
         
         #sort
         arrExpected = ["Largest Phrase Count","Largest Phrase Count "+objEnglish.name,"Preposition Count","Preposition Count "+objEnglish.name]
-        
-        self.assertListEqual(arrFeatureNames, arrExpected)    
+        for str_expected_feature_name in arrExpected:
+            bolEncontrou = False
+            for feature in arrFeatures:
+                if(str_expected_feature_name == feature.name):
+                    bolEncontrou = True
+            self.assertTrue(bolEncontrou, "Could not found the feature: "+str_expected_feature_name)
+            
     
     def test_feature_add(self):
         wordCount = WordCountFeature("Preposition Count","Count the number of prepositions in the text","ref",FeatureVisibilityEnum.public,FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,setWordsToCount=["de","do","du"])
@@ -189,10 +195,10 @@ class TestUsedFeatures(TestCase):
         return arrFeatures
     def assert_feature_add(self,client,str_url,arrFeatNames,arr_num_of_config_args):
         
-        strPostFeatNames = "|".join(arrFeatNames)
+        strPostFeatNames = json.dumps(arrFeatNames)
         response = client.post(str_url, {"hidUsedFeaturesToInsert":strPostFeatNames})
         self.assertEqual(response.status_code, 200, "could not obtain a status 200")
-        
+    
         #check if found the feature names
         arrUsedFeatures = response.json()['arrUsedFeatures']
         intI = 0

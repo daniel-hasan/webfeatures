@@ -7,12 +7,11 @@ Tabelas relacionadas com o upload de datasets para a futura
 extração de features. 
 As tabelas relacionadas com o resultado desta extração também está neste arquivo.
 '''
-
+from distutils.archive_util import zipfile
 from django.contrib.auth.models import User, Group
-from django.db import models
+from django.db import models, transaction
 from enum import IntEnum, Enum
 import lzma
-import zipfile
 
 from utils.uncompress_data import CompressedFile
 from wqual.models import FeatureSet, Format
@@ -45,7 +44,6 @@ class Status(EnumModel):
     def get_enum_class():
         return StatusEnum
     
-
    
 class Dataset(models.Model):
     '''
@@ -69,12 +67,8 @@ class Dataset(models.Model):
     status = models.ForeignKey(Status, models.PROTECT)
     dsc_result_header = models.TextField(blank=True, null=True)
     
-    
-
-    
-
-    
-    
+    num_proc_extractor = models.IntegerField(blank=True, null=True)
+         
     def save_compressed_file(self,comp_file_pointer):
             #validacao ser feita aqui
             
@@ -85,8 +79,8 @@ class Dataset(models.Model):
             #inserção
             #save
             objFileZip = CompressedFile.get_compressed_file(comp_file_pointer)
-            
-            if zipfile.is_zipfile(objFileZip):
+
+            if zipfile.is_zipfile(comp_file_pointer):
                 int_limit = 10*(1024*1024)
                 for name,int_file_size in objFileZip.get_each_file_size():
                     if int_file_size > int_limit:
@@ -94,11 +88,12 @@ class Dataset(models.Model):
                     
                 self.save()   
                 for name,strFileTxt in objFileZip.read_each_file():
-                    objDocumento = Document(nam_file=name,dataset=self)
-                    objDocumento.save()
-                    objDocumentoTexto = DocumentText(document=objDocumento,dsc_text=strFileTxt)
-                    objDocumentoTexto.save()
-                    self.document_set.add(objDocumento,bulk=False)
+                    with transaction.atomic():
+                        objDocumento = Document(nam_file=name,dataset=self)
+                        objDocumento.save()
+                        objDocumentoTexto = DocumentText(document=objDocumento,dsc_text=strFileTxt)
+                        objDocumentoTexto.save()
+                        self.document_set.add(objDocumento,bulk=False)
             else:
                 raise FileCompressionException("The file "+name+" isn't a zip file")
                     
@@ -138,10 +133,17 @@ class DocumentText(models.Model):
     @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
     Texto do documento
     '''
-    dsc_text = models.TextField()
+    dsc_text_bin = models.BinaryField()    
     document = models.OneToOneField(Document, models.CASCADE)
     
-    
+    @property
+    def dsc_text(self):
+        return lzma.decompress(self.dsc_text_bin).decode("utf-8")
+
+    @dsc_text.setter
+    def dsc_text(self, dsc_result):
+        dsc_text_bytes = bytes(str(dsc_result), 'utf-8')        
+        self.dsc_text_bin = lzma.compress(dsc_text_bytes)    
 class DocumentResult(models.Model):
     '''
     Created on 14 de ago de 2017
