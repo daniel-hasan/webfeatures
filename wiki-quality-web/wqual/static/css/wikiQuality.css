@@ -22,11 +22,11 @@
   background-color: #0066a3;
 }
 
-img{
+/*img{
   margin-top: -5px;
   width: 100px; 
   height: 31px;
-}
+}*/
 
 li{
   text-align: center;
@@ -509,7 +509,6 @@ footer img {
 	position: fixed;
 	bottom: 0px;
 	left: 175px;
-	width: 100px;
 	height: 50px;
 }
 
