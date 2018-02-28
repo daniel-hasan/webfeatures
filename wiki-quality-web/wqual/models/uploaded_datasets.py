@@ -8,15 +8,16 @@ extração de features.
 As tabelas relacionadas com o resultado desta extração também está neste arquivo.
 '''
 
-from enum import IntEnum, Enum
 from django.contrib.auth.models import User, Group
 from django.db import models
+from enum import IntEnum, Enum
 import lzma
-from utils.uncompress_data import CompressedFile
-from wqual.models.exceptions import FileSizeException
-from wqual.models import FeatureSet, Format
-from wqual.models.utils import EnumModel, EnumManager, CompressedTextField
+import zipfile
 
+from utils.uncompress_data import CompressedFile
+from wqual.models import FeatureSet, Format
+from wqual.models.exceptions import FileSizeException, FileCompressionException
+from wqual.models.utils import EnumModel, EnumManager, CompressedTextField
 
 
 class StatusEnum(Enum):
@@ -85,19 +86,22 @@ class Dataset(models.Model):
             #save
             objFileZip = CompressedFile.get_compressed_file(comp_file_pointer)
             
-            int_limit = 10*(1024*1024)
-            for name,int_file_size in objFileZip.get_each_file_size():
-                if int_file_size > int_limit:
-                    raise FileSizeException("The file "+name+" exceeds the limit of "+str(int_limit)+" bytes")
-                
-            self.save()   
-            for name,strFileTxt in objFileZip.read_each_file():
-                objDocumento = Document(nam_file=name,dataset=self)
-                objDocumento.save()
-                objDocumentoTexto = DocumentText(document=objDocumento,dsc_text=strFileTxt)
-                objDocumentoTexto.save()
-                self.document_set.add(objDocumento,bulk=False)
-                
+            if zipfile.is_zipfile(objFileZip):
+                int_limit = 10*(1024*1024)
+                for name,int_file_size in objFileZip.get_each_file_size():
+                    if int_file_size > int_limit:
+                        raise FileSizeException("The file "+name+" exceeds the limit of "+str(int_limit)+" bytes")
+                    
+                self.save()   
+                for name,strFileTxt in objFileZip.read_each_file():
+                    objDocumento = Document(nam_file=name,dataset=self)
+                    objDocumento.save()
+                    objDocumentoTexto = DocumentText(document=objDocumento,dsc_text=strFileTxt)
+                    objDocumentoTexto.save()
+                    self.document_set.add(objDocumento,bulk=False)
+            else:
+                raise FileCompressionException("The file "+name+" isn't a zip file")
+                    
 
                 
                 
