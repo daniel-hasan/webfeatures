@@ -6,28 +6,26 @@ Views relacionadas a upload dos datasets
 '''
 from _io import BytesIO
 from datetime import datetime
-
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.forms.utils import ErrorList
+from django.http import HttpResponse, request
+from django.urls.base import reverse
+from django.views.generic.base import View
+from django.views.generic.edit import CreateView, DeleteView
 import json
 import lzma
 import os
 import uuid
-
-
-
-from django.forms.utils import ErrorList
-from django.http import HttpResponse
 import zipfile
-from django.urls.base import reverse
-from django.views.generic.base import View
-from django.views.generic.edit import CreateView, DeleteView
+
 from wqual.models import Dataset
-from wqual.models.exceptions import FileSizeException
+from wqual.models.exceptions import FileSizeException, FileCompressionException
+from wqual.models.featureset_config import FeatureSet
 from wqual.models.uploaded_datasets import  Status, StatusEnum, DocumentText, \
     Document, DocumentResult
 
 
-
-class DatasetDownloadView(View):
+class DatasetDownloadView(LoginRequiredMixin, View):
     def get(self, request, dataset_id,format):
         
         txt_file_name = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))+"/tmp/"+str(uuid.uuid1())
@@ -83,7 +81,7 @@ class DatasetDownloadView(View):
 
         
         return resp
-class DatasetCreateView(CreateView):
+class DatasetCreateView(LoginRequiredMixin, CreateView):
     '''
     Created on 14 de ago de 2017
     
@@ -114,10 +112,12 @@ class DatasetCreateView(CreateView):
     def get_context_data(self, **kwargs):
         context = super(DatasetCreateView, self).get_context_data(**kwargs)
         #context['map_feathtml'] = UsedFeature.objects.get_html_features_name_grouped_by_featureset()
+        #context['form'].fields['combo'].queryset = FeatureSet.objects.filter(user=request.user)
         context['dataset_list'] = Dataset.objects.filter(user=self.request.user) if self.request.user.is_authenticated else []
         return context    
         
     def form_valid(self, form):
+        
         form.instance.user = self.request.user
         form.instance.nam_dataset = self.request.FILES['file_dataset'].name
         form.instance.status = Status.objects.get_enum(StatusEnum.SUBMITTED)
@@ -126,11 +126,17 @@ class DatasetCreateView(CreateView):
         #save (tratar a exceção: e adicionar erro na lista de erro e retornar form_invalid se houver exceção)
         try:
             form.instance.save_compressed_file(self.request.FILES['file_dataset'])
-
+            
         except FileSizeException as e:
             errors = form._errors.setdefault("feature_set", ErrorList())
-            errors.append(u"Ação não permitida. O tamanho do arquivo ultrapassa o limite de 20MB.")           
+            errors.append(u"Action not allowed. Each file in the compressed file need to have at most 10MB")           
             return super(CreateView, self).form_invalid(form)
+        
+        except FileCompressionException as e:
+            errors = form._errors.setdefault("feature_set", ErrorList())
+            errors.append(u"Action not allowed. The file isn't a zip file.")           
+            return super(CreateView, self).form_invalid(form)
+            
         return super(CreateView, self).form_valid(form)
     
     def get_success_url(self):
@@ -143,7 +149,7 @@ class DatasetCreateView(CreateView):
         }
         
              
-class DatasetDelete(DeleteView):
+class DatasetDelete(LoginRequiredMixin, DeleteView):
         '''
         Created on 7 dez de 2017
         

@@ -6,7 +6,7 @@
 				<h1 class="home_sign-up_h1">WikiQuality</h1>
 				<form method="post">
 					{% csrf_token %}
-					<section class="signup-error-section">
+					<section class="signup-error-container">
 						{% for field in form %}
 							{% for error in field.errors %}
 								{% ifequal error "This field is required." %}
@@ -91,15 +91,11 @@
 			
 			
 			//Obtém todos os filhos da section de classe igual a errors. Como só tem uma nesta página, então não é necessário usar "document.querySelectorAll".
-			let SignupErrorSection = document.querySelector(".signup-error-section");
+			let SignupErrorSection = document.querySelector(".signup-error-container");
 			
 			//Estiliza a section de class igual a errors, quando ela tiver mais de um filho.
 			if(SignupErrorSection.children.length >= 1) {
-				SignupErrorSection.style.border = '2px solid rgb(255, 158, 158)';
-				SignupErrorSection.style.marginTop = '20px';
-				SignupErrorSection.style.marginBottom = '15px';
-				SignupErrorSection.style.padding = '5px';
-				SignupErrorSection.style.backgroundColor = 'rgb(255, 234, 234)';
+				SignupErrorSection.style.display = 'block';
 			}
 		</script>
 {% endblock %}

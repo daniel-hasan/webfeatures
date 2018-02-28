@@ -1,27 +1,38 @@
 {% extends "../bases/base_main_site.html" %}
+{% load static %}
+{% block title %}Analyse Texts{% endblock %}
 
 {% block content %}
 	<section class="dataset-section">
-		<h1>Upload a compressed file</h1>
-		<form enctype="multipart/form-data" method="post" name='file_dataset' class="form">
+		<h1>Extract features</h1>
+		<label id="informations-modal">i</label>
+		<div id="modal"></div>
+		<div class="dataset-error-container"></div>
+		<form enctype="multipart/form-data" method="post" class="form">
 			{% csrf_token %}
-			<input name="file_dataset" type="file">
+			<div class="form-group">
+				<span class="dataset-file-name">Upload a compressed file</span><!--
+			 --><label class="dataset-file" for="dataset-file-input" name="file_dataset">Upload</label>
+				<input id="dataset-file-input" name="file_dataset" type="file">
+			</div>
 			{% for field in form %}
-				{% ifequal field.label "Format" %}
-					<span>Format Dataset:</span>
-				{% endifequal %}
-			
-				{% ifequal field.label "Feature set" %}
-					<span>Feature Set Dataset: </span>
-				{% endifequal %}
-				<div>
-					{{ field }}
+				<div class="form-group">
+					{% ifequal field.label "Format" %}
+						<span>Dataset format:</span>
+					{% endifequal %}
+				
+					{% ifequal field.label "Feature set" %}
+						<span>Feature set to extract:</span>
+					{% endifequal %}
+					<div>
+						{{ field }}
+					</div>
+					{% for error in field.errors %}
+						<p class="erro-p">{{ error }}</p>
+					{% endfor %}
 				</div>
-				{% for error in field.errors %}
-					<p class="erro-p">{{ error }}</p>
-				{% endfor %}
-			{% endfor %}						
-			<button type="submit" class="submit_button">Submit</button>
+			{% endfor %}
+			<button type="submit" class="ui-button ui-widget ui-corner-all">Submit</button>
 		</form>
 	</section>
 	<table class="dataset-list">
@@ -40,12 +51,20 @@
 			{% for dataset in dataset_list|dictsortreversed:"dat_submitted" %}
    				<tr>
     				<td>{{ dataset.nam_dataset }}</td>
-    				<td>{{ dataset.status }}</td>
-    				<td>{{ dataset.dat_submitted }}</td>
-  	  				<td>{{ dataset.dat_valid_until }}</td>
+    				<td>{{ dataset.status.name}}</td>
+    				<td>{{ dataset.dat_submitted|date:"d M. Y" }}</td>
+    				{% if dataset.dat_valid_until == None  %}
+    					<td></td>
+    				{% else %}
+  	  					<td>{{ dataset.dat_valid_until }}</td>
+  	  				{% endif %}
     				<td>{{ dataset.feature_set }}</td>
     				<td>{{ dataset.format.name }}</td>
-					<td><a href="{% url "download_result" dataset.id "json" %}">json</a> <a href="{% url "download_result" dataset.id "xls" %}">xls</a></td>
+    				{% ifequal dataset.status.name "COMPLETED" %}
+						<td><a href="{% url "download_result" dataset.id "json" %}">json</a> <a href="{% url "download_result" dataset.id "xls" %}">xls</a></td>
+					{% else %}
+						<td></td>
+					{% endifequal %}
 					<td>
 						<form action="{% url "dataset_delete" dataset.id %}" method="post">
 							{% csrf_token %}
@@ -66,6 +85,8 @@
 			{% endfor %}
 		</tbody>
 	</table>
+	<script src="{% static "js/dataset_list.js" %}"></script>
+	<script src="{% static "js/modal_dataset.js" %}"></script>
 	<!-- <script type="text/javascript">
 		let mapFeatHTMLperFeatSet = {1: ["feature HTML1"], 2: ["feature HTML2"], 3: ["feature HTML3"]};
 		

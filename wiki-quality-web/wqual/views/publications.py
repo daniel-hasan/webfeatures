@@ -6,10 +6,12 @@ Views relacionadas a visualização das publicações
 '''
 from django.views.generic.list import ListView
 
+from django.contrib.auth.mixins import LoginRequiredMixin
+
 from wqual.models import Publication
 
 
-class PublicationList(ListView):
+class PublicationList(LoginRequiredMixin, ListView):
     '''
     Created on 14 de ago de 2017
     
