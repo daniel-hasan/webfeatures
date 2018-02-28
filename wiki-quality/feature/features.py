@@ -217,19 +217,36 @@ class FeatureCalculatorManager(object):
         word_buffer = ""
         sentence_buffer = ""
         paragraph_buffer = ""
+        
+        #separa os tipos de features par a dar o check
         arrCharFeats = [feat for feat in arr_features if isinstance(feat, CharBasedFeature)]
+        arrWordFeats = [feat for feat in arr_features if isinstance(feat, WordBasedFeature)]
+        arrSentFeats = [feat for feat in arr_features if isinstance(feat, SentenceBasedFeature)]
+        arrParFeats = [feat for feat in arr_features if isinstance(feat, ParagraphBasedFeature)]
+        
+        
+        timeToProc.printDelta("proc char feats")
+        #print("Arr features size: "+str(len(arr_features))+" Char: "+str(len(arrCharFeats)))
         for str_char_for_char in str_text_for_char:
             for feat in arrCharFeats:
                 feat.checkChar(docText,str_char_for_char)
+                #if isinstance(feat, CharBasedFeature):
+                #    xx = xx+1
+                #if isinstance(feat, CharBasedFeature):
+
+                    
         timeToProc.printDelta("Check char")
         for str_char in str_text:
             word_proc = word_buffer.strip()
             if(len(word_proc) > 0 and str_char in FeatureCalculator.word_divisors):
-                for feat in arr_features:
-                    if(isinstance(feat, WordBasedFeature)):
-                        feat.checkWord(docText, word_proc)
-                        if(str_char != " "):
-                            feat.checkWord(docText, str_char)
+                for feat in arrWordFeats:
+                    feat.checkWord(docText, word_proc)
+                    if(str_char != " "):
+                        feat.checkWord(docText, str_char)
+                    #if(isinstance(feat, WordBasedFeature)):
+                    #    feat.checkWord(docText, word_proc)
+                    #    if(str_char != " "):
+                    #        feat.checkWord(docText, str_char)
                     word_buffer = ""
                 
             else:
@@ -237,18 +254,16 @@ class FeatureCalculatorManager(object):
             
             sentence_buffer = sentence_buffer + str_char
             if(str_char in FeatureCalculator.sentence_divisors):
-                    for feat in arr_features:
-                        if(isinstance(feat, SentenceBasedFeature)):
-                            feat.checkSentence(docText,sentence_buffer)
+                    for feat in arrSentFeats:
+                        feat.checkSentence(docText,sentence_buffer)
                     sentence_buffer = ""
 
 
             
             
             if(paragraph_buffer != "" and str_char in FeatureCalculator.paragraph_divisor):
-                    for feat in arr_features:
-                        if(isinstance(feat, ParagraphBasedFeature)):
-                            feat.checkParagraph(docText,paragraph_buffer)
+                    for feat in arrParFeats:
+                        feat.checkParagraph(docText,paragraph_buffer)
                     paragraph_buffer = ""
             else:
                     paragraph_buffer = paragraph_buffer + str_char                    
