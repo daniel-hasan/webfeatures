@@ -22,7 +22,7 @@ class Proportional(Enum):
     CHAR_COUNT = 2
     SENTENCE_COUNT = 3
     SECTION_COUNT = 4
-    
+    SUBSECTION_COUNT = 4
     @classmethod
     def get_enum(self,int_val):
         for enumFeat in Proportional:
@@ -52,6 +52,11 @@ class Proportional(Enum):
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.HTML, 
                                          FeatureTimePerDocumentEnum.MILLISECONDS,["h1"])
+        elif(self == Proportional.SUBSECTION_COUNT):
+            return TagCountFeature("contagem de tags", "Feature que conta tags em HTML", "HTML", 
+                                         FeatureVisibilityEnum.public, 
+                                         FormatEnum.HTML, 
+                                         FeatureTimePerDocumentEnum.MILLISECONDS,["h2"])    
         return None
 class TagCountFeature(TagBasedFeature,WordBasedFeature,SentenceBasedFeature,CharBasedFeature):
     
@@ -62,9 +67,13 @@ class TagCountFeature(TagBasedFeature,WordBasedFeature,SentenceBasedFeature,Char
         self.setTagsToCount = set([tag.lower() for tag in setTagsToCount])
         self.int_tag_counter = 0
         self.objFeature = None
+        #adicionando o param intPropotionalTo como atributos (para serem gravadas no bd)
+        self.intPropotionalTo = intPropotionalTo
+        
         if(intPropotionalTo!=None):
             self.enumProportional = Proportional.get_enum(intPropotionalTo) 
             self.objFeature = self.enumProportional.get_feature()
+
     
     def startTag(self,document,tag,attrs,ignoreCount=False):
     
@@ -77,7 +86,6 @@ class TagCountFeature(TagBasedFeature,WordBasedFeature,SentenceBasedFeature,Char
         intNorm = None
         if(self.objFeature != None):
             intNorm = self.objFeature.compute_feature(document)
-        
         return self.int_tag_counter/intNorm if intNorm != None and intNorm != 0 else self.int_tag_counter
     
     def finish_document(self,document):
@@ -101,7 +109,7 @@ class TagCountFeature(TagBasedFeature,WordBasedFeature,SentenceBasedFeature,Char
     def checkWord(self, document, word):
         if(self.objFeature != None and isinstance(self.objFeature,WordBasedFeature)):
             self.objFeature.checkWord(document,word)
-    
+            
     def checkSentence(self, document, word):
         if(self.objFeature != None and isinstance(self.objFeature,SentenceBasedFeature)):
             self.objFeature.checkWord(document,word)
@@ -117,10 +125,14 @@ class LinkCountFeature(TagCountFeature):
     
     def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document,bolExternal,bolInternalSameDomain,bolInternalSamePage,intPropotionalTo=None):
         super().__init__(name,description,reference,visibility,text_format,feature_time_per_document,setTagsToCount=["a"],intPropotionalTo=intPropotionalTo)    
-        self.bolExternal = bolExternal
-        self.bolInternalSameDomain = bolInternalSameDomain
-        self.bolInternalSamePage = bolInternalSamePage
-    
+        
+        """adicionando os params booleanos como atributos (para serem gravados no bd)"""
+        self.bolExternal=bolExternal
+        self.bolInternalSameDomain=bolInternalSameDomain
+        self.bolInternalSamePage=bolInternalSamePage
+        self.intPropotionalTo = intPropotionalTo
+        #if(self.name=="Same page link Count" or "Complete URL link Count"):
+        #    print("Name: "+self.name+"\t external: "+str(self.bolExternal)+"\tsamedomain:"+str(self.bolInternalSameDomain)+"\t samepage: "+str(self.bolInternalSamePage))
     def startTag(self,document,tag,attrs):
         str_href = ""
         for att in attrs:
@@ -284,7 +296,7 @@ class StdDeviationSectionSize(SectionSizeFeature):
     def compute_feature(self, document):
         super().compute_feature(document)
         
-        return stdev(self.arrSectionSizes) if len(self.arrSectionSizes) != 0 else 0
+        return stdev(self.arrSectionSizes) if len(self.arrSectionSizes) >1 else 0
     
     def finish_document(self,document):
         self.arrSectionSizes=[]

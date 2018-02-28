@@ -6,14 +6,15 @@ Created on 8 de ago de 2017
 '''
 from abc import abstractmethod
 from enum import Enum
+import html
 from html.parser import HTMLParser
 import os
 from os.path import join, isfile, isdir
 from posix import listdir
 import re
-import html
 
-from utils.basic_entities import FormatEnum
+from utils.basic_entities import FormatEnum, CheckTime
+
 
 class NotTheOwner(Exception):
     def __init__(self):
@@ -188,6 +189,7 @@ class FeatureCalculatorManager(object):
         for feat in arr_features:
             arr_feat_result.append(None)
         str_text_for_char = str_text
+        timeToProc = CheckTime()
         if format is FormatEnum.HTML:
             aux = 0
             for feat in arr_features:
@@ -195,7 +197,8 @@ class FeatureCalculatorManager(object):
                     parser = ParserTags(feat, docText)
                     parser.feed(str_text)
                 aux = aux + 1
-                            
+            timeToProc.printDelta("HTML parser tags")         
+            
             '''considera apenas o que estiver dentro de <body> </body> (se esses elementos existirem)'''
             str_text_lower = str_text.lower()
             int_pos_body = str_text_lower.find("<body>")
@@ -208,18 +211,17 @@ class FeatureCalculatorManager(object):
             '''elimina as html entities'''
             str_text = html.unescape(str_text)
             str_text_for_char = html.unescape(str_text_for_char)
-            
+            timeToProc.printDelta("String parsing")
         
         #armazo as word based features e sentence based feature
         word_buffer = ""
         sentence_buffer = ""
         paragraph_buffer = ""
-        
+        arrCharFeats = [feat for feat in arr_features if isinstance(feat, CharBasedFeature)]
         for str_char_for_char in str_text_for_char:
-            for feat in arr_features:
-                if(isinstance(feat, CharBasedFeature)):
-                    feat.checkChar(docText,str_char_for_char)
-        
+            for feat in arrCharFeats:
+                feat.checkChar(docText,str_char_for_char)
+        timeToProc.printDelta("Check char")
         for str_char in str_text:
             word_proc = word_buffer.strip()
             if(len(word_proc) > 0 and str_char in FeatureCalculator.word_divisors):
@@ -251,7 +253,7 @@ class FeatureCalculatorManager(object):
             else:
                     paragraph_buffer = paragraph_buffer + str_char                    
                     
-            
+        timeToProc.printDelta("Other checks")    
         #se necessario, le a ultima palavra/frase/paragrafo do buffer
         
         paragraph_buffer = paragraph_buffer.strip()
@@ -267,16 +269,17 @@ class FeatureCalculatorManager(object):
             
             if(len(paragraph_buffer) > 0 and isinstance(feat, ParagraphBasedFeature)):
                 feat.checkParagraph(docText, paragraph_buffer)
-        
+        timeToProc.printDelta("Last  checking")
         #para todoas as WordBasedFeatue ou SentenceBased feature, rodar o compute_feature
         
         aux = 0
         for feat in arr_features:
             arr_feat_result[aux] = feat.compute_feature(docText)
- 
             aux = aux + 1
+        timeToProc.printDelta("Compute feature")
         for feat in arr_features:
             feat.finish_document(docText)
+        timeToProc.printDelta("Finish document")
         return arr_feat_result
 
 class FeatureVisibilityEnum(Enum):

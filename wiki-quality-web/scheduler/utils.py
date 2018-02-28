@@ -4,9 +4,11 @@ Created on
 
 '''
 
+from datetime import datetime
 import json
 
 from feature.features import Document as DocumentFeature, FeatureDocumentsReader, FeatureDocumentsWriter
+from utils.basic_entities import CheckTime
 from wqual.models.uploaded_datasets import Dataset, DocumentResult
 from wqual.models.uploaded_datasets import Document as DocumentDataset
 
@@ -18,10 +20,13 @@ class DatasetModelDocReader(FeatureDocumentsReader):
     
     def get_documents(self):
         
+        timeToProc = CheckTime()
         for doc in self.dataset.document_set.all():
             if hasattr(doc, "documenttext"):
-                yield DocumentFeature(doc.id, doc.nam_file, doc.documenttext.dsc_text)
-            
+                objDocmentFeature = DocumentFeature(doc.id, doc.nam_file, doc.documenttext.dsc_text)
+                timeToProc.printDelta("Query ")
+                yield objDocmentFeature
+                timeToProc.printDelta("Processing ")
 class DatasetModelDocWriter(FeatureDocumentsWriter):
         def __init__(self, dataset):
             self.dataset = dataset

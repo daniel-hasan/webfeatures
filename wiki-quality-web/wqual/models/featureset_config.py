@@ -70,7 +70,8 @@ class FeatureFactoryManager(models.Manager):
                 objFeatureFactory = FeatureFactoryClass()
             
             #add all the features from factory
-            #print("Feature: "+featFactory.nam_factory_class+" array: "+str(objFeatureFactory.createFeatures()))
+            arrNames = [f.name for f in objFeatureFactory.createFeatures()] 
+            print("Feature: "+featFactory.nam_factory_class+" array: "+str(arrNames))
             [arr_features.append(objFeature) for objFeature in objFeatureFactory.createFeatures()]
         return arr_features
             
@@ -186,12 +187,15 @@ class UsedFeatureManager(models.Manager):
     def from_obj_to_bd_type_val(self,value):
         paramType = None
         paramValue = value 
+        #print("Valor do tipo: "+str(paramValue)+": "+str(type(value)))
         if(type(value)==str):
             paramType = UsedFeatureArgVal.STRING
         elif(type(value)==int):
             paramType = UsedFeatureArgVal.INT
         elif(type(value)==float):
-            paramType = UsedFeatureArgVal.FLOAT                                
+            paramType = UsedFeatureArgVal.FLOAT
+        elif(value == None):
+            paramType = UsedFeatureArgVal.NONE_T                                
         elif(type(value)==bool):
             paramType = UsedFeatureArgVal.BOOLEAN
         elif type(value)==list or type(value)==dict:
@@ -296,8 +300,10 @@ class UsedFeature(models.Model):
                 #print("nome " + arg.nam_argument + "Valor " + arg.val_argument)
             elif arg.type_argument == UsedFeatureArgVal.FLOAT:
                 param[arg.nam_argument] = float(arg.val_argument)                
+            elif arg.type_argument == UsedFeatureArgVal.NONE_T:
+                param[arg.nam_argument] = None
             elif arg.type_argument == UsedFeatureArgVal.BOOLEAN:
-                param[arg.nam_argument] = bool(arg.val_argument)
+                param[arg.nam_argument] = arg.val_argument.lower()=="true"
             elif arg.type_argument == UsedFeatureArgVal.JSON:
                 param[arg.nam_argument] = json.loads(arg.val_argument)
             elif arg.type_argument == UsedFeatureArgVal.JSON_SET:
@@ -321,6 +327,7 @@ class UsedFeatureArgVal(models.Model):
     FLOAT = "float"
     STRING = "string"
     BOOLEAN = "boolean"
+    NONE_T = "None"
     JSON = "json"
     JSON_SET = "json_set"
     TIPOS_DADOS = [(INT,"int"),(FLOAT,"float"),(STRING,"string"),(BOOLEAN,"boolean"),(JSON,"json"),(JSON_SET,"json_set")]
