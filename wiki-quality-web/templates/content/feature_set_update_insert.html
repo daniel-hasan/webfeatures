@@ -23,7 +23,7 @@
     <li><a class="styletabs" id="FeaturesSets" href="#tabs-2">Features Set</a></li>
   </ul>
   <div id="tabs-1">
-  	<div class = "col-md-6">	
+  	<div class="col-md-6">	
   		{% if object.id %}
   				<form id="updateFeatureForm" action="{% url "feature_set_edit" object.nam_feature_set %}" method="post">{% csrf_token %}
   			{% else %}
@@ -44,17 +44,18 @@
 							<span>Language:</span>
 						{% endifequal %}
 				
-						<div>
+					<div>
 	                    	{{ field }}
 	                   </div>
 	                </div>
-	            {% endfor %} 
-	            Publish feature set. When public you can access through the URL: 
+	            {% endfor %}
+	            
+			<p>&nbspPublish feature set. When public you can access through the URL: <a id="anc" href="{% url "public_extract_features" user.get_username object.nam_feature_set %}">http://{{request.get_host}}/p/{{user.get_username}}/{{object.nam_feature_set}}</a></p> 
 	    		<button type="submit" id="saveButton" class="ui-button ui-widget ui-corner-all">Save</button>
 	    		<input type="button" class="ui-button ui-widget ui-corner-all" onclick="cancelEditFeature()" value = "Cancel" />
 		</form>
 	</div>
-  </div>
+</div>
     
   <div id="alertSaveFeature">
   	<p>Do you want to save your changes?</p>
@@ -63,6 +64,8 @@
   <!-- form create/update via ajax --> 
   <script>
   		let href_button_clicked = "";
+
+		
   		
   		$("#updateFeatureForm").change(function() {
 		   $("#updateFeatureForm").data("changed",true);
@@ -82,7 +85,7 @@
 	 	$( "#analyseTexts" ).click(function() {
 	 		href_button_clicked = "";
 	 		$(this).removeAttr( "href" );
-	  		if ($("#updateFeatureForm").data("changed")) {
+	  	if ($("#updateFeatureForm").data("changed")) {
 	 			href_button_clicked = "{% url "extract_features" %}";
 	 			$( "#alertSaveFeature" ).dialog( "open" );
 	 		} else {

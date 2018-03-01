@@ -101,10 +101,17 @@ h1 {
 }
 
 #tabs-1 {
-	height: 270px;
+	height: 320px;
 }
 
+#id_bol_is_public {
+	float: left;
+}
 
+#anc{
+	color:#0000FF;
+	font-size: 12px;
+}
 
 /****************************** Dataset ******************************/
 .dataset-section {

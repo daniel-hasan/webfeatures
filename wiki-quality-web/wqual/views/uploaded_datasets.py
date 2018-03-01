@@ -140,6 +140,29 @@ class DatasetCreateView(CreateView):
             "feature_set" : "Feature Set Dataset"
         }
         
+class DatasetCreateFromSharedFeaturesetView(DatasetCreateView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        objFeatureSet = None
+        try: 
+            objFeatureSet = FeatureSet.objects.get(bol_is_public=True,
+                                                  user__username=self.kwargs["user"],
+                                                  nam_feature_set=self.kwargs["nam_feature_set"])
+        #check if the feature set exists
+        except FeatureSet.DoesNotExist:
+            context['feature_set_to_use'] = "NOT_FOUND"
+            return context
+        
+        arr_features = []
+        for objUsedFeature in objFeatureSet.usedfeature_set.all():
+            arr_features.append(objUsedFeature.get_features_with_params())
+        context['feature_set_to_use'] = {"nam_feature_set":objFeatureSet.nam_feature_set,
+                                         "dsc_feature_set":objFeatureSet.dsc_feature_set,
+                                         "language":objFeatureSet.language,
+                                         "arr_features":arr_features
+                                         }
+        return context    
+        
 class DatasetCreateFromPublicView(DatasetCreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
