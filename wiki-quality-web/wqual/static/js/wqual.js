@@ -16,3 +16,8 @@ $( function() {
 	      dialog.dialog( "close" );
 	    });
 } );
+
+function itemSelecionado(strIdItem){
+	alert(strIdItem);
+
+}

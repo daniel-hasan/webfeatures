@@ -44,7 +44,7 @@ class FeatureTimePerDocumentEnum(Enum):
 class FormatEnum(Enum):
     text_plain = "Text-Plain"
     HTML = "HTML"
-    mark_down = "Mark-Down"
+    #mark_down = "Mark-Down" Nao impleentado ainda
     
 class LanguageEnum(Enum):
 

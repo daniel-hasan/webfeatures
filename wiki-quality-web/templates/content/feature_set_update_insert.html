@@ -1,7 +1,9 @@
 {% extends "../bases/base_main_site.html" %}
 {% load static %}
 {% block title %}Feature Set Update Insert{% endblock %}
-  
+
+{% block configFeaturesMenuAttr %}class="itemSelecionado"{% endblock %} 
+
 {% block content %}
 
 <script>
@@ -23,7 +25,7 @@
     <li><a class="styletabs" id="FeaturesSets" href="#tabs-2">Features Set</a></li>
   </ul>
   <div id="tabs-1">
-  	<div class = "col-md-6">	
+  	<div class="col-md-6">	
   		{% if object.id %}
   				<form id="updateFeatureForm" action="{% url "feature_set_edit" object.nam_feature_set %}" method="post">{% csrf_token %}
   			{% else %}
@@ -44,17 +46,20 @@
 							<span>Language:</span>
 						{% endifequal %}
 				
-						<div>
+					<div>
 	                    	{{ field }}
 	                   </div>
 	                </div>
-	            {% endfor %} 
-	            Publish feature set. When public you can access through the URL: 
+	            {% endfor %}
+	            
+			<p>&nbsp;
+			Share the feature set. 
+			When checked, everyone can have access to this feature set by using the following link: <a id="anc" href="{% url "public_extract_features" user.get_username object.nam_feature_set %}">http://{{request.get_host}}/p/{{user.get_username}}/<span id="pub_feat_set_name">{{object.nam_feature_set}}</span></a></p>
 	    		<button type="submit" id="saveButton" class="ui-button ui-widget ui-corner-all">Save</button>
 	    		<input type="button" class="ui-button ui-widget ui-corner-all" onclick="cancelEditFeature()" value = "Cancel" />
 		</form>
 	</div>
-  </div>
+</div>
     
   <div id="alertSaveFeature">
   	<p>Do you want to save your changes?</p>
@@ -63,7 +68,14 @@
   <!-- form create/update via ajax --> 
   <script>
   		let href_button_clicked = "";
-  		
+
+		$("#id_nam_feature_set").keyup(function(){
+			let strFeatureSetName = $("#id_nam_feature_set")[0].value;
+			$("#pub_feat_set_name").html(strFeatureSetName);
+			$("#anc")[0].href = "{% url "public_extract_features" user.get_username "" %}"+strFeatureSetName;
+			
+		}); 
+		
   		$("#updateFeatureForm").change(function() {
 		   $("#updateFeatureForm").data("changed",true);
 		});
@@ -82,7 +94,7 @@
 	 	$( "#analyseTexts" ).click(function() {
 	 		href_button_clicked = "";
 	 		$(this).removeAttr( "href" );
-	  		if ($("#updateFeatureForm").data("changed")) {
+	  	if ($("#updateFeatureForm").data("changed")) {
 	 			href_button_clicked = "{% url "extract_features" %}";
 	 			$( "#alertSaveFeature" ).dialog( "open" );
 	 		} else {
@@ -214,7 +226,7 @@
   		</div>
 </div>
 
-<div id="add-form" title="Add Feature Set">
+<div id="add-form" class="listAdd" title="Add Feature Set">
 	<div id="featureList"></div>
 	 <script src="{% url "insert_list_used_features" %}"></script>
 	 <script src="{% static "js/csrf_token_ajax.js" %}"></script>

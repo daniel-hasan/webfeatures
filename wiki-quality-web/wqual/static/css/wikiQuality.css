@@ -101,10 +101,20 @@ h1 {
 }
 
 #tabs-1 {
-	height: 270px;
+	height: 320px;
 }
 
+#id_bol_is_public {
+	float: left;
+}
 
+#anc{
+	color:#0000FF;
+	font-size: 12px;
+}
+.itemSelecionado{
+	background-color:#5886bf;
+}
 
 /****************************** Dataset ******************************/
 .dataset-section {
@@ -386,7 +396,12 @@ fieldset[disabled] .dataset-file-name {
     		top: 50%; 
     		left: 50%;
 		}
-		
+		.listAdd div {
+			    overflow: auto;
+			height:400px;
+		}	
+
+
 /***************************** Fim feature_set_update_insert.html e used_features.js*****************************/
 
 /***************************** Início home.html e signup.html *****************************/
