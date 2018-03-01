@@ -47,5 +47,7 @@ urlpatterns = [
     url(r'^signup/', views.SignUpView.as_view(), name='signup'),
     url(r'^logout/', views.LogoutView.as_view(), name='logout'),
     url(r'^usedFeatureDelete$', views.UsedFeatureDelete.as_view(), name='usedFeaturesDelete'),
+    
+   url(r'^extractFeaturesPublic/(?P<user>.*)/(?P<nam_feature_set>.*)$', views.DatasetCreateView.as_view(), name='extract_features'),
 
 ] 

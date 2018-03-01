@@ -33,28 +33,29 @@
 					{{ field.errors }}
 					<div class="form-group">
 						{% ifequal field.label "Nam feature set" %}
-							<span>Name Feature Set:</span>
+							<span>Feature Set Name:</span>
 						{% endifequal %}	
 						
 						{% ifequal field.label "Dsc feature set" %}
-							<span>Description Feature Set:</span>
+							<span>Description:</span>
 						{% endifequal %}
 						
 						{% ifequal field.label "Language" %}
 							<span>Language:</span>
 						{% endifequal %}
-						
+				
 						<div>
 	                    	{{ field }}
 	                   </div>
 	                </div>
-	    		{% endfor %}
+	            {% endfor %} 
+	            Publish feature set. When public you can access through the URL: 
 	    		<button type="submit" id="saveButton" class="ui-button ui-widget ui-corner-all">Save</button>
 	    		<input type="button" class="ui-button ui-widget ui-corner-all" onclick="cancelEditFeature()" value = "Cancel" />
 		</form>
 	</div>
   </div>
-  
+    
   <div id="alertSaveFeature">
   	<p>Do you want to save your changes?</p>
   </div>

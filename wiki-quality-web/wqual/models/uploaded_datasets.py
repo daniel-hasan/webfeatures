@@ -57,12 +57,11 @@ class Dataset(models.Model):
     
     dat_submitted = models.DateTimeField()
     dat_valid_until = models.DateTimeField(blank=True, null=True)
-    
+    bol_ready_to_process = models.BooleanField(default=False)
     start_dat_processing = models.DateTimeField(blank=True, null=True)
     end_dat_processing = models.DateTimeField(blank=True, null=True)
     
     format = models.ForeignKey(Format, models.PROTECT)    
-    
     feature_set = models.ForeignKey(FeatureSet, models.PROTECT)
     user = models.ForeignKey(User, models.PROTECT)
     status = models.ForeignKey(Status, models.PROTECT)
@@ -91,17 +90,18 @@ class Dataset(models.Model):
             for name,strFileTxt in objFileZip.read_each_file():
                 with transaction.atomic():
                     i = i+1
-                    print(name+": "+str(i))
-                    if(name == "1095706.html"):
-                        a=1
-                        a = a+1
-                        pass
+                    #print(name+": "+str(i))
+                    #if(name == "1095706.html"):
+                    #    a=1
+                    #    a = a+1
+                    #    pass
                     objDocumento = Document(nam_file=name,dataset=self)
                     objDocumento.save()
                     objDocumentoTexto = DocumentText(document=objDocumento,dsc_text=strFileTxt)
                     objDocumentoTexto.save()
                     self.document_set.add(objDocumento,bulk=False)
-                
+            self.bol_ready_to_process = True
+            self.save()
 
                 
                 
@@ -140,6 +140,7 @@ class DocumentText(models.Model):
     '''
     dsc_text_bin = models.BinaryField()    
     document = models.OneToOneField(Document, models.CASCADE)
+     
     
     @property
     def dsc_text(self):

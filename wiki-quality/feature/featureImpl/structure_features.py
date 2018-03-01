@@ -284,7 +284,7 @@ class StdDeviationSectionSize(SectionSizeFeature):
     def compute_feature(self, document):
         super().compute_feature(document)
         
-        return stdev(self.arrSectionSizes) if len(self.arrSectionSizes) != 0 else 0
+        return stdev(self.arrSectionSizes) if len(self.arrSectionSizes) > 1 else 0
     
     def finish_document(self,document):
         self.arrSectionSizes=[]

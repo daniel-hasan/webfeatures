@@ -125,6 +125,7 @@ class FeatureSet(models.Model):
     '''
     nam_feature_set = models.CharField(max_length=50)
     dsc_feature_set = models.CharField(max_length=255, blank=True, null=True)
+    bol_is_public = models.BooleanField(default=False)
     
     language = models.ForeignKey(Language, models.PROTECT)  
     user = models.ForeignKey(User, models.PROTECT)

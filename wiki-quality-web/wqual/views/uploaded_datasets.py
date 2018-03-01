@@ -6,25 +6,23 @@ Views relacionadas a upload dos datasets
 '''
 from _io import BytesIO
 from datetime import datetime
-
+from django.forms.utils import ErrorList
 import json
 import lzma
 import os
 import uuid
-
-
-
-from django.forms.utils import ErrorList
-from django.http import HttpResponse
 import zipfile
+
+from django.http import HttpResponse
 from django.urls.base import reverse
 from django.views.generic.base import View
 from django.views.generic.edit import CreateView, DeleteView
+
 from wqual.models import Dataset
 from wqual.models.exceptions import FileSizeException
+from wqual.models.featureset_config import FeatureSet
 from wqual.models.uploaded_datasets import  Status, StatusEnum, DocumentText, \
     Document, DocumentResult
-
 
 
 class DatasetDownloadView(View):
@@ -142,7 +140,14 @@ class DatasetCreateView(CreateView):
             "feature_set" : "Feature Set Dataset"
         }
         
-             
+class DatasetCreateFromPublicView(DatasetCreateView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        #context['map_feathtml'] = UsedFeature.objects.get_html_features_name_grouped_by_featureset()
+        
+        context['feature_set_list'] = FeatureSet.objects.filter(user__username=self.kwargs["user"],nam_feature_set=self.kwargs["nam_feature_set"])
+        return context    
+                 
 class DatasetDelete(DeleteView):
         '''
         Created on 7 dez de 2017
