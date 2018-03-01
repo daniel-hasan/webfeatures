@@ -10,6 +10,9 @@ import json
 
 from django.http.response import JsonResponse, HttpResponse, \
     HttpResponseRedirect
+from django.views.generic.list import ListView
+
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls.base import reverse, reverse_lazy
 from django.views.generic.base import View, TemplateView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
@@ -35,7 +38,7 @@ class FormValidation(object):
         return True
     
 # Create your views here.
-class FeatureSetListView(ListView):
+class FeatureSetListView(LoginRequiredMixin, ListView):
     '''
     Created on 14 de ago de 2017
     
@@ -49,7 +52,7 @@ class FeatureSetListView(ListView):
         return FeatureSet.objects.filter(user=self.request.user) if  self.request.user.is_authenticated() else []
 
 
-class FeatureSetInsert(CreateView):
+class FeatureSetInsert(LoginRequiredMixin, CreateView):
     '''
     Created on 14 de ago de 2017    
     @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
@@ -87,7 +90,7 @@ class FeatureSetInsertAJAX(View):
       
         return JsonResponse({"arrCreateFeatureSet" : arrCreateFeatureSet })
       
-class FeatureSetEdit(UpdateView):
+class FeatureSetEdit(LoginRequiredMixin, UpdateView):
     '''
     Created on 14 de ago de 2017
     sddasd
@@ -124,7 +127,9 @@ class FeatureSetEditAJAX(View):
             
         return JsonResponse({"arrFeauteSetEdit" : arrFeatureSetEdit }) 
 
-class UsedFeatureListView(ListView):
+
+     
+class UsedFeatureListView(LoginRequiredMixin, ListView):
    
     model = UsedFeature
     template_name = "content/used_features.js"
@@ -146,7 +151,7 @@ class UsedFeatureListView(ListView):
 
         return map_used_feat_per_id
 
-class UsedFeatureListViewTeste(ListView):
+class UsedFeatureListViewTeste(LoginRequiredMixin, ListView):
     '''
     Created on 14 de ago de 2017
    
@@ -164,7 +169,8 @@ class UsedFeatureListViewTeste(ListView):
     def get_success_url(self):
         return reverse('feature_set_list')
 
-class UsedFeatureIsConfigurableForm(View): 
+
+class UsedFeatureIsConfigurableForm(LoginRequiredMixin, UpdateView): 
     
     model = UsedFeatureArgVal
     template_name = "content/used_features.js"
@@ -179,7 +185,7 @@ class UsedFeatureIsConfigurableForm(View):
             
         return JsonResponse({"arrValueArgVal" : arrValueArgVal})
         
-class UsedFeatureDelete(View):
+class UsedFeatureDelete(LoginRequiredMixin,View):
     model = UsedFeatureArgVal
     template_name = "content/used_features.js"
     
@@ -189,7 +195,8 @@ class UsedFeatureDelete(View):
         
         return JsonResponse({})
 
-class FeatureSetDelete(DeleteView):
+class FeatureSetDelete(LoginRequiredMixin,DeleteView):
+
     model = FeatureSet
     template_name = "content/feature_set_delete.html"
     
@@ -202,7 +209,7 @@ class FeatureSetDelete(DeleteView):
     
     
     
-class ListFeaturesView(View):
+class ListFeaturesView(LoginRequiredMixin, View):
     '''
     Created on 07 de fev de 2018
    
@@ -238,10 +245,10 @@ class ListFeaturesView(View):
     
 
 
-class JSListAddUsedFeatureView(TemplateView):
+class JSListAddUsedFeatureView(LoginRequiredMixin, TemplateView):
     template_name = "content/list_add_used_features.js"    
     
-class InsertUsedFeaturesView(View):
+class InsertUsedFeaturesView(LoginRequiredMixin, View):
     def post(self, request,nam_feature_set):
         #get the feature set object
         objFeatureSet=FeatureSet.objects.get(user=self.request.user,nam_feature_set=nam_feature_set)

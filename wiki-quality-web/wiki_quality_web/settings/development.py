@@ -18,6 +18,10 @@ import os
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE_DIR = os.path.abspath(os.path.join(BASE_DIR,os.pardir))
 
+#Set  the login url and the login redirect url as "/"
+LOGIN_URL = "/"
+LOGIN_REDIRECT_URL = "/"
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
