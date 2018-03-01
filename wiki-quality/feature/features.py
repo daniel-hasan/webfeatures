@@ -197,7 +197,7 @@ class FeatureCalculatorManager(object):
                     parser = ParserTags(feat, docText)
                     parser.feed(str_text)
                 aux = aux + 1
-            timeToProc.printDelta("HTML parser tags")         
+            #timeToProc.printDelta("HTML parser tags")         
             
             '''considera apenas o que estiver dentro de <body> </body> (se esses elementos existirem)'''
             str_text_lower = str_text.lower()
@@ -206,12 +206,13 @@ class FeatureCalculatorManager(object):
             if(int_pos_body >=0 and int_pos_fim_body>=0):
                 str_text = str_text[int_pos_body+6:int_pos_fim_body]
             '''str_text = parser.str_plain_text'''
-            str_text = re.sub("<[^>]+>", " ", str_text)
             str_text_for_char = re.sub("<[^>]+>", "", str_text)
+            str_text = re.sub("<[^>]+>", " ", str_text)
+             
             '''elimina as html entities'''
             str_text = html.unescape(str_text)
             str_text_for_char = html.unescape(str_text_for_char)
-            timeToProc.printDelta("String parsing")
+            #timeToProc.printDelta("String parsing")
         
         #armazo as word based features e sentence based feature
         word_buffer = ""
@@ -225,7 +226,7 @@ class FeatureCalculatorManager(object):
         arrParFeats = [feat for feat in arr_features if isinstance(feat, ParagraphBasedFeature)]
         
         
-        timeToProc.printDelta("proc char feats")
+        #timeToProc.printDelta("proc char feats")
         #print("Arr features size: "+str(len(arr_features))+" Char: "+str(len(arrCharFeats)))
         for str_char_for_char in str_text_for_char:
             for feat in arrCharFeats:
@@ -235,7 +236,7 @@ class FeatureCalculatorManager(object):
                 #if isinstance(feat, CharBasedFeature):
 
                     
-        timeToProc.printDelta("Check char")
+        #timeToProc.printDelta("Check char")
         for str_char in str_text:
             word_proc = word_buffer.strip()
             if(len(word_proc) > 0 and str_char in FeatureCalculator.word_divisors):
@@ -268,7 +269,7 @@ class FeatureCalculatorManager(object):
             else:
                     paragraph_buffer = paragraph_buffer + str_char                    
                     
-        timeToProc.printDelta("Other checks")    
+        #timeToProc.printDelta("Other checks")    
         #se necessario, le a ultima palavra/frase/paragrafo do buffer
         
         paragraph_buffer = paragraph_buffer.strip()
@@ -284,17 +285,17 @@ class FeatureCalculatorManager(object):
             
             if(len(paragraph_buffer) > 0 and isinstance(feat, ParagraphBasedFeature)):
                 feat.checkParagraph(docText, paragraph_buffer)
-        timeToProc.printDelta("Last  checking")
+        #timeToProc.printDelta("Last  checking")
         #para todoas as WordBasedFeatue ou SentenceBased feature, rodar o compute_feature
         
         aux = 0
         for feat in arr_features:
             arr_feat_result[aux] = feat.compute_feature(docText)
             aux = aux + 1
-        timeToProc.printDelta("Compute feature")
+        #timeToProc.printDelta("Compute feature")
         for feat in arr_features:
             feat.finish_document(docText)
-        timeToProc.printDelta("Finish document")
+        #timeToProc.printDelta("Finish document")
         return arr_feat_result
 
 class FeatureVisibilityEnum(Enum):

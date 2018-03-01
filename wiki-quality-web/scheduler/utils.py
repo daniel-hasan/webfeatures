@@ -21,12 +21,14 @@ class DatasetModelDocReader(FeatureDocumentsReader):
     def get_documents(self):
         
         timeToProc = CheckTime()
+        i =1
         for doc in self.dataset.document_set.all():
             if hasattr(doc, "documenttext"):
                 objDocmentFeature = DocumentFeature(doc.id, doc.nam_file, doc.documenttext.dsc_text)
-                timeToProc.printDelta("Query ")
+                #timeToProc.printDelta("Query ")
                 yield objDocmentFeature
-                timeToProc.printDelta("Processing ")
+                timeToProc.printDelta("Processing "+str(i))
+                i=i+1
 class DatasetModelDocWriter(FeatureDocumentsWriter):
         def __init__(self, dataset):
             self.dataset = dataset

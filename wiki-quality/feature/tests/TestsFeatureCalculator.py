@@ -53,9 +53,11 @@ class CharTestFeature(CharBasedFeature):
     
     def compute_feature(self,document):
         arr_aux = self.arr_str_char
-        self.arr_str_char = []      
+              
         return arr_aux
-
+    
+    def finish_document(self, document):
+        self.arr_str_char = []
 class WordTestFeature(WordBasedFeature):
     '''
     Classe para usar no teste que verifica se o WordBasedFeature está funcionando. 
@@ -69,10 +71,11 @@ class WordTestFeature(WordBasedFeature):
         self.arr_str_words.append(word)
     
     def compute_feature(self,document):
-        arr_aux = self.arr_str_words
-        self.arr_str_words = []      
+        arr_aux = self.arr_str_words    
         return arr_aux
     
+    def finish_document(self, document):
+        self.arr_str_words = []
 class SentenceTestFeature(SentenceBasedFeature):
     '''
     Classe para usar no teste que verifica se o SentenceBasedFeature está funcionando. 
@@ -89,9 +92,11 @@ class SentenceTestFeature(SentenceBasedFeature):
     
     def compute_feature(self,document):
         arr_aux = self.arr_str_sentence
-        self.arr_str_sentence = []      
+           
         return arr_aux       
     
+    def finish_document(self, document):
+        self.arr_str_sentence = []
 
 class ParagraphTestFeature(ParagraphBasedFeature):
   
@@ -105,9 +110,12 @@ class ParagraphTestFeature(ParagraphBasedFeature):
     
     def compute_feature(self,document):
         arr_aux = self.arr_str_paragraph
-        self.arr_str_paragraph = []      
+           
         return arr_aux
-
+    
+    def finish_document(self, document):
+        self.arr_str_paragraph = []   
+        
 class TagTestFeature(TagBasedFeature):
     
     def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document):
@@ -115,14 +123,14 @@ class TagTestFeature(TagBasedFeature):
         self.arr_str_tag = []
         
           
-    def checkTag(self,document,tag):
+    def startTag(self,document, tag, attrs):
         self.arr_str_tag.append(tag)
     
     def compute_feature(self,document):
-        arr_aux = self.arr_str_tag
-        self.arr_str_tag = []      
+        arr_aux = self.arr_str_tag    
         return arr_aux
-
+    def finish_document(self, document):
+        self.arr_str_tag = []
 class TestFeatureCalculator(unittest.TestCase):
     
 
@@ -215,6 +223,7 @@ class TestFeatureCalculator(unittest.TestCase):
         ["l","a","l","a","l","a",".","\n","M","e","u"," ","t","e","s","t","e"," ","t","e","m"," ",
          "t","r","e","s"," ","p","a","r","a","g","r","a","f","o","s",".","\n","E","s","s","e"," ",
          "é"," ","o"," ","ú","l","t","i","m","o"], "A leitura dos caracteres está incorreta")
+        print(str(map_result["doc5"][5]))
         self.assertListEqual(map_result["doc5"][5], 
         ["O","l","a"," "," "," "," "," "," "," "," ",","," "," "," "," "," "," ","m","e","u"," ","n",
          "o","m","e"," ","é"," ","h","a","s","a","n","."], "A leitura dos caracteres está incorreta")
