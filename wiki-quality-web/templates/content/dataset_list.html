@@ -7,6 +7,45 @@
 		<h1>Extract features</h1>
 		<label id="informations-modal">i</label>
 		<div id="modal"></div>
+		<div id="feature_set_list">
+			{% if feature_set_to_use and feature_set_to_use != "NOT_FOUND" %}
+				<h2>Feature set: {{ feature_set_to_use.nam_feature_set }} </h2>
+				
+				<p><label>Language: </label><span>feature_set_to_use.language.value</span></p>
+				
+				<label>Description/Parameters: </label>
+				<p id="feature-description">
+					{{ feature_set_to_use.dsc_feature_set }}
+				</p>
+				
+				<section id="feature-list-dataset">
+					<table>
+					<tr>
+						<th>Feature Name</th>
+						<th>Description</th>
+					</tr>
+						{% for feature in feature_set_to_use.arr_features|dictsort:"ord_feature" %}
+						<tr>
+							<td class="td_name"> {{ feature.name }} </td>
+							<td class="td_description"> {{ feature.description }} 
+														{% if feature.reference %} <p> {{ feature.reference }}</p> {% endif %}
+														{% if feature.arr_param %}
+														
+															<label>Parameters:</label> 
+															<p class="paramTableDataset"> 
+															{% for param in feature.arr_param %} 
+																<span><strong>{{ param.nam_argument }}</strong>: {{ param.val_argument }}</span> 
+															{% endfor %}
+															</p> 
+														{% endif %}
+							</td>
+						</tr>
+						{% endfor %}
+						
+					</table>
+				</section>
+			{% endif %}
+		</div>
 		<div class="dataset-error-container"></div>
 		<form enctype="multipart/form-data" method="post" class="form">
 			{% csrf_token %}
@@ -25,7 +64,23 @@
 						<span>Feature set to extract:</span>
 					{% endifequal %}
 					<div>
-						{{ field }}
+						{% if field.label == "Feature set" and feature_set_to_use and feature_set_to_use != "NOT_FOUND"%}
+						  <button id="show_featureset" class="right-ico ui-button ui-widget ui-corner-all">
+						    <span class="btnTextLeft">{{ feature_set_to_use.nam_feature_set }}</span><span class="ui-icon ui-icon-search"></span> 
+						  </button>
+							
+							
+						{% else %}
+							{% if field.label == "Feature set" and feature_set_to_use == "NOT_FOUND" %}
+								<script>
+										$(function(){
+											alert("Error: could not found the requested feature set");
+										}
+										);
+								</script>
+							{% endif %}
+							{{ field }}
+						{% endif %}
 					</div>
 					{% for error in field.errors %}
 						<p class="erro-p">{{ error }}</p>

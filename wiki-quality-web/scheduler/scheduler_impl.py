@@ -41,7 +41,7 @@ class OldestFirstScheduler(Scheduler):
 	
 		with transaction.atomic():
 			
-			dataset_oldest = Dataset.objects.select_for_update().filter(status=objSubmited).order_by('dat_submitted').first()
+			dataset_oldest = Dataset.objects.select_for_update().filter(status=objSubmited,bol_ready_to_process=True).order_by('dat_submitted').first()
 			
 			if not dataset_oldest:
 				return None
@@ -64,7 +64,7 @@ class SchedulerSmallJobFirst(Scheduler):
 		used_feature_small_job = UsedFeature.objects.annotate(Max('feature_time_to_extract')).order_by('-feature_time_to_extract')[0]
 		
 		with transaction.atomic():
-			dataset_small_job = Dataset.objects.select_for_update().filter(feature_set=used_feature_small_job.feature_set).order_by('dat_submitted')[0]
+			dataset_small_job = Dataset.objects.select_for_update().filter(feature_set=used_feature_small_job.feature_set,bol_ready_to_process=True).order_by('dat_submitted')[0]
 			dataset_small_job.status= Status.objects.get_enum(StatusEnum.PROCESSING)
 			dataset_small_job.start_dat_processing=timezone.now()
 			dataset_small_job.save()

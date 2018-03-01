@@ -125,8 +125,9 @@ class FeatureSet(models.Model):
     '''
     nam_feature_set = models.CharField(max_length=50)
     dsc_feature_set = models.CharField(max_length=255, blank=True, null=True)
-
-    language = models.ForeignKey(Language, models.PROTECT)
+    bol_is_public = models.BooleanField(default=False)
+    
+    language = models.ForeignKey(Language, models.PROTECT)  
     user = models.ForeignKey(User, models.PROTECT)
 
 
@@ -268,6 +269,9 @@ class UsedFeatureManager(models.Manager):
                 if(arg.nam_argument == "name"):
                     mapFeaturesGroup[objUsed.feature_set_id].append(arg.val_argument)
         return mapFeaturesGroup
+    
+     
+         
 class UsedFeature(models.Model):
     '''
     Created on 13 de ago de 2017
@@ -283,7 +287,28 @@ class UsedFeature(models.Model):
     feature_visibility = models.ForeignKey(FeatureVisibility,models.PROTECT)
     text_format = models.ForeignKey(Format,models.PROTECT)
     objects = UsedFeatureManager()
-
+    
+    def get_features_with_params(self):
+        
+        arrConfigParamsFeat = []
+        isConfigurable = False
+        objFeature = self.get_feature_instance()
+        for argValParam in self.usedfeatureargval_set.values("id","nam_argument","val_argument","type_argument","is_configurable"):
+            if(argValParam['is_configurable']):
+                arrConfigParamsFeat.append(argValParam)
+                isConfigurable = True
+            
+        print("Parametros do "+objFeature.name+":"+str(arrConfigParamsFeat))
+        return {"used_feature_id":self.id,
+                 "name":objFeature.name,
+                 "description":objFeature.description,
+                 "reference":objFeature.reference,
+                 "is_configurable":isConfigurable,
+                 "ord_feature":self.ord_feature,
+                 "arr_param":arrConfigParamsFeat,
+                 "str_arr_param":objFeature.get_params_str()
+                  }
+                
     def get_feature_instance(self):
         FeatureClass = self.feature.get_feature_class()
         param = {

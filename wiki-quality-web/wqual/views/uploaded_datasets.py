@@ -6,27 +6,40 @@ Views relacionadas a upload dos datasets
 '''
 from _io import BytesIO
 from datetime import datetime
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.forms.utils import ErrorList
-from django.http import HttpResponse, request
-from django.urls.base import reverse
-from django.views.generic.base import View
-from django.views.generic.edit import CreateView, DeleteView
 import json
 import lzma
 import os
 import uuid
 import zipfile
 
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.forms.utils import ErrorList
+from django.http import HttpResponse
+from django.http import HttpResponse, request
+from django.urls.base import reverse
+from django.urls.base import reverse
+from django.views.generic.base import View
+from django.views.generic.base import View
+from django.views.generic.edit import CreateView, DeleteView
+from django.views.generic.edit import CreateView, DeleteView
+
 from wqual.models import Dataset
 from wqual.models.exceptions import FileSizeException, FileCompressionException
 from wqual.models.featureset_config import FeatureSet
 from wqual.models.uploaded_datasets import  Status, StatusEnum, DocumentText, \
     Document, DocumentResult
+from django.http.response import HttpResponseNotFound
 
 
 class DatasetDownloadView(LoginRequiredMixin, View):
     def get(self, request, dataset_id,format):
+        objDataset = None
+        try:
+            objDataset = Dataset.objects.get( id=dataset_id)
+            if(objDataset.user != self.request.user):
+                return HttpResponseNotFound()
+        except Dataset.DoesNotExist:
+            return HttpResponseNotFound()
         
         txt_file_name = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))+"/tmp/"+str(uuid.uuid1())
         #print(txt_file_name)
@@ -36,7 +49,7 @@ class DatasetDownloadView(LoginRequiredMixin, View):
         with open(txt_file_name+"."+format, "w") as f:
             if(format=="json"):
                 f.write("{\n")
-                f.write("\t\"feature_descriptions\":"+Dataset.objects.get(id=dataset_id).dsc_result_header+",\n")
+                f.write("\t\"feature_descriptions\":"+objDataset.dsc_result_header+",\n")
                 f.write("\t\"data\": [")
                 for document in Document.objects.all().filter(dataset_id=dataset_id):
                     strResult = "{\"docname\":" + document.nam_file
@@ -52,7 +65,7 @@ class DatasetDownloadView(LoginRequiredMixin, View):
                 #print header
                 f.write("doc_name")
                 i=0
-                print("FEATUS: "+str(dictArrFeatures))
+                #print("FEATUS: "+str(dictArrFeatures))
                 while(str(i) in dictArrFeatures):
                     f.write(","+dictArrFeatures[str(i)]['name'])
                     i = i+1
@@ -148,7 +161,30 @@ class DatasetCreateView(LoginRequiredMixin, CreateView):
             "feature_set" : "Feature Set Dataset"
         }
         
-             
+class DatasetCreateFromSharedFeaturesetView(DatasetCreateView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        objFeatureSet = None
+        try: 
+            objFeatureSet = FeatureSet.objects.get(bol_is_public=True,
+                                                  user__username=self.kwargs["user"],
+                                                  nam_feature_set=self.kwargs["nam_feature_set"])
+        #check if the feature set exists
+        except FeatureSet.DoesNotExist:
+            context['feature_set_to_use'] = "NOT_FOUND"
+            return context
+        
+        arr_features = []
+        for objUsedFeature in objFeatureSet.usedfeature_set.all():
+            arr_features.append(objUsedFeature.get_features_with_params())
+        context['feature_set_to_use'] = {"nam_feature_set":objFeatureSet.nam_feature_set,
+                                         "dsc_feature_set":objFeatureSet.dsc_feature_set,
+                                         "language":objFeatureSet.language,
+                                         "arr_features":arr_features
+                                         }
+        return context    
+                 
+
 class DatasetDelete(LoginRequiredMixin, DeleteView):
         '''
         Created on 7 dez de 2017

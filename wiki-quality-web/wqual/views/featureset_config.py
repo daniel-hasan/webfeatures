@@ -58,7 +58,7 @@ class FeatureSetInsert(LoginRequiredMixin, CreateView):
     @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
     Lista todos os conjunto de features criados.
     '''
-    fields=["nam_feature_set","dsc_feature_set", "language"]
+    fields=["nam_feature_set","dsc_feature_set", "language","bol_is_public"]
 #    initial = { 'language': Language.objects.get(name=LanguageEnum.en.name) }
     
     model = FeatureSet
@@ -79,7 +79,8 @@ class FeatureSetInsert(LoginRequiredMixin, CreateView):
         labels = {
             "nam_feature_set" : "Name Feature Set",
             "dsc_feature_set" : "Description Feature Set",
-            "language" : "Language"
+            "language" : "Language",
+            "bol_is_public" : "Bol is Public"
         } 
 
 class FeatureSetInsertAJAX(View):
@@ -97,7 +98,7 @@ class FeatureSetEdit(LoginRequiredMixin, UpdateView):
     @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
     Lista todos os conjunto de features criados.
     '''
-    fields=["nam_feature_set","dsc_feature_set", "language"]
+    fields=["nam_feature_set","dsc_feature_set", "language","bol_is_public"]
     form_validator = FormValidation()
     model = FeatureSet
 
