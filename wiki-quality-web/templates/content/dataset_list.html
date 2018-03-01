@@ -5,14 +5,11 @@
 {% block content %}
 	<section class="dataset-section">
 		<h1>Extract features</h1>
-		<label id="informations-modal">i</label>
-		<div id="modal"></div>
 		<div class="dataset-error-container"></div>
 		<form enctype="multipart/form-data" method="post" class="form">
 			{% csrf_token %}
 			<div class="form-group">
-				<span class="dataset-file-name">Upload a compressed file</span><!--
-			 --><label class="dataset-file" for="dataset-file-input" name="file_dataset">Upload</label>
+				<span class="dataset-file-name">Upload a compressed file</span>
 				<input id="dataset-file-input" name="file_dataset" type="file">
 			</div>
 			{% for field in form %}
@@ -20,7 +17,7 @@
 					{% ifequal field.label "Format" %}
 						<span>Dataset format:</span>
 					{% endifequal %}
-				
+
 					{% ifequal field.label "Feature set" %}
 						<span>Feature set to extract:</span>
 					{% endifequal %}
@@ -41,9 +38,7 @@
     			<th>Name</th>
     			<th>Status</th>
     			<th>Submitted date</th>
-    			<th>Valid until</th>
     			<th>Feature Set</th>
-    			<th>Text Format</th>
     			<th>Download</th>
     		</tr>
     	</thead>
@@ -51,16 +46,10 @@
 			{% for dataset in dataset_list|dictsortreversed:"dat_submitted" %}
    				<tr>
     				<td>{{ dataset.nam_dataset }}</td>
-    				<td>{{ dataset.status.name}}</td>
+    				<td>{{ dataset.status.value}}</td>
     				<td>{{ dataset.dat_submitted|date:"d M. Y" }}</td>
-    				{% if dataset.dat_valid_until == None  %}
-    					<td></td>
-    				{% else %}
-  	  					<td>{{ dataset.dat_valid_until }}</td>
-  	  				{% endif %}
     				<td>{{ dataset.feature_set }}</td>
-    				<td>{{ dataset.format.name }}</td>
-    				{% ifequal dataset.status.name "COMPLETED" %}
+    				{% ifequal dataset.status.name "COMPLETE" %}
 						<td><a href="{% url "download_result" dataset.id "json" %}">json</a> <a href="{% url "download_result" dataset.id "xls" %}">xls</a></td>
 					{% else %}
 						<td></td>
@@ -71,7 +60,7 @@
          					<button class="btn btn-danger" id="delete">Delete</button>
          				</form>
 					</td>
-					
+
     			</tr>
 				{% empty %}
 				<tr>
@@ -89,18 +78,18 @@
 	<script src="{% static "js/modal_dataset.js" %}"></script>
 	<!-- <script type="text/javascript">
 		let mapFeatHTMLperFeatSet = {1: ["feature HTML1"], 2: ["feature HTML2"], 3: ["feature HTML3"]};
-		
+
 		//Obtém o único botão do tipo submit da página.
 		let submit_button = document.querySelector('.submit_button');
-		
-		//Ao clicar no botão, 
+
+		//Ao clicar no botão,
 		submit_button.addEventListener('click', function() {
 			{% for id_featset, arr_feat_names in map_feathtml.items %}
 			console.log({{id_featset}});
 			console.log({{arr_feat_names}});
 				let ArrayFeatNames = Object.getPrototypeOf({{ arr_feat_names }});
 				console.log(ArrayFeatNames);
-				//Se o id do feature set for igual a 1 (text_plain), 
+				//Se o id do feature set for igual a 1 (text_plain),
 				{% for nam_feature in arr_feat_names %} {
 					//{% ifequal id_featset 1 %}
 						console.log({{ nam_feature }});
