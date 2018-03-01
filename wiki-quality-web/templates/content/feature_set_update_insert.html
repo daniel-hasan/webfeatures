@@ -58,24 +58,25 @@
 </div>
     
   <div id="alertSaveFeature">
-  	<p>Do you want to save your changes?</p>
+  	<p></p>
   </div>
   
   <!-- form create/update via ajax --> 
   <script>
   		let href_button_clicked = "";
-
-		
   		
   		$("#updateFeatureForm").change(function() {
 		   $("#updateFeatureForm").data("changed",true);
 		});
+		
+	{% if object.id %}
 			
   		$( "#configureFeatureSet" ).click(function() {
 			href_button_clicked = "";
 			$(this).removeAttr( "href" );
 	  		if ($("#updateFeatureForm").data("changed")) {
 	  			href_button_clicked = "{% url "feature_set_list"%}";
+	 			$("#alertSaveFeature").append('<p>Do you want to save your changes?</p>');
 	 			$( "#alertSaveFeature" ).dialog( "open" );
 	 		} else {
 	 			$( "#configureFeatureSet" ).attr("href","{% url "feature_set_list"%}");
@@ -87,6 +88,7 @@
 	 		$(this).removeAttr( "href" );
 	  	if ($("#updateFeatureForm").data("changed")) {
 	 			href_button_clicked = "{% url "extract_features" %}";
+	 			$("#alertSaveFeature").append('<p>Do you want to save your changes?</p>');
 	 			$( "#alertSaveFeature" ).dialog( "open" );
 	 		} else {
 	 			$( "#analyseTexts" ).attr("href","{% url "extract_features" %}");
@@ -98,12 +100,17 @@
 			$(this).removeAttr( "href" );
 	  		if ($("#updateFeatureForm").data("changed")) {
 	  			href_button_clicked = "{% url "publications" %}";
+	 			$("#alertSaveFeature").append('<p>Do you want to save your changes?</p>');	
 	 			$( "#alertSaveFeature" ).dialog( "open" );
 	 		} else {
 	 			$( "#publications" ).attr("href","{% url "publications"%}");
 	 		}
   		});
   		
+  	{% endif %}	
+  		
+  		let boolSave = false;
+		  		
   		$( function() {
 	         $("#alertSaveFeature").dialog({
 			    autoOpen: false,
@@ -116,6 +123,7 @@
 			          	salveData();
 			          	window.location.href = href_button_clicked;
 			          	$( this ).dialog( "close" );
+			        
 			          },
 			        
 			        "No": function() {
@@ -128,10 +136,12 @@
 		
 		$( "#FeaturesSets" ).click(function() {
 			if ($("#updateFeatureForm").data("changed")) {
-				salveData();
+				if(!boolSave){
+					salveData();
+				}
 	 		} 
   		});
-		
+  		
 		function salveData(){
 			let idNamFeaturesSet = "{{object.nam_feature_set}}";
 		  	let arrElementsFeatureSet = [];
@@ -145,8 +155,8 @@
 				updateFeatureSet(arrElementsFeatureSet);
 				
 				{% else %}
-	  		
-	  			createFeatureSet(arrCreateElementsFeatureSet);
+				createFeatureSet(arrCreateElementsFeatureSet);
+	  			boolSave = true;	  		
 	  			
 	  		{% endif %}	
 		}
@@ -164,10 +174,6 @@
 				  success: function(response) {
 				  		let name_feature = response.arrCreateFeatureSet;
 				  		gUsedFeaturesNames = {};
-				  		/*let scriptInsetFeature = document.querySelector('#scriptInsertFeature');
-				  		let str_url = "{% url "usedFeatures.js"  name_feature.nam_feature_set%}" + name_feature.nam_feature_set;
-				  		scriptInsetFeature.src = str_url;
-				  		window.location.href =  "/featureSetConfig/" + name_feature.nam_feature_set;*/
 				  },
 				  error: function(xhr,status,error){
 				  		alert("An error occured when trying to save the new configurations:\n"+error);
