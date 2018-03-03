@@ -42,7 +42,11 @@ class StructureFeatureFactory(FeatureFactory):
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.HTML, 
                                          FeatureTimePerDocumentEnum.MILLISECONDS,["h1"]),
+<<<<<<< HEAD
                        TagCountFeature("Subsection count", "Count the number of subsections (i.e. HTML h1 tags) in the text", "", 
+=======
+                       TagCountFeature("Subsection Count", "Count the number of subsections (i.e. HTML h2 tags) in the text", "", 
+>>>>>>> hot-fix-hasan-004
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.HTML, 
                                          FeatureTimePerDocumentEnum.MILLISECONDS,["h2"]),
@@ -108,6 +112,11 @@ class StructureFeatureFactory(FeatureFactory):
                                           FormatEnum.HTML, 
                                           FeatureTimePerDocumentEnum.MILLISECONDS,1
                                           ),
+                       AverageSectionSize("Mean subsection size","The ratio between the section size (in characters) and the section count","",
+                                          FeatureVisibilityEnum.public, 
+                                          FormatEnum.HTML, 
+                                          FeatureTimePerDocumentEnum.MILLISECONDS,2
+                                          ),
                        LargestSectionSize("Largest section size","The size (in characters) of the largest section.","",
                                           FeatureVisibilityEnum.public, 
                                           FormatEnum.HTML, 
@@ -123,7 +132,12 @@ class StructureFeatureFactory(FeatureFactory):
                                           FormatEnum.HTML, 
                                           FeatureTimePerDocumentEnum.MILLISECONDS,1
                                           ),
-                       
+                       TagCountFeature("Images count","Number of images (considering the 'img' HTML tag)","",
+                                          FeatureVisibilityEnum.public, 
+                                          FormatEnum.HTML, 
+                                          FeatureTimePerDocumentEnum.MILLISECONDS,
+                                          intPropotionalTo=Proportional.CHAR_COUNT.value,setTagsToCount=["img"]
+                                          ),
                         TagCountFeature("Images per length","Number of images (considering the 'img' HTML tag) per length (in characters)","",
                                           FeatureVisibilityEnum.public, 
                                           FormatEnum.HTML, 
@@ -131,6 +145,12 @@ class StructureFeatureFactory(FeatureFactory):
                                           intPropotionalTo=Proportional.CHAR_COUNT.value,setTagsToCount=["img"]
                                           ),
                         TagCountFeature("Images per section","The ratio between the number of links (considering the  'img' HTML tag) and the section count","",
+                                          FeatureVisibilityEnum.public, 
+                                          FormatEnum.HTML, 
+                                          FeatureTimePerDocumentEnum.MILLISECONDS,
+                                          intPropotionalTo=Proportional.SECTION_COUNT.value,setTagsToCount=["img"]
+                                          ),                       
+                        TagCountFeature("Images per subsection","The ratio between the number of links (considering the  'img' HTML tag) and the subsection count","",
                                           FeatureVisibilityEnum.public, 
                                           FormatEnum.HTML, 
                                           FeatureTimePerDocumentEnum.MILLISECONDS,

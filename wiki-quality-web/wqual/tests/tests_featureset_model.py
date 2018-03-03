@@ -246,8 +246,8 @@ class TestUsedFeatures(TestCase):
         for name,objFeature in dict_feat_per_id.items():
             arrFeatNames.append(name)
             arrParamPerFeature.append(len(objFeature.arr_configurable_param))
-        print("Number of feats: "+str(len(arrFeatNames)))
-        print("Feat names: "+str(arrFeatNames))
+        #print("Number of feats: "+str(len(arrFeatNames)))
+        #print("Feat names: "+str(arrFeatNames))
         
         
         str_url = reverse("insert_used_features",kwargs={"nam_feature_set":objFeatureSet.nam_feature_set})
