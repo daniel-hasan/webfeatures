@@ -1,3 +1,21 @@
+.invisible{
+	display:none;
+}
+.infobox{
+	padding: .7em .7em;
+	font-size: 8pt;
+	text-align:justify;
+	background-color:#f6f6fd;	
+}
+.ui-state-highlight{
+	padding: .7em .7em;"
+	font-size: 8pt;
+	text-align:justify;
+}
+.ui-state-highlight a{
+	color: blue;
+	text-decoration: underline;
+}
 .navbar-default {
   background-color: #005ca3;
   border-color: #5b5b5b;

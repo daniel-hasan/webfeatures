@@ -293,7 +293,7 @@ class UsedFeature(models.Model):
         arrConfigParamsFeat = []
         isConfigurable = False
         objFeature = self.get_feature_instance()
-        for argValParam in self.usedfeatureargval_set.values("id","nam_argument","val_argument","type_argument","is_configurable"):
+        for argValParam in self.usedfeatureargval_set.values("id","dsc_argument","nam_argument","val_argument","type_argument","is_configurable"):
             if(argValParam['is_configurable']):
                 arrConfigParamsFeat.append(argValParam)
                 isConfigurable = True

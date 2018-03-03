@@ -242,6 +242,7 @@ class WordsFeatureFactory(FeatureFactory):
         
         return objFeature
     def getWrittenName(self,classe):
+        pass  
     def createBeginningOfSentenceFeatureObject(self,classe):
         listWords = self.getClasseGramatical(classe)
         if(listWords == None):
@@ -249,8 +250,8 @@ class WordsFeatureFactory(FeatureFactory):
         #n = ""
         #if(classe[0] in set(["a","e","i","o","u"])):
         #    n = "n"
-
-        objFeature = BeginningSentenceWordCountFeature("Sentences starting with a"+n+" "+str(classe).title(),"Count the number of phrases that starts with a"+n+" "+ classe +" in the text. ",
+  
+        objFeature = BeginningSentenceWordCountFeature("Sentences starting with "+str(classe).title(),"Count the number of phrases that starts with "+ classe +" in the text. ",
                         "Based on file style.c from the file diction-1.11.tar.gz in http://ftp.gnu.org/gnu/diction/",
                         FeatureVisibilityEnum.public, 
                         FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,listWords,False)

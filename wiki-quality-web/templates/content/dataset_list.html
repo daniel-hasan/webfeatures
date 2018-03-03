@@ -11,12 +11,11 @@
 		<div id="modal"></div>
 		<div id="feature_set_list">
 			{% if feature_set_to_use and feature_set_to_use != "NOT_FOUND" %}
-				<h2>Feature set: {{ feature_set_to_use.nam_feature_set }} </h2>
 				
-				<p><label>Language: </label><span>feature_set_to_use.language.value</span></p>
+				<p><label>Language: </label><span> {{ feature_set_to_use.language.value }}</span></p>
 				
-				<label>Description/Parameters: </label>
-				<p id="feature-description">
+				<label>Description: </label>
+				<span id="feature-description">
 					{{ feature_set_to_use.dsc_feature_set }}
 				</p>
 				
@@ -24,7 +23,7 @@
 					<table>
 					<tr>
 						<th>Feature Name</th>
-						<th>Description</th>
+						<th>Description/Parameters</th>
 					</tr>
 						{% for feature in feature_set_to_use.arr_features|dictsort:"ord_feature" %}
 						<tr>
@@ -36,7 +35,7 @@
 															<label>Parameters:</label> 
 															<p class="paramTableDataset"> 
 															{% for param in feature.arr_param %} 
-																<span><strong>{{ param.nam_argument }}</strong>: {{ param.val_argument }}</span> 
+																<span><strong>{{ param.nam_argument }}</strong>: {{ param.val_argument }}</span>{% if param.dsc_argument %} <span title="{{ param.dsc_argument }}" class="ui-icon ui-icon-help"></span> {% endif %}
 															{% endfor %}
 															</p> 
 														{% endif %}
@@ -67,11 +66,20 @@
 					{% endifequal %}
 					<div>
 						{% if field.label == "Feature set" and feature_set_to_use and feature_set_to_use != "NOT_FOUND"%}
+						
 						  <button id="show_featureset" class="right-ico ui-button ui-widget ui-corner-all">
 						    <span class="btnTextLeft">{{ feature_set_to_use.nam_feature_set }}</span><span class="ui-icon ui-icon-search"></span> 
 						  </button>
+						  <input type="hidden" value="{{feature_set_to_use.id}}" id="{{field.id_for_label}}" name="{{field.html_name}}">
+						  <input type="hidden" value="{{feature_set_to_use.nam_feature_set}}" id="featureSetName" name="featureSetName">
 							
 							
+							{% if not feature_set_to_use.bol_is_public %}
+								<p class="ui-state-highlight ui-corner-all">
+								<span class="ui-icon ui-icon-info"></span>
+									This feature set is not public. If you want to share this feature set, please check this option <a href="{% url "feature_set_edit" feature_set_to_use.nam_feature_set%}">in the configuration of this feature set</a>.
+								</p>
+							{% endif %}
 						{% else %}
 							{% if field.label == "Feature set" and feature_set_to_use == "NOT_FOUND" %}
 								<script>
@@ -124,7 +132,11 @@
 						<td></td>
 					{% endifequal %}
 					<td>
-						<form action="{% url "dataset_delete" dataset.id %}" method="post">
+						{% if feature_set_to_use %}
+							<form action="{% url "dataset_delete_public" feature_set_to_use.username feature_set_to_use.nam_feature_set dataset.id%}" method="post">
+						{% else %}
+							<form action="{% url "dataset_delete" dataset.id %}" method="post">
+						{% endif %}
 							{% csrf_token %}
          					<button class="btn btn-danger" id="delete">Delete</button>
          				</form>

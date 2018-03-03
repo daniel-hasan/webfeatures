@@ -87,8 +87,8 @@ class FeatureSetInsertAJAX(View):
     
     def post(self, request):
         arrCreateFeatureSet =  json.loads(request.POST["arrCreateElementsFeatureSet"])[0]            
-        FeatureSet.objects.create(user=self.request.user,nam_feature_set = arrCreateFeatureSet["nam_feature_set"], dsc_feature_set = arrCreateFeatureSet["dsc_feature_set"], language = Language.objects.get(id=int(arrCreateFeatureSet["language"])))
-      
+        objFeatureSet = FeatureSet.objects.create(user=self.request.user,nam_feature_set = arrCreateFeatureSet["nam_feature_set"], dsc_feature_set = arrCreateFeatureSet["dsc_feature_set"], language = Language.objects.get(id=int(arrCreateFeatureSet["language"])))
+        arrCreateFeatureSet["nam_feature_set"] = objFeatureSet.nam_feature_set;
         return JsonResponse({"arrCreateFeatureSet" : arrCreateFeatureSet })
       
 class FeatureSetEdit(LoginRequiredMixin, UpdateView):
@@ -241,7 +241,7 @@ class ListFeaturesView(LoginRequiredMixin, View):
                                "description":objFeature.description,
                                "reference":objFeature.reference})
             
-            
+        arr_features = sorted(arr_features, key=lambda x: x['name']) 
         return JsonResponse({"arrFeatures":arr_features})
     
 
@@ -262,7 +262,7 @@ class InsertUsedFeaturesView(LoginRequiredMixin, View):
         dict_feat_per_id = ListFeaturesView.get_features(objFeatureSet.language.name)
         
         #obtain the objects to insert by name
-        arrObjFeaturesToInsert = [dict_feat_per_id[nam_feature] for nam_feature in arrStrFeatureNames]
+        arrObjFeaturesToInsert = [dict_feat_per_id[nam_feature] for nam_feature in arrStrFeatureNames if nam_feature in dict_feat_per_id]
         
         
         #inser them
@@ -274,7 +274,7 @@ class InsertUsedFeaturesView(LoginRequiredMixin, View):
             objUsedFeature = dictInsertedFeat[objFeature.name]
             arrConfigParamsFeat = []
             isConfigurable = False
-            for argValParam in objUsedFeature.usedfeatureargval_set.values("id","nam_argument","val_argument","type_argument","is_configurable"):
+            for argValParam in objUsedFeature.usedfeatureargval_set.values("id","nam_argument","dsc_argument","val_argument","type_argument","is_configurable"):
                 if(argValParam['is_configurable']):
                     arrConfigParamsFeat.append(argValParam)
                     isConfigurable = True
@@ -283,6 +283,7 @@ class InsertUsedFeaturesView(LoginRequiredMixin, View):
                                         "name":objFeature.name,
                                         "description":objFeature.description+"\n"+objFeature.reference,
                                         "is_configurable":isConfigurable,
+                                        
                                         "ord_feature":objUsedFeature.ord_feature,
                                         "arr_param":arrConfigParamsFeat
                                         })

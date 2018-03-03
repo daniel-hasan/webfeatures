@@ -11,6 +11,9 @@ $(document).ready(function() {
 	});
 	$("#show_featureset").click( function() {
 						$("#feature_set_list").dialog("open");
+						let strDialogName = $("#featureSetName")[0].value;
+						
+						$("#feature_set_list").dialog('option', 'title', "Feature set: "+strDialogName);
 						return false;
 					}
 					);

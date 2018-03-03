@@ -37,6 +37,7 @@ urlpatterns = [
     
     
     url(r'^extractFeatures/(?P<id_dataset>.*)/delete/$', views.DatasetDelete.as_view(), name='dataset_delete'),
+    url(r'^p/(?P<user>.*)/(?P<nam_feature_set>.*)/(?P<id_dataset>.*)/delete/$', views.DatasetDeletePublic.as_view(), name='dataset_delete_public'),
     url(r'^extractFeatures$', views.DatasetCreateView.as_view(), name='extract_features'),
     url(r'^p/(?P<user>.*)/(?P<nam_feature_set>.*)$', views.DatasetCreateFromSharedFeaturesetView.as_view(), name='public_extract_features'),
     url(r'^extractFeatures/downloadResult/(?P<dataset_id>[0-9]+).(?P<format>(xls|json))$', views.DatasetDownloadView.as_view(), name="download_result"),
