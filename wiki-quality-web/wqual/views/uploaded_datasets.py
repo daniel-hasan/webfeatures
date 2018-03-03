@@ -45,10 +45,10 @@ class DatasetDownloadView(LoginRequiredMixin, View):
         with open(txt_file_name+"."+format, "w") as f:
             if(format=="json"):
                 f.write("{\n")
-                f.write("\t\"feature_descriptions\":"+objDataset.dsc_result_header+",\n")
+                f.write("\t\"feature_descriptions\":"+json.dumps(objDataset.dsc_result_header)+",\n")
                 f.write("\t\"data\": [")
                 for document in Document.objects.all().filter(dataset_id=dataset_id):
-                    strResult = "{\"docname\":" + document.nam_file
+                    strResult = "{\"docname\":'" + document.nam_file+"'"
                     for doc_result in DocumentResult.objects.filter(document = document):
                         arrFeatures = ["\""+str(i)+"\":"+str(feat) for i,feat in enumerate(json.loads(doc_result.dsc_result)) ]
                         strResult = strResult + ", \"result\": {" +(",".join(arrFeatures))+"}"
@@ -57,7 +57,7 @@ class DatasetDownloadView(LoginRequiredMixin, View):
                 f.write("\t]\n")
                 f.write("}")
             else:
-                dictArrFeatures = json.loads(Dataset.objects.get(id=dataset_id).dsc_result_header)
+                dictArrFeatures = Dataset.objects.get(id=dataset_id).dsc_result_header
                 #print header
                 f.write("doc_name")
                 i=0
@@ -71,7 +71,7 @@ class DatasetDownloadView(LoginRequiredMixin, View):
                 for document in Document.objects.all().filter(dataset_id=dataset_id):
                     strResult = document.nam_file+","
                     for doc_result in DocumentResult.objects.filter(document = document):
-                        arrFeatures = [str(feat) for i,feat in enumerate(json.loads(doc_result.dsc_result)) ]
+                        arrFeatures = [str(feat) for i,feat in enumerate(doc_result.dsc_result) ]
                         strResult = strResult +(",".join(arrFeatures))
                     strResult = strResult + "\n"
                     f.write(strResult)    
@@ -138,7 +138,7 @@ class DatasetCreateView(LoginRequiredMixin, CreateView):
             
         except FileSizeException as e:
             errors = form._errors.setdefault("feature_set", ErrorList())
-            errors.append(u"Action not allowed. Each file in the compressed file need to have at most 10MB")           
+            errors.append(u"Action not allowed. Each file in the compressed file need to have at most 4MB")           
             return super(CreateView, self).form_invalid(form)
         
         except FileCompressionException as e:

@@ -229,7 +229,7 @@ class UsedFeatureManager(models.Manager):
                     if(name in arrParamsConstrutor):
                         if name not in ("visibility","text_format","feature_time_per_document"):
                             paramType,paramValue = self.from_obj_to_bd_type_val(value)
-                            dictParamsToInsert[name]= {"nam_argument": name,
+                            dictParamsToInsert[name]= {"nam_att_argument":name,
                                                        "val_argument": str(paramValue),
                                                        "type_argument":paramType,
                                                        "is_configurable": False}
@@ -241,13 +241,14 @@ class UsedFeatureManager(models.Manager):
                         if objConfigurableFeature.param_type == ParamTypeEnum.choices:
                             pass
                             #TODO: se for choices, armazenas as alternativas (arr_choices) no campo apropriado
-
+                        dictArgValToInsert["nam_argument"] = objConfigurableFeature.name,
                         dictArgValToInsert["val_argument"] = objConfigurableFeature.default_value
                         dictArgValToInsert["dsc_argument"] = objConfigurableFeature.description
                         dictArgValToInsert["is_configurable"] = True
 
                 for dictArgValToInsert in dictParamsToInsert.values():
-                    UsedFeatureArgVal.objects.create(    nam_argument = dictArgValToInsert["nam_argument"],
+                    UsedFeatureArgVal.objects.create(    nam_argument = dictArgValToInsert["nam_argument"] if "nam_argument" in dictArgValToInsert else "",
+                                                         nam_att_argument= dictArgValToInsert["nam_att_argument"],
                                                                  val_argument = dictArgValToInsert["val_argument"],
                                                                  dsc_argument = dictArgValToInsert["dsc_argument"] if "dsc_argument" in dictArgValToInsert else "",
                                                                  type_argument=dictArgValToInsert["type_argument"],
@@ -318,18 +319,18 @@ class UsedFeature(models.Model):
         }
         for arg in self.usedfeatureargval_set.all():
             if arg.type_argument == UsedFeatureArgVal.INT:
-                param[arg.nam_argument] = int(arg.val_argument)
+                param[arg.nam_att_argument] = int(arg.val_argument)
                 #print("nome " + arg.nam_argument + "Valor " + arg.val_argument)
             elif arg.type_argument == UsedFeatureArgVal.FLOAT:
-                param[arg.nam_argument] = float(arg.val_argument)
+                param[arg.nam_att_argument] = float(arg.val_argument)
             elif arg.type_argument == UsedFeatureArgVal.BOOLEAN:
-                param[arg.nam_argument] = bool(arg.val_argument)
+                param[arg.nam_att_argument] = bool(arg.val_argument)
             elif arg.type_argument == UsedFeatureArgVal.JSON:
-                param[arg.nam_argument] = json.loads(arg.val_argument)
+                param[arg.nam_att_argument] = json.loads(arg.val_argument)
             elif arg.type_argument == UsedFeatureArgVal.JSON_SET:
-                param[arg.nam_argument] = set(json.loads(arg.val_argument))
+                param[arg.nam_att_argument] = set(json.loads(arg.val_argument))
             else:
-                param[arg.nam_argument] = arg.val_argument
+                param[arg.nam_att_argument] = arg.val_argument
 
         obj = FeatureClass(**param)
         return obj
@@ -351,7 +352,8 @@ class UsedFeatureArgVal(models.Model):
     JSON_SET = "json_set"
     TIPOS_DADOS = [(INT,"int"),(FLOAT,"float"),(STRING,"string"),(BOOLEAN,"boolean"),(JSON,"json"),(JSON_SET,"json_set")]
 
-    nam_argument = models.CharField(max_length=45)
+    nam_argument = models.CharField(max_length=45,blank=True, null=True)
+    nam_att_argument = models.CharField(max_length=60)
     val_argument = models.CharField(max_length=5000)
     dsc_argument = models.CharField(max_length=255, blank=True, null=True)
     json_choices = JSONField(blank=True, null=True)

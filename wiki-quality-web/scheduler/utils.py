@@ -32,14 +32,14 @@ class DatasetModelDocWriter(FeatureDocumentsWriter):
                 dictFeatureHeader[i] = {"name":objFeature.name,
                                         "params":objFeature.get_params_str()}
                 
-            self.dataset.dsc_result_header = json.dumps(dictFeatureHeader)  
+            self.dataset.dsc_result_header = dictFeatureHeader  
             self.dataset.save()
             
         def write_document(self,document, arr_feats_used, arr_feats_result):  
             self.document = document
             self.arr_feats_used = arr_feats_used
             
-            self.arr_feats_result = json.dumps(arr_feats_result)
+            self.arr_feats_result = arr_feats_result
                                     
             doc=DocumentDataset.objects.get(id = self.document.int_doc_id)
             doc_result = DocumentResult(dsc_result=self.arr_feats_result, document=doc)

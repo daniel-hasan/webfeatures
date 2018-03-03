@@ -25,8 +25,8 @@ $(document).ready(function() {
 		
 		//Se o tamanho (em bytes) do arquivo for maior que o limite, adiciona uma mensagem e impede o submit.
 		if($("#dataset-file-input").val() != '') {
-			if($("#dataset-file-input")[0].files[0].size > 10*(1024*1024)) {
-				$('.dataset-error-container').append("<p>The file's size is higher than the limit (10 MB).</p>");
+			if($("#dataset-file-input")[0].files[0].size > 50*(1024*1024)) {
+				$('.dataset-error-container').append("<p>The file's size is higher than the limit (50 MB).</p>");
 				ImpedirSubmit = 'V';
 			}
 		}

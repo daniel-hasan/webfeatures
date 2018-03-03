@@ -1,6 +1,6 @@
 {% extends "../bases/base_main_site.html" %}
 {% load static %}
-{% block title %}Analyse Texts{% endblock %}
+{% block title %}Extract Features from Texts{% endblock %}
 
 {% block extractFeaturesMenuAttr %}class="itemSelecionado"{% endblock %} 
 
@@ -8,8 +8,20 @@
 	<section class="dataset-section">
 		<h1>Extract features</h1>
 		<label id="informations-modal">i</label>
-		<div id="modal"></div>
-		<div id="feature_set_list">
+		<div id="modal" class="invisible">
+			<p>	
+				<label>Input: </label> <span>Compressed ".zip" file with as many text file (plain text or HTML) you want.
+				Please send then using the UTF8 codification.</span> 
+			</p>
+			<p>
+				<label>Zip file size limit: </label><span> 40 MB</span> 
+			</p>
+			<p>
+				<label>Text file size limit: </label><span> 4 MB</span> 
+			</p>		
+		</div>
+		
+		<div id="feature_set_list" class="invisible">
 			{% if feature_set_to_use and feature_set_to_use != "NOT_FOUND" %}
 				
 				<p><label>Language: </label><span> {{ feature_set_to_use.language.value }}</span></p>
@@ -47,58 +59,66 @@
 				</section>
 			{% endif %}
 		</div>
-		<div class="dataset-error-container"></div>
-		<form enctype="multipart/form-data" method="post" class="form">
-			{% csrf_token %}
-			<div class="form-group">
-				<span class="dataset-file-name">Upload a compressed file</span><!--
-			 --><label class="dataset-file" for="dataset-file-input" name="file_dataset">Upload</label>
-				<input id="dataset-file-input" name="file_dataset" type="file">
-			</div>
-			{% for field in form %}
+		{% if not form.fields.feature_set.queryset and not feature_set_to_use %}
+			<p class="ui-state-highlight ui-corner-all">
+				<span class="ui-icon ui-icon-info"></span>
+				You need first to <a href="{% url "feature_set_list"%}">create a feature set</a> in order to extract features from it. 
+			</p>
+		
+		{%else%}
+			<div class="dataset-error-container error-container"></div>
+			<form enctype="multipart/form-data" method="post" class="form">
+				{% csrf_token %}
 				<div class="form-group">
-					{% ifequal field.label "Format" %}
-						<span>Dataset format:</span>
-					{% endifequal %}
-				
-					{% ifequal field.label "Feature set" %}
-						<span>Feature set to extract:</span>
-					{% endifequal %}
-					<div>
-						{% if field.label == "Feature set" and feature_set_to_use and feature_set_to_use != "NOT_FOUND"%}
-						
-						  <button id="show_featureset" class="right-ico ui-button ui-widget ui-corner-all">
-						    <span class="btnTextLeft">{{ feature_set_to_use.nam_feature_set }}</span><span class="ui-icon ui-icon-search"></span> 
-						  </button>
-						  <input type="hidden" value="{{feature_set_to_use.id}}" id="{{field.id_for_label}}" name="{{field.html_name}}">
-						  <input type="hidden" value="{{feature_set_to_use.nam_feature_set}}" id="featureSetName" name="featureSetName">
-							
-							
-							{% if not feature_set_to_use.bol_is_public %}
-								<p class="ui-state-highlight ui-corner-all">
-								<span class="ui-icon ui-icon-info"></span>
-									This feature set is not public. If you want to share this feature set, please check this option <a href="{% url "feature_set_edit" feature_set_to_use.nam_feature_set%}">in the configuration of this feature set</a>.
-								</p>
-							{% endif %}
-						{% else %}
-							{% if field.label == "Feature set" and feature_set_to_use == "NOT_FOUND" %}
-								<script>
-										$(function(){
-											alert("Error: could not found the requested feature set");
-										}
-										);
-								</script>
-							{% endif %}
-							{{ field }}
-						{% endif %}
-					</div>
-					{% for error in field.errors %}
-						<p class="erro-p">{{ error }}</p>
-					{% endfor %}
+					<span class="dataset-file-name">Upload a compressed file</span><!--
+				 --><label class="dataset-file" for="dataset-file-input" name="file_dataset">Upload</label>
+					<input id="dataset-file-input" name="file_dataset" type="file">
 				</div>
-			{% endfor %}
-			<button type="submit" class="ui-button ui-widget ui-corner-all">Submit</button>
-		</form>
+				{% for field in form %}
+					<div class="form-group">
+						{% ifequal field.label "Format" %}
+							<span>Dataset format:</span>
+						{% endifequal %}
+					
+						{% ifequal field.label "Feature set" %}
+							<span>Feature set to extract:</span>
+						{% endifequal %}
+						<div>
+							{% if field.label == "Feature set" and feature_set_to_use and feature_set_to_use != "NOT_FOUND"%}
+							
+							  <button id="show_featureset" class="right-ico ui-button ui-widget ui-corner-all">
+							    <span class="btnTextLeft">{{ feature_set_to_use.nam_feature_set }}</span><span class="ui-icon ui-icon-search"></span> 
+							  </button>
+							  <input type="hidden" value="{{feature_set_to_use.id}}" id="{{field.id_for_label}}" name="{{field.html_name}}">
+							  <input type="hidden" value="{{feature_set_to_use.nam_feature_set}}" id="featureSetName" name="featureSetName">
+								
+								
+								{% if not feature_set_to_use.bol_is_public %}
+									<p class="ui-state-highlight ui-corner-all">
+									<span class="ui-icon ui-icon-info"></span>
+										This feature set is not public. If you want to share this feature set, please check this option <a href="{% url "feature_set_edit" feature_set_to_use.nam_feature_set%}">in the configuration of this feature set</a>.
+									</p>
+								{% endif %}
+							{% else %}
+								{% if field.label == "Feature set" and feature_set_to_use == "NOT_FOUND" %}
+									<script>
+											$(function(){
+												alert("Error: could not found the requested feature set");
+											}
+											);
+									</script>
+								{% endif %}
+								{{ field }}
+							{% endif %}
+						</div>
+						{% for error in field.errors %}
+							<p class="erro-p">{{ error }}</p>
+						{% endfor %}
+					</div>
+				{% endfor %}
+				<button type="submit" class="ui-button ui-widget ui-corner-all">Submit</button>
+			</form>
+		{% endif %}
 	</section>
 	<table class="dataset-list">
 		<thead>

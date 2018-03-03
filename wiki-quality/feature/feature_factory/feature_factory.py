@@ -38,11 +38,11 @@ class StructureFeatureFactory(FeatureFactory):
     
     def createFeatures(self):
         
-        arrFeatures = [TagCountFeature("Section Count", "Count the number of sections (i.e. HTML h1 tags) in the text", "", 
+        arrFeatures = [TagCountFeature("Section count", "Count the number of sections (i.e. HTML h1 tags) in the text", "", 
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.HTML, 
                                          FeatureTimePerDocumentEnum.MILLISECONDS,["h1"]),
-                       TagCountFeature("Subsection Count", "Count the number of subsections (i.e. HTML h1 tags) in the text", "", 
+                       TagCountFeature("Subsection count", "Count the number of subsections (i.e. HTML h1 tags) in the text", "", 
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.HTML, 
                                          FeatureTimePerDocumentEnum.MILLISECONDS,["h2"]),
@@ -50,40 +50,40 @@ class StructureFeatureFactory(FeatureFactory):
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.HTML, 
                                          FeatureTimePerDocumentEnum.MILLISECONDS,bolExternal=True,bolInternalSameDomain=False,bolInternalSamePage=False),
-                       LinkCountFeature("Complete URL link Count per section", "Ration between number of  HTML 'a' tag in which the 'href' attribute refers to a complete URL and the number of sections.", "", 
+                       LinkCountFeature("Complete URL link count per section", "Ration between number of  HTML 'a' tag in which the 'href' attribute refers to a complete URL and the number of sections.", "", 
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.HTML, 
                                          FeatureTimePerDocumentEnum.MILLISECONDS,
                                          bolExternal=True,bolInternalSameDomain=False,bolInternalSamePage=False,
                                          intPropotionalTo=Proportional.SECTION_COUNT.value
                                         ),
-                       LinkCountFeature("Complete URL link Count per length", "Ration between number of  HTML 'a' tag in which the 'href' attribute refers to a complete URL and the number of characters in text.", "", 
+                       LinkCountFeature("Complete URL link count per length", "Ration between number of  HTML 'a' tag in which the 'href' attribute refers to a complete URL and the number of characters in text.", "", 
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.HTML, 
                                          FeatureTimePerDocumentEnum.MILLISECONDS,
                                          bolExternal=True,bolInternalSameDomain=False,bolInternalSamePage=False,
                                          intPropotionalTo=Proportional.CHAR_COUNT.value
                                         ),                       
-                       LinkCountFeature("Relative URL link Count", "Count the number of  HTML 'a' tag in which the 'href' attribute refers to a relative URL (e.g. /images/cow.gif).", "", 
+                       LinkCountFeature("Relative URL link count", "Count the number of  HTML 'a' tag in which the 'href' attribute refers to a relative URL (e.g. /images/cow.gif).", "", 
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.HTML, 
                                          FeatureTimePerDocumentEnum.MILLISECONDS,
                                          bolExternal=False,bolInternalSameDomain=True,bolInternalSamePage=False),
-                       LinkCountFeature("Relative URL link Count per section", "Ratio between the number of  HTML 'a' tag in which the 'href' attribute refers to a relative URL (e.g. /images/cow.gif) and the number of sections.", "", 
+                       LinkCountFeature("Relative URL link count per section", "Ratio between the number of  HTML 'a' tag in which the 'href' attribute refers to a relative URL (e.g. /images/cow.gif) and the number of sections.", "", 
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.HTML, 
                                          FeatureTimePerDocumentEnum.MILLISECONDS,
                                          bolExternal=False,bolInternalSameDomain=True,bolInternalSamePage=False,
                                          intPropotionalTo=Proportional.SECTION_COUNT.value
                                          ),     
-                       LinkCountFeature("Relative URL link Count per length", "Ratio between the number of  HTML 'a' tag in which the 'href' attribute refers to a relative URL (e.g. /images/cow.gif) and the number of characters in text.", "", 
+                       LinkCountFeature("Relative URL link count per length", "Ratio between the number of  HTML 'a' tag in which the 'href' attribute refers to a relative URL (e.g. /images/cow.gif) and the number of characters in text.", "", 
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.HTML, 
                                          FeatureTimePerDocumentEnum.MILLISECONDS,
                                          bolExternal=False,bolInternalSameDomain=True,bolInternalSamePage=False,
                                          intPropotionalTo=Proportional.CHAR_COUNT.value
                                          ),                                           
-                       LinkCountFeature("Same page link Count", "Count the number of links which refers to some other elements in the same page."+
+                       LinkCountFeature("Same page link count", "Count the number of links which refers to some other elements in the same page."+
                                                                 " In other words, count the number of HTML 'a' tags in which 'href' points to some html page id."+
                                                                 " For example, the value '#mainDiv' point to an element in the page which the id is 'mainDiv'.", "", 
                                          FeatureVisibilityEnum.public, 
@@ -160,7 +160,7 @@ class StyleFeatureFactory(FeatureFactory):
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.text_plain, FeatureTimePerDocumentEnum.MILLISECONDS)
         
-        featLargeSentenceCount = LargeSentenceCountFeature("Large Phrase Count","Count the number of phrases larger than a specified threshold.",
+        featLargeSentenceCount = LargeSentenceCountFeature("Large phrase count","Count the number of phrases larger than a specified threshold.",
                                                            "reference",FeatureVisibilityEnum.public,FormatEnum.text_plain,
                                                            FeatureTimePerDocumentEnum.MICROSECONDS,10)
         
@@ -187,17 +187,17 @@ class StyleFeatureFactory(FeatureFactory):
                                                                       "The phrase need to have (at most) this length less than the average in order to be considered a short sentence. The length is calculated using the number of words.",
                                                                       2,ParamTypeEnum.int))        
                 
-        featParagraphCount = ParagraphCountFeature("Paragraph Count","Count the number of paragraph at text",
+        featParagraphCount = ParagraphCountFeature("Paragraph count","Count the number of paragraph at text",
                                          "",
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.text_plain, FeatureTimePerDocumentEnum.MILLISECONDS)
         
-        featLargeParagraphCount = LargeParagraphCountFeature("Large Paragraph Count","The number of paragraphs larger than a specified threshold",
+        featLargeParagraphCount = LargeParagraphCountFeature("Large paragraph count","The number of paragraphs larger than a specified threshold",
                                          "",
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.text_plain, FeatureTimePerDocumentEnum.MILLISECONDS,16)
         
-        featLargeParagraphCount.addConfigurableParam(ConfigurableParam("size","Paragraph Size",
+        featLargeParagraphCount.addConfigurableParam(ConfigurableParam("size","Paragraph size",
                                                                       "The paragraph need to have (at least) this length (in words) in order to be considered a large paragraph.",
                                                                       16,ParamTypeEnum.int))
         

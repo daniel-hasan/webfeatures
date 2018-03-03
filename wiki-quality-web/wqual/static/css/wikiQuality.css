@@ -220,6 +220,13 @@ h1 {
 	background-color: rgb(255, 250, 250);
 }
 
+.error-container {
+	border: 2px solid rgb(255, 220, 220);
+	margin-top: 20px;
+	margin-bottom: 15px;
+	padding: 5px;
+	background-color: rgb(255, 250, 250);
+}
 #dataset-file-input {
 	opacity: 0;
 	position: absolute;
@@ -422,6 +429,9 @@ fieldset[disabled] .dataset-file-name {
 
 /***************************** Fim feature_set_update_insert.html e used_features.js*****************************/
 
+
+
+
 /***************************** Início home.html e signup.html *****************************/
 .home_sign-up_section {
 	display: block;
@@ -473,10 +483,16 @@ fieldset[disabled] .dataset-file-name {
 	width: 100%;
 }
 
+
 .help_text {
 	font-size: 14px;
 }
 /***************************** Fim do home.html e signup.html *****************************/
+#info-home{
+	width:40%;
+	margin: 0 auto;
+	font-size: 12pt;
+}
 /***************************** Início do home.html *****************************/
 .link_sign-up:hover {
 	background-color: rgb(35, 61, 255);
@@ -558,9 +574,8 @@ fieldset[disabled] .dataset-file-name {
 }
 
 /***************************** Fim do signup.html *****************************/
-/***************************** Início do footer *****************************/
-footer img {
-	position: fixed;
+/***************************** Início do footer e esqueleto da pagina *****************************/
+/*footer img {
 	bottom: 0px;
 	left: 175px;
 	height: 50px;
@@ -568,5 +583,24 @@ footer img {
 
 footer .piim-lab{
 	left: 50px;
+}*/
+footer .piim-lab{
+	position:relative;
+	right:0px;
+	
 }
+footer img{
+	margin-right:30px;
+}
+main{
+	min-height: 300px;
+}
+footer{
+	clear:both;
+	text-align:center;
+	background-color: #dcdcef;
+	padding:20px 5px;
+	margin-top:20px;
+}
+
 /***************************** Fim do footer *****************************/

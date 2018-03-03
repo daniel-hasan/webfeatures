@@ -8,11 +8,12 @@ extração de features.
 As tabelas relacionadas com o resultado desta extração também está neste arquivo.
 '''
 from distutils.archive_util import zipfile
-from django.contrib.auth.models import User, Group
-from django.db import models, transaction
 from enum import IntEnum, Enum
 import lzma
 
+from django.contrib.auth.models import User, Group
+from django.db import models, transaction
+from django_mysql.models import JSONField
 from utils.uncompress_data import CompressedFile
 from wqual.models import FeatureSet, Format
 from wqual.models.exceptions import FileSizeException, FileCompressionException
@@ -44,7 +45,11 @@ class Status(EnumModel):
     def get_enum_class():
         return StatusEnum
     
-   
+class Machine(models.Model):
+    nam_machine = models.CharField(max_length=45)
+    ip_field = models.GenericIPAddressField()
+    
+    
 class Dataset(models.Model):
     '''
     Created on 14 de ago de 2017
@@ -59,14 +64,17 @@ class Dataset(models.Model):
     bol_ready_to_process = models.BooleanField(default=False)
     start_dat_processing = models.DateTimeField(blank=True, null=True)
     end_dat_processing = models.DateTimeField(blank=True, null=True)
+    dsc_result_header = JSONField(blank=True, null=True)
     
-    format = models.ForeignKey(Format, models.PROTECT)    
+    num_proc_extractor = models.IntegerField(blank=True, null=True)
+    machine_extractor = models.ForeignKey(Machine, models.PROTECT,blank=True, null=True)    
+    
+    format = models.ForeignKey(Format, models.PROTECT)
+    
     feature_set = models.ForeignKey(FeatureSet, models.PROTECT)
     user = models.ForeignKey(User, models.PROTECT)
     status = models.ForeignKey(Status, models.PROTECT)
-    dsc_result_header = models.TextField(blank=True, null=True)
-    
-    num_proc_extractor = models.IntegerField(blank=True, null=True)
+
          
     def save_compressed_file(self,comp_file_pointer):
             #validacao ser feita aqui
@@ -79,7 +87,7 @@ class Dataset(models.Model):
             #save
             objFileZip = CompressedFile.get_compressed_file(comp_file_pointer)
             
-            int_limit = 3*(1024*1024)
+            int_limit = 4*(1024*1024)
             for name,int_file_size in objFileZip.get_each_file_size():
                 if int_file_size > int_limit:
                     raise FileSizeException("The file "+name+" exceeds the limit of "+str(int_limit)+" bytes")
@@ -151,7 +159,7 @@ class DocumentResult(models.Model):
     @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
     Resultado obtido do documento
     '''
-    dsc_result = models.TextField()
+    dsc_result = JSONField()
     document = models.OneToOneField(Document, models.CASCADE)
 
    
