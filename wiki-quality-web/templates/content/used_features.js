@@ -16,11 +16,11 @@ let arr_isConfigurable_form = new Array();
 
 		is_configurable = false;
 	
-		{% ifequal arg.nam_argument "name" %}
+		{% ifequal arg.nam_att_argument "name" %}
 			featName = "{{ arg.val_argument }}";		
 		{% endifequal %}
 	
-		{% ifequal arg.nam_argument "description" %}
+		{% ifequal arg.nam_att_argument "description" %}
 			featDescription = "{{ arg.val_argument }}";		
 		{% endifequal %}
 				
@@ -28,7 +28,7 @@ let arr_isConfigurable_form = new Array();
 		is_configurable = {% if arg.is_configurable %}true{%else %}false{% endif %};
 		
 		if( is_configurable){
-			arrParams.push({ 'id' : "{{ arg.id }}" , 'nam_argument' : "{{ arg.nam_argument }}",'val_argument' : "{{ arg.val_argument }}", 'desc_argument' : "{{ arg.desc_argument }}", 'type_argument' : "{{ arg.type_argument }}"});
+			arrParams.push({ 'id' : "{{ arg.id }}" , 'nam_argument' : "{{ arg.nam_argument }}",'val_argument' : "{{ arg.val_argument }}", 'dsc_argument' : "{{ arg.dsc_argument }}", 'type_argument' : "{{ arg.type_argument }}"});
 		}		
 					
 	{% endfor %}

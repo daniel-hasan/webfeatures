@@ -2,8 +2,7 @@
 
 {% block content %}
 		<section class="home_sign-up_section">
-			{% if not user.is_authenticated %}
-				<h1 class="home_sign-up_h1">WikiQuality</h1>
+				<h1 class="home_sign-up_h1">WebFeatures</h1>
 				<form method="post">
 					{% csrf_token %}
 					<section class="signup-error-container">
@@ -37,7 +36,7 @@
 					{% endfor %}
 					<button class="login_sign-up_button" type="submit">Sign up</button>
 				</form>
-			{% endif %}
+			
 		</section>
 		<script type="text/javascript">
 			//Obtém todos os inputs da página.

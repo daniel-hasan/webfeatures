@@ -1,4 +1,4 @@
-$( function() {
+/*$( function() {
 	var dialog;
 		  
 	    dialog = $( "#add-form" ).dialog({
@@ -15,4 +15,5 @@ $( function() {
 	    $( "#Cancel" ).button().on( "click", function() {
 	      dialog.dialog( "close" );
 	    });
-} );
+
+} );*/

@@ -84,42 +84,42 @@ class TestUsedFeatures(TestCase):
         #search if the att in bd were in objFeatureObjPython
         set_configurable_params_bd = set([])
         for argVal in objFeatureBD.usedfeatureargval_set.all():
-            if(argVal.nam_argument=="name"):
+            if(argVal.nam_att_argument=="name"):
                 self.assertEqual(argVal.val_argument, objFeatureObjPython.name, "The "+argVal.nam_argument+" attr is not equal")
                 
-            elif(argVal.nam_argument=="description"):
+            elif(argVal.nam_att_argument=="description"):
                 self.assertEqual(argVal.val_argument, objFeatureObjPython.description, "The "+argVal.nam_argument+" attr is not equal")
             
-            elif(argVal.nam_argument=="reference"):
+            elif(argVal.nam_att_argument=="reference"):
                 self.assertEqual(argVal.val_argument, objFeatureObjPython.reference, "The "+argVal.nam_argument+" attr is not equal")
             else:
                 
                 #if is a configurable param, search in objFeatureObjPython.arr_configurable_param    
                 if(argVal.is_configurable):
-                    set_configurable_params_bd.add(argVal.nam_argument)
+                    set_configurable_params_bd.add(argVal.nam_att_argument)
                     bolEncontrou = False
                     for confParam in objFeatureObjPython.arr_configurable_param:
-                        if(confParam.att_name == argVal.nam_argument):
+                        if(confParam.att_name == argVal.nam_att_argument):
                             bolEncontrou = True
                             self.assertEqual(argVal.val_argument, str(UsedFeature.objects.from_obj_to_bd_type_val(confParam.default_value)[1]), "The "+argVal.nam_argument+" attr was not set to default")
-                    self.assertTrue(bolEncontrou, "Could not find the configurable parameter: "+argVal.nam_argument+" in the feature object")
+                    self.assertTrue(bolEncontrou, "Could not find the configurable parameter: "+argVal.nam_argument+" ("+argVal.nam_att_argument+") in the feature object")
                     
                 #search the att in att args
                 for namAtt in arrParamsConstrutor:
                     valAtt = objFeatureObjPython.__dict__[namAtt]
-                    if(namAtt == argVal.nam_argument):
+                    if(namAtt == argVal.nam_att_argument):
                             bolEncontrou = True
                             if(not argVal.is_configurable):
-                                self.assertEqual(argVal.val_argument, str(UsedFeature.objects.from_obj_to_bd_type_val(valAtt)[1]), "The "+argVal.nam_argument+" attr was not igual in the object")
-                            self.assertTrue(bolEncontrou, "Could not find the parameter: "+argVal.nam_argument+" in the feature object")
+                                self.assertEqual(argVal.val_argument, str(UsedFeature.objects.from_obj_to_bd_type_val(valAtt)[1]), "The "+argVal.nam_att_argument+" attr was not igual in the object")
+                            self.assertTrue(bolEncontrou, "Could not find the parameter: "+argVal.nam_att_argument+" in the feature object")
         #search if all the construtor atts are in BD (expept visibility,text_format and feature_time_per_document)
         for strConstructorParam in arrParamsConstrutor:
             if(strConstructorParam not in ("visibility","text_format","feature_time_per_document")):
                 bolEncontrou = False
                 for argVal in objFeatureBD.usedfeatureargval_set.all():
-                    if(argVal.nam_argument == strConstructorParam):
+                    if(argVal.nam_att_argument == strConstructorParam):
                         bolEncontrou = True
-                self.assertTrue(bolEncontrou, "Could not find the parameter: "+argVal.nam_argument+" in the database")
+                self.assertTrue(bolEncontrou, "Could not find the parameter: "+argVal.nam_att_argument+" in the database")
         set_configurable_params =set([confParam.att_name for confParam in objFeatureObjPython.arr_configurable_param])
         self.assertSetEqual(set_configurable_params_bd, set_configurable_params, "The set of configurable params in BD and in the object are diferent in the feature '"+objFeatureObjPython.name+"'")
         #print("Set in BD:"+str(set_configurable_params_bd)+" set in obj: "+str(set_configurable_params))
@@ -160,7 +160,7 @@ class TestUsedFeatures(TestCase):
         arrUsedFeatures = UsedFeature.objects.filter(feature_set=self.feature_set.pk)
         self.assertEqual(len(arrUsedFeatures), 2, "Deveria ter 2 features e tem "+str(len(arrUsedFeatures)))
         for objFeatureUsed in arrUsedFeatures:
-            str_nameFeature = objFeatureUsed.usedfeatureargval_set.get(nam_argument="name").val_argument
+            str_nameFeature = objFeatureUsed.usedfeatureargval_set.get(nam_att_argument="name").val_argument
                 
             msg="The feature should be Preposition Count or Largest Phrase Count but it was "+str_nameFeature
             self.assertTrue(str_nameFeature == "Preposition Count" or str_nameFeature == "Largest Phrase Count", msg)
@@ -246,8 +246,8 @@ class TestUsedFeatures(TestCase):
         for name,objFeature in dict_feat_per_id.items():
             arrFeatNames.append(name)
             arrParamPerFeature.append(len(objFeature.arr_configurable_param))
-        print("Number of feats: "+str(len(arrFeatNames)))
-        print("Feat names: "+str(arrFeatNames))
+        #print("Number of feats: "+str(len(arrFeatNames)))
+        #print("Feat names: "+str(arrFeatNames))
         
         
         str_url = reverse("insert_used_features",kwargs={"nam_feature_set":objFeatureSet.nam_feature_set})

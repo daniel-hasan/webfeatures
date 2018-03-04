@@ -26,7 +26,7 @@ class EnumQuerySet(models.query.QuerySet):
     def has_enum_in_db(self,enum):
         '''
         Created on 15 de ago de 2017
-        
+
         @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
         Busca se um determinado enum existe no BD pelo seu nome.
         '''
@@ -35,41 +35,41 @@ class EnumQuerySet(models.query.QuerySet):
     def get_enum(self,enum):
         '''
         Created on 16 de nov de 2017
-        
+
         @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
-        Retorna o enum 
+        Retorna o enum
         '''
         return self.get(name=enum.name)
-    
+
     def insert_enum(self,enum):
         '''
         Created on 15 de ago de 2017
-        
+
         @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
         Insere um enum no BD
         '''
         ModelClass = self.model
         obj = ModelClass(name=enum.name,value=enum.value)
-        obj.save()        
-         
+        obj.save()
+
     def update_enums_in_db(self):
         '''
         Created on 15 de ago de 2017
-        
+
         @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
-        
-        Efetua a atualização dos valores/nomes dos enuns se necessário: 
+
+        Efetua a atualização dos valores/nomes dos enuns se necessário:
         -> Deleta as instancias que estão no BD mas nao no Enum correspondente
         -> Atualiza as instancias que estão no BD mas com valores (value) diferentes
         -> Insere as instancias que estão no Enum e não no BD
         '''
         EnumClass = self.model.get_enum_class()
-    
-        #deleta as instancias que estao no bd e não estao no enum 
+
+        #deleta as instancias que estao no bd e não estao no enum
         for obj in self.all():
             if not isinstance(obj,EnumModel):
                 raise TypeError("A class"+str(self.model)+" deve ser subclasse de EnumModel para poder usar o EnumManager!")
-            
+
             if not obj.has_instance_in_enum():
                 try:
                     obj.delete()
@@ -83,7 +83,7 @@ class EnumQuerySet(models.query.QuerySet):
                 if(enum_obj.value != obj.value):
                     obj.value = enum_obj.value
                     obj.save()
-                    
+
         #insere no bd as instancias que estao no enum e nao estao no bd
         for enum in EnumClass:
             if not self.has_enum_in_db(enum):
@@ -93,21 +93,21 @@ class EnumQuerySet(models.query.QuerySet):
 class EnumManager(models.Manager.from_queryset(EnumQuerySet)):
     '''
     Created on 15 de ago de 2017
-    
+
     @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
-    Classe com os métodos para atualizar automaticamente um Enum em um banco de dados. 
+    Classe com os métodos para atualizar automaticamente um Enum em um banco de dados.
     '''
 
-    
 
-    
-  
-    
-    
+
+
+
+
+
     def get_queryset(self):
         '''
         Created on 15 de ago de 2017
-        
+
         @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
         Atualiza os enuns sempre quando esta classe de modelo
         for consultada pela primeira vez durante a execução do app.
@@ -116,14 +116,14 @@ class EnumManager(models.Manager.from_queryset(EnumQuerySet)):
             #print("Prima vez")
             setattr(self.model,"__first_query", False)
             self.update_enums_in_db()
-            
-            
+
+
         return super(EnumManager, self).get_queryset()
-        
+
 class EnumModel(models.Model):
     '''
     Created on 15 de ago de 2017
-    
+
     @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
     Classe abstrata que armazena os atributos comuns aos Enuns (name e value).
     O enum é representado por uma igualdade x = y em que x é o nome e y é o valor.
@@ -131,66 +131,67 @@ class EnumModel(models.Model):
     name = models.CharField(max_length=45,unique=True)
     value = models.CharField(max_length=255)
     objects = EnumManager()
-    
+
     @staticmethod
     @abstractstaticmethod
     def get_enum_class():
         '''
         Created on 15 de ago de 2017
-        
+
         @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
-        
+
         Método que obtem a classe correspondente deste Enum
         '''
-        raise NotImplementedError("Voce deve criar uma subclasse e a mesma deve sobrepor este método")   
-    
+        raise NotImplementedError("Voce deve criar uma subclasse e a mesma deve sobrepor este método")
 
-    
-    
+
+
+
     def has_instance_in_enum(self):
         '''
         Created on 15 de ago de 2017
-        
+
         @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
-        
+
         Verifica se a instancia atual existe no enum
         '''
         try:
             self.get_enum()
         except KeyError:
             return False
-        
+
         return True
-       
+
     def get_enum(self):
         '''
         Created on 15 de ago de 2017
-        
+
         @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
-        
+
         Obtem o Enum
         '''
         EnumClass = self.get_enum_class()
         return EnumClass[self.name]
-    
+
     def __str__(self):
         return "{name}: {value} ({id})".format(id=self.id,name=self.name,value=self.value)
-    
+
     class Meta:
         abstract = True
 
 class Format(EnumModel):
     '''
     Created on 14 de ago de 2017
-    
+
     @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
     Armazena os possíveis formatos de arquivo (de acordo com o enum FormatEnum)
     '''
-    
+
     @staticmethod
     def get_enum_class():
         return FormatEnum
-    
+    def __str__(self):
+        return self.value
 class CompressedTextField(models.TextField):
 
     #__metaclass__ = models.SubfieldBase  #Algumas versoes django nao aceitam Subfield
@@ -200,9 +201,9 @@ class CompressedTextField(models.TextField):
             return value
 
         try:
-            return lzma.compress(bytes(value, 'utf-8')) 
-           
-        except Exception:     
+            return lzma.compress(bytes(value, 'utf-8'))
+
+        except Exception:
             return value
 
     def get_prep_value(self, value):
@@ -223,4 +224,3 @@ class CompressedTextField(models.TextField):
                 if len(tmp) > len(value):
                     return value
                 return tmp
- 
