@@ -22,7 +22,7 @@ def create_django():
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "wiki_quality_web.settings")
     #adiciona o projeto wiki-quality como dependente 
     sys.path.append(os.path.join(BASE_DIR,"wiki-quality"))
-    print("WIJIQUALITY: "+os.path.join(BASE_DIR,"wiki-quality"))
+    print("WIKIQUALITY: "+os.path.join(BASE_DIR,"wiki-quality"))
     django.setup()
         
 def run_scheduler():
