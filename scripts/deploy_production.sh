@@ -15,7 +15,7 @@ GRANT ALL ON wiki_quality.* TO 'wiki_quality'@'127.0.0.1';
 REVOKE CREATE DROP on wikiquality.* to 'wiki_quality'@'127.0.0.1';
 
 #Instalação do wsgi
-http://pythonclub.com.br/configurando-ambiente-django-com-apache-e-mod-wsgi.htmlsudo 
+http://pythonclub.com.br/configurando-ambiente-django-com-apache-e-mod-wsgi.html
 
 ln -s ../sites-available/wsgi_test wsgi_test
 
