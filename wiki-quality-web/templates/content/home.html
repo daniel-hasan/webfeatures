@@ -2,12 +2,36 @@
 {% load static %}
 
 {% block content %}
+		{% if not user.is_authenticated %}
+			<h1 class="home_sign-up_h1">WebFeatures</h1>
+		{% endif %}
+		<section id="info-home" class="infobox">
+		
+
+
+
+
+			<p>WebFeatures is a tool which extracts textual features from text/HTML documents.</p> 
+			{% if user.is_authenticated %}
+			<p>To use this software, you need first to <a href="{% url "feature_set_list"%}">Configure a feature set</a> in order to select the features you want.<p> 
+			<p>After that, you can upload text/HTML documents in a compressed zip file through the <a href="{% url "extract_features" %}">extract features menu</a>.</p> 
+			{% endif %}
+		</section>
 		<section class="home_sign-up_section">
 			{% if not user.is_authenticated %}
-				<h1 class="home_sign-up_h1">WikiQuality</h1>
+				<p>Please login to use the system.</p>
+				{% if form.non_field_errors %}
+					<div class="error-container">
+					
+					{% for error in form.non_field_errors %}
+						<p>{{ error }}</p>
+					{% endfor %}
+					</div>
+ 				{% endif %}
  				<form method="post">
  			 		{% csrf_token %}
- 			 		{% for field in form %}		 			
+ 			 		{% for field in form %}		 	
+	 			 				
  			 			{% ifequal field.label "Username" %}
  			 				<input class="login_sign-up_input" for="id_username" name="username" type="text" placeholder="Username">
  			 			{% endifequal %}
@@ -26,7 +50,7 @@
     				<button class="login_sign-up_button" type="submit">Log in</button>
     				<a class="link_sign-up" href="{% url 'signup' %}">Create an account</a>
  				</form>
- 			{% else %}
+
  			{% endif %}
  		</section>
  		<script>

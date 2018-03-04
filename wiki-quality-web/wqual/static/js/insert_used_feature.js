@@ -231,7 +231,10 @@ function insert_feature_is_configurable(arrParams, idDivForms, featureName, used
 		
 		let HTMLEl_temp_label = document.createElement('span');
 		let HTMLEl_temp_value_argument = document.createElement('input');
-				
+		let elDscArgument = document.createElement('p');
+		$(elDscArgument).addClass("infobox");
+		$(elDscArgument).addClass("ui-corner-all");
+		let bolHasDscArgument = false;
 		for(key in arrParams[foreignKey]){
 			
 			if(key == 'id'){
@@ -246,8 +249,11 @@ function insert_feature_is_configurable(arrParams, idDivForms, featureName, used
 				val_argument = arrParams[foreignKey][key];		
 			}
 			
-			if(key == 'desc_argument'){
-				HTMLEl_temp_value_argument.title = arrParams[foreignKey][key];		
+			if(key == 'dsc_argument'){
+				elDscArgument.innerHTML = arrParams[foreignKey][key];
+				if(arrParams[foreignKey][key].trim().length > 0){
+					bolHasDscArgument = true;
+				}		
 			}
 			
 			if(key == 'type_argument'){
@@ -288,6 +294,9 @@ function insert_feature_is_configurable(arrParams, idDivForms, featureName, used
 		HTMLEl_temp_label.setAttribute('class', 'labelForm');
 		
 		HTMLEl_temp_form.appendChild(HTMLEl_temp_label);
+		if(bolHasDscArgument){
+			HTMLEl_temp_form.appendChild(elDscArgument);
+		}
 		HTMLEl_temp_form.appendChild(HTMLEl_temp_value_argument);
 	}	
 		HTMLEl_temp_form.appendChild(HTMLEl_temp_space);

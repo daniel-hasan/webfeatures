@@ -38,52 +38,52 @@ class StructureFeatureFactory(FeatureFactory):
     
     def createFeatures(self):
         
-        arrFeatures = [TagCountFeature("Section Count", "Count the number of sections (i.e. HTML h1 tags) in the text", "", 
+        arrFeatures = [TagCountFeature("Section count", "Count the number of sections (i.e. HTML h1 tags) in the text", "", 
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.HTML, 
                                          FeatureTimePerDocumentEnum.MILLISECONDS,["h1"]),
-                       TagCountFeature("Subsection Count", "Count the number of subsections (i.e. HTML h1 tags) in the text", "", 
+                       TagCountFeature("Subsection count", "Count the number of subsections (i.e. HTML h1 tags) in the text", "", 
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.HTML, 
                                          FeatureTimePerDocumentEnum.MILLISECONDS,["h2"]),
-                       LinkCountFeature("Complete URL link Count", "Count the number of  HTML 'a' tag in which the 'href' attribute refers to a complete URL.", "", 
+                       LinkCountFeature("Complete URL link count", "Count the number of  HTML 'a' tag in which the 'href' attribute refers to a complete URL.", "", 
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.HTML, 
                                          FeatureTimePerDocumentEnum.MILLISECONDS,bolExternal=True,bolInternalSameDomain=False,bolInternalSamePage=False),
-                       LinkCountFeature("Complete URL link Count per section", "Ration between number of  HTML 'a' tag in which the 'href' attribute refers to a complete URL and the number of sections.", "", 
+                       LinkCountFeature("Complete URL link count per section", "Ration between number of  HTML 'a' tag in which the 'href' attribute refers to a complete URL and the number of sections.", "", 
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.HTML, 
                                          FeatureTimePerDocumentEnum.MILLISECONDS,
                                          bolExternal=True,bolInternalSameDomain=False,bolInternalSamePage=False,
                                          intPropotionalTo=Proportional.SECTION_COUNT.value
                                         ),
-                       LinkCountFeature("Complete URL link Count per length", "Ration between number of  HTML 'a' tag in which the 'href' attribute refers to a complete URL and the number of characters in text.", "", 
+                       LinkCountFeature("Complete URL link count per length", "Ration between number of  HTML 'a' tag in which the 'href' attribute refers to a complete URL and the number of characters in text.", "", 
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.HTML, 
                                          FeatureTimePerDocumentEnum.MILLISECONDS,
                                          bolExternal=True,bolInternalSameDomain=False,bolInternalSamePage=False,
                                          intPropotionalTo=Proportional.CHAR_COUNT.value
                                         ),                       
-                       LinkCountFeature("Relative URL link Count", "Count the number of  HTML 'a' tag in which the 'href' attribute refers to a relative URL (e.g. /images/cow.gif).", "", 
+                       LinkCountFeature("Relative URL link count", "Count the number of  HTML 'a' tag in which the 'href' attribute refers to a relative URL (e.g. /images/cow.gif).", "", 
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.HTML, 
                                          FeatureTimePerDocumentEnum.MILLISECONDS,
                                          bolExternal=False,bolInternalSameDomain=True,bolInternalSamePage=False),
-                       LinkCountFeature("Relative URL link Count per section", "Ratio between the number of  HTML 'a' tag in which the 'href' attribute refers to a relative URL (e.g. /images/cow.gif) and the number of sections.", "", 
+                       LinkCountFeature("Relative URL link count per section", "Ratio between the number of  HTML 'a' tag in which the 'href' attribute refers to a relative URL (e.g. /images/cow.gif) and the number of sections.", "", 
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.HTML, 
                                          FeatureTimePerDocumentEnum.MILLISECONDS,
                                          bolExternal=False,bolInternalSameDomain=True,bolInternalSamePage=False,
                                          intPropotionalTo=Proportional.SECTION_COUNT.value
                                          ),     
-                       LinkCountFeature("Relative URL link Count per length", "Ratio between the number of  HTML 'a' tag in which the 'href' attribute refers to a relative URL (e.g. /images/cow.gif) and the number of characters in text.", "", 
+                       LinkCountFeature("Relative URL link count per length", "Ratio between the number of  HTML 'a' tag in which the 'href' attribute refers to a relative URL (e.g. /images/cow.gif) and the number of characters in text.", "", 
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.HTML, 
                                          FeatureTimePerDocumentEnum.MILLISECONDS,
                                          bolExternal=False,bolInternalSameDomain=True,bolInternalSamePage=False,
                                          intPropotionalTo=Proportional.CHAR_COUNT.value
                                          ),                                           
-                       LinkCountFeature("Same page link Count", "Count the number of links which refers to some other elements in the same page."+
+                       LinkCountFeature("Same page link count", "Count the number of links which refers to some other elements in the same page."+
                                                                 " In other words, count the number of HTML 'a' tags in which 'href' points to some html page id."+
                                                                 " For example, the value '#mainDiv' point to an element in the page which the id is 'mainDiv'.", "", 
                                          FeatureVisibilityEnum.public, 
@@ -108,6 +108,11 @@ class StructureFeatureFactory(FeatureFactory):
                                           FormatEnum.HTML, 
                                           FeatureTimePerDocumentEnum.MILLISECONDS,1
                                           ),
+                       AverageSectionSize("Mean subsection size","The ratio between the section size (in characters) and the section count","",
+                                          FeatureVisibilityEnum.public, 
+                                          FormatEnum.HTML, 
+                                          FeatureTimePerDocumentEnum.MILLISECONDS,2
+                                          ),
                        LargestSectionSize("Largest section size","The size (in characters) of the largest section.","",
                                           FeatureVisibilityEnum.public, 
                                           FormatEnum.HTML, 
@@ -123,7 +128,12 @@ class StructureFeatureFactory(FeatureFactory):
                                           FormatEnum.HTML, 
                                           FeatureTimePerDocumentEnum.MILLISECONDS,1
                                           ),
-                       
+                       TagCountFeature("Images count","Number of images (considering the 'img' HTML tag)","",
+                                          FeatureVisibilityEnum.public, 
+                                          FormatEnum.HTML, 
+                                          FeatureTimePerDocumentEnum.MILLISECONDS,
+                                          intPropotionalTo=Proportional.CHAR_COUNT.value,setTagsToCount=["img"]
+                                          ),
                         TagCountFeature("Images per length","Number of images (considering the 'img' HTML tag) per length (in characters)","",
                                           FeatureVisibilityEnum.public, 
                                           FormatEnum.HTML, 
@@ -131,6 +141,12 @@ class StructureFeatureFactory(FeatureFactory):
                                           intPropotionalTo=Proportional.CHAR_COUNT.value,setTagsToCount=["img"]
                                           ),
                         TagCountFeature("Images per section","The ratio between the number of links (considering the  'img' HTML tag) and the section count","",
+                                          FeatureVisibilityEnum.public, 
+                                          FormatEnum.HTML, 
+                                          FeatureTimePerDocumentEnum.MILLISECONDS,
+                                          intPropotionalTo=Proportional.SECTION_COUNT.value,setTagsToCount=["img"]
+                                          ),                       
+                        TagCountFeature("Images per subsection","The ratio between the number of links (considering the  'img' HTML tag) and the subsection count","",
                                           FeatureVisibilityEnum.public, 
                                           FormatEnum.HTML, 
                                           FeatureTimePerDocumentEnum.MILLISECONDS,
@@ -160,7 +176,7 @@ class StyleFeatureFactory(FeatureFactory):
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.text_plain, FeatureTimePerDocumentEnum.MILLISECONDS)
         
-        featLargeSentenceCount = LargeSentenceCountFeature("Large Phrase Count","Count the number of phrases larger than a specified threshold.",
+        featLargeSentenceCount = LargeSentenceCountFeature("Large phrase count","Count the number of phrases larger than a specified threshold.",
                                                            "reference",FeatureVisibilityEnum.public,FormatEnum.text_plain,
                                                            FeatureTimePerDocumentEnum.MICROSECONDS,10)
         
@@ -187,17 +203,17 @@ class StyleFeatureFactory(FeatureFactory):
                                                                       "The phrase need to have (at most) this length less than the average in order to be considered a short sentence. The length is calculated using the number of words.",
                                                                       2,ParamTypeEnum.int))        
                 
-        featParagraphCount = ParagraphCountFeature("Paragraph Count","Count the number of paragraph at text",
+        featParagraphCount = ParagraphCountFeature("Paragraph count","Count the number of paragraph at text",
                                          "",
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.text_plain, FeatureTimePerDocumentEnum.MILLISECONDS)
         
-        featLargeParagraphCount = LargeParagraphCountFeature("Large Paragraph Count","The number of paragraphs larger than a specified threshold",
+        featLargeParagraphCount = LargeParagraphCountFeature("Large paragraph count","The number of paragraphs larger than a specified threshold",
                                          "",
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.text_plain, FeatureTimePerDocumentEnum.MILLISECONDS,16)
         
-        featLargeParagraphCount.addConfigurableParam(ConfigurableParam("size","Paragraph Size",
+        featLargeParagraphCount.addConfigurableParam(ConfigurableParam("size","Paragraph size",
                                                                       "The paragraph need to have (at least) this length (in words) in order to be considered a large paragraph.",
                                                                       16,ParamTypeEnum.int))
         
@@ -235,22 +251,35 @@ class WordsFeatureFactory(FeatureFactory):
         listWords = self.getClasseGramatical(classe)
         if(listWords == None):
             return None
-        objFeature = WordCountFeature(str(classe).title() + " Count","Count the number of "+ classe +" in the text.",
-                        "Based on file style.c from the file diction-1.11.tar.gz in http://ftp.gnu.org/gnu/diction/",
+        strClassName = self.getWrittenName(classe)
+        objFeature = WordCountFeature(strClassName[0].upper()+strClassName[1:]+ " count","Count the number of "+ strClassName +" in the text.",
+                        "Based on 'style.c' file from the Software Style and Diction 1.11 in http://ftp.gnu.org/gnu/diction/",
                         FeatureVisibilityEnum.public, 
                         FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,listWords,case_sensitive=False)
         
         return objFeature
-    
+    def getWrittenName(self,classe):
+        dictClassName =  {"auxiliaryVerbs":"auxiliary verbs",
+         "coordinatingConjunctions":"coordination conjunctions",
+         "correlativeConjunctions":"correlative conjunctions",
+         "indefinitePronouns":"indefinite pronouns",
+         "interrogativePronouns": "interrogative pronouns",
+         "relativePronouns":"relative pronoums",
+        "subordinatingConjunctions":"subordinating conjunctions",
+        "toBeVerbs":"to be verbs"}
+        if(classe in dictClassName):
+            return dictClassName[classe]
+        return classe  
     def createBeginningOfSentenceFeatureObject(self,classe):
         listWords = self.getClasseGramatical(classe)
         if(listWords == None):
             return None
-        n = ""
-        if(classe[0] in set(["a","e","i","o","u"])):
-            n = "n"
-        objFeature = BeginningSentenceWordCountFeature("Sentences starting with a"+n+" "+str(classe).title(),"Count the number of phrases that starts with a"+n+" "+ classe +" in the text. ",
-                        "Based on file style.c from the file diction-1.11.tar.gz in http://ftp.gnu.org/gnu/diction/",
+        #n = ""
+        #if(classe[0] in set(["a","e","i","o","u"])):
+        #    n = "n"
+        strClassName = self.getWrittenName(classe)
+        objFeature = BeginningSentenceWordCountFeature("Sentences starting with "+strClassName,"Count the number of phrases that starts with "+ strClassName +" in the text. ",
+                        "Based on 'style.c' file from the Software Style and Diction 1.11 in http://ftp.gnu.org/gnu/diction/",
                         FeatureVisibilityEnum.public, 
                         FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,listWords,False)
         
@@ -280,34 +309,48 @@ class ReadabilityFeatureFactory(FeatureFactory):
     def createFeatures(self):
         
         arrFeatures = []
-        
-        featARI = ARIFeature("ARI Readability Feature","Compute ARI metric",
-                  "Based on Daniel Hasan Dalip's PhD thesis", FeatureVisibilityEnum.public,
+        strReadabilityMetric = "Compute the {name} metric Based on 'style.c' file from the Software Style and Diction 1.11 in http://ftp.gnu.org/gnu/diction/."
+        strRadabilityRefence = "Metric proposed by {author} in the article {article}."
+        featARI = ARIFeature("ARI readability feature",
+                strReadabilityMetric.format(name="Automated Readability Index"),
+                  strRadabilityRefence.format(author="Smith E. A. and R. J. Senter",article="Automated readability index - Aerospace Medical Division (1967)"), 
+                  FeatureVisibilityEnum.public,
                   FormatEnum.text_plain, FeatureTimePerDocumentEnum.MILLISECONDS)
         
-        featColemanLiau = ColemanLiauFeature("Coleman-Liau Readability Feature","Compute Coleman-Liau metric",
-                            "Based on file style from the file diction-1.11.tar.gz in http://ftp.gnu.org/gnu/diction/"
-                             + " and based on Coleman, et al. article 'A computer readability formula designed for machine scoring' - Journal of Applied Psychology (1975)",FeatureVisibilityEnum.public,
+        featColemanLiau = ColemanLiauFeature("Coleman-Liau readability feature",
+                            strReadabilityMetric.format(name="Coleman-Liau metric"),
+                            strRadabilityRefence.format(author="Meri Coleman and T. L. Liau",article="'A computer readability formula designed for machine scoring' - Journal of Applied Psychology (1975)"),
+                            FeatureVisibilityEnum.public,
                             FormatEnum.text_plain, FeatureTimePerDocumentEnum.MILLISECONDS)
         
-        featFleschReadingEase = FleschReadingEaseFeature("Flesch Reading Ease Readability Feature","Compute Flesch Reading Ease metric",
-                            "Based on Daniel Hasan Dalip's PhD thesis", FeatureVisibilityEnum.public,
+        featFleschReadingEase = FleschReadingEaseFeature("Flesch Reading Ease Readability Feature",
+                             strReadabilityMetric.format(name="Flesch Reading Ease"),
+                             strRadabilityRefence.format(author="Flesch, R.",article="A New Readability Yardstick - Journal of Applied Psychology (1948)"), 
+                            FeatureVisibilityEnum.public,
                             FormatEnum.text_plain, FeatureTimePerDocumentEnum.MILLISECONDS)
                 
-        featFleschKincaid = FleschKincaidFeature("Flesch Kincaid Readability Feature","Compute Flesch Kincaid metric",
-                            "Based on Daniel Hasan Dalip's PhD thesis", FeatureVisibilityEnum.public,
+        featFleschKincaid = FleschKincaidFeature("Flesch Kincaid Readability Feature",
+                strReadabilityMetric.format(name="Flesch Kincaid"),
+                  strRadabilityRefence.format(author="Sandy Ressler",article="Perspectives on electronic publishing: standards, solutions, and more (1993)"), 
+                            FeatureVisibilityEnum.public,
                             FormatEnum.text_plain, FeatureTimePerDocumentEnum.MILLISECONDS)
         
-        featGunningFogIndex = GunningFogIndexFeature("Gunning Fog Index Readability Feature","Compute Gunning Fog Index metric",
-                            "Based on Daniel Hasan Dalip's PhD thesis", FeatureVisibilityEnum.public,
+        featGunningFogIndex = GunningFogIndexFeature("Gunning Fog Index readability feature",
+                strReadabilityMetric.format(name="Gunning Fog"),
+                  strRadabilityRefence.format(author="R. Gunning",article="The Technique of Clear Writing (1952)"),  
+                            FeatureVisibilityEnum.public,
                             FormatEnum.text_plain, FeatureTimePerDocumentEnum.MILLISECONDS)
         
-        featLasbarhetsindex = LasbarhetsindexFeature("Lasbarhetsindex Readability Feature","Compute Lasbarhetsindex metric",
-                            "Based on Daniel Hasan Dalip's PhD thesis", FeatureVisibilityEnum.public,
+        featLasbarhetsindex = LasbarhetsindexFeature("Lasbarhetsindex readability feature",
+                 strReadabilityMetric.format(name="Lasbarhetsindex"),
+                  strRadabilityRefence.format(author="C. Björnsson",article="Lesbarkeit durch Lix (1968)"), 
+                            FeatureVisibilityEnum.public,
                             FormatEnum.text_plain, FeatureTimePerDocumentEnum.MILLISECONDS)
         
-        featSmogGrading = SmogGradingFeature("Smog Grading Readability Feature","Compute Smog Grading metric",
-                            "Based on Daniel Hasan Dalip's PhD thesis", FeatureVisibilityEnum.public,
+        featSmogGrading = SmogGradingFeature("SMOG Grading readability feature",
+                            strReadabilityMetric.format(name="SMOG Grading"),
+                            strRadabilityRefence.format(author="G. Harry McLaughlin",article="SMOG grading: A new readability formula (1969)"),  
+                            FeatureVisibilityEnum.public,
                             FormatEnum.text_plain, FeatureTimePerDocumentEnum.MILLISECONDS)
         
         arrFeatures.append(featARI)
