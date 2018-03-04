@@ -48,9 +48,9 @@ class DatasetDownloadView(LoginRequiredMixin, View):
                 f.write("\t\"feature_descriptions\":"+json.dumps(objDataset.dsc_result_header)+",\n")
                 f.write("\t\"data\": [")
                 for document in Document.objects.all().filter(dataset_id=dataset_id):
-                    strResult = "{\"docname\":'" + document.nam_file+"'"
+                    strResult = "{\"docname\":\"" + document.nam_file+"\""
                     for doc_result in DocumentResult.objects.filter(document = document):
-                        arrFeatures = ["\""+str(i)+"\":"+str(feat) for i,feat in enumerate(json.loads(doc_result.dsc_result)) ]
+                        arrFeatures = ["\""+str(i)+"\":"+str(feat) for i,feat in enumerate(doc_result.dsc_result) ]
                         strResult = strResult + ", \"result\": {" +(",".join(arrFeatures))+"}"
                     strResult = strResult + "},\n"
                     f.write(strResult)

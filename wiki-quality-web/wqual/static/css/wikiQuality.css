@@ -425,7 +425,9 @@ fieldset[disabled] .dataset-file-name {
 			    overflow: auto;
 			height:400px;
 		}	
-
+		.add-form p{
+			margin-left:5px;
+		}
 
 /***************************** Fim feature_set_update_insert.html e used_features.js*****************************/
 

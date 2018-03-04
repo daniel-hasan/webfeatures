@@ -138,7 +138,7 @@ class UsedFeatureListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         obj_Feature_Set = FeatureSet.objects.get(user=self.request.user,nam_feature_set=self.kwargs["nam_feature_set"])
         arr_used_features = UsedFeatureArgVal.objects.filter(used_feature__feature_set__id = obj_Feature_Set.id)\
-                                 .values("used_feature_id", "dsc_argument", "id", "type_argument", "nam_argument","val_argument", "is_configurable")                                                
+                                 .values("used_feature_id", "dsc_argument", "id", "type_argument", "nam_argument","nam_att_argument","val_argument", "is_configurable")                                                
         
         
         map_used_feat_per_id = {}

@@ -244,7 +244,7 @@ class UsedFeatureManager(models.Manager):
                         if objConfigurableFeature.param_type == ParamTypeEnum.choices:
                             pass
                             #TODO: se for choices, armazenas as alternativas (arr_choices) no campo apropriado
-                        dictArgValToInsert["nam_argument"] = objConfigurableFeature.name,
+                        dictArgValToInsert["nam_argument"] = objConfigurableFeature.name
                         dictArgValToInsert["val_argument"] = objConfigurableFeature.default_value
                         dictArgValToInsert["dsc_argument"] = objConfigurableFeature.description
                         dictArgValToInsert["is_configurable"] = True

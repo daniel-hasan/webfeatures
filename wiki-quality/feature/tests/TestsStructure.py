@@ -92,7 +92,7 @@ class TestTagCounter(unittest.TestCase):
                                          intPropotionalTo=Proportional.CHAR_COUNT.value),
                         ]
         strText = "<h1>oioi</h1>sod<h2>io</h2>as<a href='/casa/oi'></a><a href='casinha/verde.txt'></a>id<a href='#inside'></a>lalalla<h1></h1><a href='http://xsadoi'></a><a href='http://xsadoi'></a><a href='http://xsadoi'></a>"
-        length = len(re.sub("<[^>]+>", " ", strText))
+        length = len(re.sub("<[^>]+>", "", strText))
         numSections = 2
         samePageLink = 1
         intLink = 2
@@ -109,6 +109,7 @@ class TestTagCounter(unittest.TestCase):
             #verifica o resultado
             for intJ,feature in enumerate(arrFeatures):
                 print("Asserting feature #"+str(intJ)+": "+feature.name+" for doc #"+str(intI))
+
                 self.assertEqual(arrResult[intJ],arrExpectedResult[intJ] , "Ao executar o "+str(intI)+"º documento, a feature '"+feature.name+"' deveria ser "+str(arrExpectedResult[intJ])+" e é: "+str(arrResult[intJ]))
                 print("ok")
             

@@ -16,11 +16,11 @@ let arr_isConfigurable_form = new Array();
 
 		is_configurable = false;
 	
-		{% ifequal arg.nam_argument "name" %}
+		{% ifequal arg.nam_att_argument "name" %}
 			featName = "{{ arg.val_argument }}";		
 		{% endifequal %}
 	
-		{% ifequal arg.nam_argument "description" %}
+		{% ifequal arg.nam_att_argument "description" %}
 			featDescription = "{{ arg.val_argument }}";		
 		{% endifequal %}
 				

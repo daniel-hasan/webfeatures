@@ -83,6 +83,9 @@ class TagCountFeature(TagBasedFeature,WordBasedFeature,SentenceBasedFeature,Char
         if(self.objFeature != None and isinstance(self.objFeature,TagBasedFeature)):
             self.objFeature.startTag(document,tag,attrs)  
     def compute_feature(self, document):
+        if(self.name == "Complete URL link Count per length"):
+            x = 1
+            x = x+1
         intNorm = None
         if(self.objFeature != None):
             intNorm = self.objFeature.compute_feature(document)
@@ -296,11 +299,7 @@ class StdDeviationSectionSize(SectionSizeFeature):
     def compute_feature(self, document):
         super().compute_feature(document)
         
-<<<<<<< HEAD
         return stdev(self.arrSectionSizes) if len(self.arrSectionSizes) > 1 else 0
-=======
-        return stdev(self.arrSectionSizes) if len(self.arrSectionSizes) >1 else 0
->>>>>>> hot-fix-hasan-004
     
     def finish_document(self,document):
         self.arrSectionSizes=[]

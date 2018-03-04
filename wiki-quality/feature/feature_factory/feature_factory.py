@@ -42,15 +42,11 @@ class StructureFeatureFactory(FeatureFactory):
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.HTML, 
                                          FeatureTimePerDocumentEnum.MILLISECONDS,["h1"]),
-<<<<<<< HEAD
                        TagCountFeature("Subsection count", "Count the number of subsections (i.e. HTML h1 tags) in the text", "", 
-=======
-                       TagCountFeature("Subsection Count", "Count the number of subsections (i.e. HTML h2 tags) in the text", "", 
->>>>>>> hot-fix-hasan-004
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.HTML, 
                                          FeatureTimePerDocumentEnum.MILLISECONDS,["h2"]),
-                       LinkCountFeature("Complete URL link Count", "Count the number of  HTML 'a' tag in which the 'href' attribute refers to a complete URL.", "", 
+                       LinkCountFeature("Complete URL link count", "Count the number of  HTML 'a' tag in which the 'href' attribute refers to a complete URL.", "", 
                                          FeatureVisibilityEnum.public, 
                                          FormatEnum.HTML, 
                                          FeatureTimePerDocumentEnum.MILLISECONDS,bolExternal=True,bolInternalSameDomain=False,bolInternalSamePage=False),
@@ -255,14 +251,25 @@ class WordsFeatureFactory(FeatureFactory):
         listWords = self.getClasseGramatical(classe)
         if(listWords == None):
             return None
-        objFeature = WordCountFeature(str(classe).title() + " Count","Count the number of "+ classe +" in the text.",
-                        "Based on file style.c from the file diction-1.11.tar.gz in http://ftp.gnu.org/gnu/diction/",
+        strClassName = self.getWrittenName(classe)
+        objFeature = WordCountFeature(strClassName[0].upper()+strClassName[1:]+ " count","Count the number of "+ strClassName +" in the text.",
+                        "Based on 'style.c' file from the Software Style and Diction 1.11 in http://ftp.gnu.org/gnu/diction/",
                         FeatureVisibilityEnum.public, 
                         FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,listWords,case_sensitive=False)
         
         return objFeature
     def getWrittenName(self,classe):
-        pass  
+        dictClassName =  {"auxiliaryVerbs":"auxiliary verbs",
+         "coordinatingConjunctions":"coordination conjunctions",
+         "correlativeConjunctions":"correlative conjunctions",
+         "indefinitePronouns":"indefinite pronouns",
+         "interrogativePronouns": "interrogative pronouns",
+         "relativePronouns":"relative pronoums",
+        "subordinatingConjunctions":"subordinating conjunctions",
+        "toBeVerbs":"to be verbs"}
+        if(classe in dictClassName):
+            return dictClassName[classe]
+        return classe  
     def createBeginningOfSentenceFeatureObject(self,classe):
         listWords = self.getClasseGramatical(classe)
         if(listWords == None):
@@ -270,9 +277,9 @@ class WordsFeatureFactory(FeatureFactory):
         #n = ""
         #if(classe[0] in set(["a","e","i","o","u"])):
         #    n = "n"
-  
-        objFeature = BeginningSentenceWordCountFeature("Sentences starting with "+str(classe).title(),"Count the number of phrases that starts with "+ classe +" in the text. ",
-                        "Based on file style.c from the file diction-1.11.tar.gz in http://ftp.gnu.org/gnu/diction/",
+        strClassName = self.getWrittenName(classe)
+        objFeature = BeginningSentenceWordCountFeature("Sentences starting with "+strClassName,"Count the number of phrases that starts with "+ strClassName +" in the text. ",
+                        "Based on 'style.c' file from the Software Style and Diction 1.11 in http://ftp.gnu.org/gnu/diction/",
                         FeatureVisibilityEnum.public, 
                         FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,listWords,False)
         
@@ -302,34 +309,48 @@ class ReadabilityFeatureFactory(FeatureFactory):
     def createFeatures(self):
         
         arrFeatures = []
-        
-        featARI = ARIFeature("ARI Readability Feature","Compute ARI metric",
-                  "Based on Daniel Hasan Dalip's PhD thesis", FeatureVisibilityEnum.public,
+        strReadabilityMetric = "Compute the {name} metric Based on 'style.c' file from the Software Style and Diction 1.11 in http://ftp.gnu.org/gnu/diction/."
+        strRadabilityRefence = "Metric proposed by {author} in the article {article}."
+        featARI = ARIFeature("ARI readability feature",
+                strReadabilityMetric.format(name="Automated Readability Index"),
+                  strRadabilityRefence.format(author="Smith E. A. and R. J. Senter",article="Automated readability index - Aerospace Medical Division (1967)"), 
+                  FeatureVisibilityEnum.public,
                   FormatEnum.text_plain, FeatureTimePerDocumentEnum.MILLISECONDS)
         
-        featColemanLiau = ColemanLiauFeature("Coleman-Liau Readability Feature","Compute Coleman-Liau metric",
-                            "Based on file style from the file diction-1.11.tar.gz in http://ftp.gnu.org/gnu/diction/"
-                             + " and based on Coleman, et al. article 'A computer readability formula designed for machine scoring' - Journal of Applied Psychology (1975)",FeatureVisibilityEnum.public,
+        featColemanLiau = ColemanLiauFeature("Coleman-Liau readability feature",
+                            strReadabilityMetric.format(name="Coleman-Liau metric"),
+                            strRadabilityRefence.format(author="Meri Coleman and T. L. Liau",article="'A computer readability formula designed for machine scoring' - Journal of Applied Psychology (1975)"),
+                            FeatureVisibilityEnum.public,
                             FormatEnum.text_plain, FeatureTimePerDocumentEnum.MILLISECONDS)
         
-        featFleschReadingEase = FleschReadingEaseFeature("Flesch Reading Ease Readability Feature","Compute Flesch Reading Ease metric",
-                            "Based on Daniel Hasan Dalip's PhD thesis", FeatureVisibilityEnum.public,
+        featFleschReadingEase = FleschReadingEaseFeature("Flesch Reading Ease Readability Feature",
+                             strReadabilityMetric.format(name="Flesch Reading Ease"),
+                             strRadabilityRefence.format(author="Flesch, R.",article="A New Readability Yardstick - Journal of Applied Psychology (1948)"), 
+                            FeatureVisibilityEnum.public,
                             FormatEnum.text_plain, FeatureTimePerDocumentEnum.MILLISECONDS)
                 
-        featFleschKincaid = FleschKincaidFeature("Flesch Kincaid Readability Feature","Compute Flesch Kincaid metric",
-                            "Based on Daniel Hasan Dalip's PhD thesis", FeatureVisibilityEnum.public,
+        featFleschKincaid = FleschKincaidFeature("Flesch Kincaid Readability Feature",
+                strReadabilityMetric.format(name="Flesch Kincaid"),
+                  strRadabilityRefence.format(author="Sandy Ressler",article="Perspectives on electronic publishing: standards, solutions, and more (1993)"), 
+                            FeatureVisibilityEnum.public,
                             FormatEnum.text_plain, FeatureTimePerDocumentEnum.MILLISECONDS)
         
-        featGunningFogIndex = GunningFogIndexFeature("Gunning Fog Index Readability Feature","Compute Gunning Fog Index metric",
-                            "Based on Daniel Hasan Dalip's PhD thesis", FeatureVisibilityEnum.public,
+        featGunningFogIndex = GunningFogIndexFeature("Gunning Fog Index readability feature",
+                strReadabilityMetric.format(name="Gunning Fog"),
+                  strRadabilityRefence.format(author="R. Gunning",article="The Technique of Clear Writing (1952)"),  
+                            FeatureVisibilityEnum.public,
                             FormatEnum.text_plain, FeatureTimePerDocumentEnum.MILLISECONDS)
         
-        featLasbarhetsindex = LasbarhetsindexFeature("Lasbarhetsindex Readability Feature","Compute Lasbarhetsindex metric",
-                            "Based on Daniel Hasan Dalip's PhD thesis", FeatureVisibilityEnum.public,
+        featLasbarhetsindex = LasbarhetsindexFeature("Lasbarhetsindex readability feature",
+                 strReadabilityMetric.format(name="Lasbarhetsindex"),
+                  strRadabilityRefence.format(author="C. Björnsson",article="Lesbarkeit durch Lix (1968)"), 
+                            FeatureVisibilityEnum.public,
                             FormatEnum.text_plain, FeatureTimePerDocumentEnum.MILLISECONDS)
         
-        featSmogGrading = SmogGradingFeature("Smog Grading Readability Feature","Compute Smog Grading metric",
-                            "Based on Daniel Hasan Dalip's PhD thesis", FeatureVisibilityEnum.public,
+        featSmogGrading = SmogGradingFeature("SMOG Grading readability feature",
+                            strReadabilityMetric.format(name="SMOG Grading"),
+                            strRadabilityRefence.format(author="G. Harry McLaughlin",article="SMOG grading: A new readability formula (1969)"),  
+                            FeatureVisibilityEnum.public,
                             FormatEnum.text_plain, FeatureTimePerDocumentEnum.MILLISECONDS)
         
         arrFeatures.append(featARI)
