@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 
 """
 from wiki_quality_web.settings.development import *
-import os
 
 
 
@@ -28,11 +27,6 @@ DEBUG = False
 ALLOWED_HOSTS = ["www.webfeatures.com.br"]
 
 DATABASES['default']['PASSWORD'] = os.environ['PASSWORD']
-
-
-WSGI_APPLICATION = 'wiki_quality_web.wsgi.application'
-
-
 
 
 # Static files (CSS, JavaScript, Images)
