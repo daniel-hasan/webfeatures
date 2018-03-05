@@ -24,7 +24,7 @@ SECRET_KEY = os.environ['wqual_SECRET_KEY']
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ["www.webfeatures.com.br"]
+#ALLOWED_HOSTS = ["www.webfeatures.com.br"]
 
 DATABASES['default']['PASSWORD'] = os.environ['wqual_db_PASSWORD']
 
