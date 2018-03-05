@@ -36,7 +36,10 @@ cp git/wiki-quality/wiki-quality-web/wiki_quality_web/wsgi.py wsgi/wqual.py
 #criando o ambientevirtual
 virtualenv ~/wqual-env -p /usr/bin/python3
 #ativando o ambiente virtual
-source wqual-env/bin/activate
+source ~/wqual-env/bin/activate
+#coleta os staticos 
+python3 manage.py collectstatic
+
 #desativando ambiente virtual
 deactivate
 
@@ -46,6 +49,7 @@ sudo cp deploy/django_wqual.conf /etc/apache2/sites-available/.
 
 #alterar o arquivo init para apontar para as configurações de produção
 vim wiki-quality-web/wiki_quality_web/settings/__init__.py 
-sudo service apache2 reload
-wget http://webfeatures.com.br
-tail /var/log/apache2/error.log
+
+
+
+
