@@ -14,8 +14,7 @@ GRANT ALL ON wiki_quality.* TO 'wiki_quality'@'127.0.0.1';
 GRANT ALL ON test_wiki_quality.* TO 'wiki_quality'@'127.0.0.1';
 
 
-==Codigo do mysql - apos instalação) 
-REVOKE CREATE DROP on wikiquality.* to 'wiki_quality'@'127.0.0.1';
+
 
 #Instalação do wsgi
 http://pythonclub.com.br/configurando-ambiente-django-com-apache-e-mod-wsgi.html
@@ -28,6 +27,7 @@ sudo cp deploy/django_wqual.conf /etc/apache2/sites-available/.
 cp git/wiki-quality/wiki-quality-web/wiki_quality_web/wsgi.py wsgi/wqual.py
 
 
+
 #criando o ambientevirtual
 virtualenv ~/wqual-env -p /usr/bin/python3
 #ativando o ambiente virtual
@@ -35,11 +35,14 @@ source wqual-env/bin/activate
 #desativando ambiente virtual
 deactivate
 
-#termono da instalasao do wsgi
+#termono da instalaçao do wsgi
+#apache 
+sudo apt-get install apache2 libapache2-mod-wsgi-py3
 colocar em sudo vim /etc/apache2/envvars :
 	export LANG='en_US.UTF-8'
 	export LC_ALL='en_US.UTF-8'
 #alterar o arquivo init para apontar para as configurações de produção
 vim wiki-quality-web/wiki_quality_web/settings/__init__.py 
-
-
+sudo service apache2 reload
+wget http://webfeatures.com.br
+tail /var/log/apache2/error.log
