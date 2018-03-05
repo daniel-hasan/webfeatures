@@ -54,7 +54,7 @@ class DatasetDownloadView(View):
                 #print header
                 f.write("doc_name")
                 i=0
-                print("FEATUS: "+str(dictArrFeatures))
+                #print("FEATUS: "+str(dictArrFeatures))
                 while(str(i) in dictArrFeatures):
                     f.write(","+dictArrFeatures[str(i)]['name'])
                     i = i+1

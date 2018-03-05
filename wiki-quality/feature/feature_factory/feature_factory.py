@@ -131,8 +131,7 @@ class StructureFeatureFactory(FeatureFactory):
                        TagCountFeature("Images count","Number of images (considering the 'img' HTML tag)","",
                                           FeatureVisibilityEnum.public, 
                                           FormatEnum.HTML, 
-                                          FeatureTimePerDocumentEnum.MILLISECONDS,
-                                          intPropotionalTo=Proportional.CHAR_COUNT.value,setTagsToCount=["img"]
+                                          FeatureTimePerDocumentEnum.MILLISECONDS,setTagsToCount=["img"]
                                           ),
                         TagCountFeature("Images per length","Number of images (considering the 'img' HTML tag) per length (in characters)","",
                                           FeatureVisibilityEnum.public, 
