@@ -18,5 +18,5 @@ def application(environ, start_response):
     for key in environ:
         if key.startswith('wqual_'):
             os.environ[key] = environ[key]
-            
+    os.environ["wqual_SECRET_KEY"] = "sadkoaskdopakd"
     return get_wsgi_application()(environ, start_response)
