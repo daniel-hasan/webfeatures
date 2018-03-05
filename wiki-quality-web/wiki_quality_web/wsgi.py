@@ -26,4 +26,4 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "wiki_quality_web.settings")
 
 
 application = get_wsgi_application()
-/home/hdalip/git/wiki-quality/wiki-quality
+
