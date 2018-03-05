@@ -49,6 +49,8 @@ sudo cp deploy/django_wqual.conf /etc/apache2/sites-available/.
 
 #alterar o arquivo init para apontar para as configurações de produção
 vim wiki-quality-web/wiki_quality_web/settings/__init__.py 
+#mudar a permissao dos arquivos estaticos
+sudo chown -R www-data.www-data *
 
 
 
