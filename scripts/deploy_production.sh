@@ -34,4 +34,7 @@ deactivate
 colocar em sudo vim /etc/apache2/envvars :
 	export LANG='en_US.UTF-8'
 	export LC_ALL='en_US.UTF-8'
-
+#alterar o arquivo init para apontar para as configurações de produção
+vim wiki-quality-web/wiki_quality_web/settings/__init__.py 
+#copiar o arquivo ".conf" para a producao
+cp 
