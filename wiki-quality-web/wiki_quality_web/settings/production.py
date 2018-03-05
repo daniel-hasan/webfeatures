@@ -28,6 +28,9 @@ ALLOWED_HOSTS = [".webfeatures.com.br"]
 
 DATABASES['default']['PASSWORD'] = os.environ['wqual_db_PASSWORD']
 
+ADMINS = (
+	('Daniel Hasan Dalip', 'prof.daniel.hasan@gmail.com'),
+	)
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
