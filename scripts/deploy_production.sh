@@ -5,10 +5,13 @@ sudo apt-get install python-pip3
 sudo apt-get install mysql-server
 sudo apt-get install make
 sudo mysql_secure_instalation
+sudo apt-get install libmysqlclient-dev
+
 #instalacao do mysql
 ==Codigo no mysql (ao começão)
 CREATE USER 'wiki_quality'@'127.0.0.1' IDENTIFIED BY '_S@no=38$238ch';
 GRANT ALL ON wiki_quality.* TO 'wiki_quality'@'127.0.0.1';
+GRANT ALL ON test_wiki_quality.* TO 'wiki_quality'@'127.0.0.1';
 
 
 ==Codigo do mysql - apos instalação) 
@@ -26,3 +29,9 @@ virtualenv ~/wqual-env -p /usr/bin/python3
 source wqual-env/bin/activate
 #desativando ambiente virtual
 deactivate
+
+#termono da instalasao do wsgi
+colocar em sudo vim /etc/apache2/envvars :
+	export LANG='en_US.UTF-8'
+	export LC_ALL='en_US.UTF-8'
+
