@@ -23,7 +23,7 @@ colocar em sudo vim /etc/apache2/envvars :
 
 
 #Instalação do wsgi
-http://pythonclub.com.br/configurando-ambiente-django-com-apache-e-mod-wsgi.html
+#http://pythonclub.com.br/configurando-ambiente-django-com-apache-e-mod-wsgi.html
 
 
 
