@@ -20,7 +20,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 strFile = os.path.join(BASE_DIR,"git/wiki-quality/wiki-quality")
 site.addsitedir(strFile);
 if(not os.path.isfile(strFile)):
-        raise Exception("Nao achou o diretorio:"+strFile
+        raise Exception("Nao achou o diretorio:"+strFile)
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "wiki_quality_web.settings")
 
