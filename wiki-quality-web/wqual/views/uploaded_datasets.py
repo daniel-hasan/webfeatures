@@ -85,6 +85,7 @@ class DatasetDownloadView(LoginRequiredMixin, View):
         f.close()
         zf.write(f.name,arcname="result."+format, compress_type=zipfile.ZIP_DEFLATED)
         zf.close()
+        os.remove(f.name)
         
 
                 

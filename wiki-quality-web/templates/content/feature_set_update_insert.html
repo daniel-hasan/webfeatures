@@ -35,7 +35,7 @@
 					{{ field.errors }}
 					<div class="form-group">
 						{% ifequal field.label "Nam feature set" %}
-							<span>Feature Set Name:</span>
+							<span>Feature set name:</span>
 						{% endifequal %}	
 						
 						{% ifequal field.label "Dsc feature set" %}
@@ -120,7 +120,7 @@
   		
   	{% endif %}	
   		
-  		let boolSave = false;
+  		let boolSave = {% if object.id %}true{%else%}false{%endif%};
 		  		
   		$( function() {
 	         $("#alertSaveFeature").dialog({
