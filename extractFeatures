@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+ 
+    
+
+	<link href="/static/css/bootstrap.css" rel="stylesheet">
+	<link href="/static/css/jquery-ui.css" rel="stylesheet">
+	<link href="/static/css/jquery-ui.structure.css" rel="stylesheet">
+	<link href="/static/css/jquery-ui.theme.css" rel="stylesheet">
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/js/jquery-ui.js"></script>
+    <script src="/static/js/jquery-ui.min.js"></script>
+	<script src="/static/js/featureSetConfigUpdate.js"></script>
+    <script src="/static/js/wqual.js"></script>
+    <link rel="stylesheet" href="/static/css/wikiQuality.css">
+	<link href="https://fonts.googleapis.com/css?family=Fredericka+the+Great" rel="stylesheet">
+	    	
+
+  </head>
+  <body>
+  	
+  	
+  	<header>
+  		
+  	</header>
+    <main>
+	    
+		
+			<h1 class="home_sign-up_h1">WebFeatures</h1>
+		
+		<section id="info-home" class="infobox">
+		
+
+
+
+
+			<p>WebFeatures is a tool which extracts textual features from text/HTML documents.</p> 
+			
+		</section>
+		<section class="home_sign-up_section">
+			
+				<p>Please login to use the system.</p>
+				
+ 				<form method="post">
+ 			 		<input type='hidden' name='csrfmiddlewaretoken' value='igKiOvf5mMwtT7LVfYufgDOC63IeHP5jdWFveOijZk85MvJy0mcWG0yKEHxu3S2D' />
+ 			 				 	
+	 			 				
+ 			 			
+ 			 				<input class="login_sign-up_input" for="id_username" name="username" type="text" placeholder="Username">
+ 			 			
+ 			 			
+ 			 			
+	 			 		
+	 			 		
+	 		 				 	
+	 			 				
+ 			 			
+ 			 			
+ 			 			
+ 			 				<section class="home-password-section">
+ 			 					<input class="password-eye-input" for="id_password" name="password" type="password" placeholder="Password">
+ 			 					<img class="password-eye" src="/static/imgs/Eye.png">
+ 			 				</section>
+	 			 		
+	 			 		
+	 			 		
+	 		 		
+    				<button class="login_sign-up_button" type="submit">Log in</button>
+    				<a class="link_sign-up" href="/signup/">Create an account</a>
+ 				</form>
+
+ 			
+ 		</section>
+ 		<script>
+ 			//Obtém a imagem do olho e o input tipo senha.
+ 			let PasswordEyeInput = document.querySelector(".password-eye-input");
+ 			let olho = document.querySelector('img');
+ 			
+ 			//Cria uma função para mudar o tipo do input senha.
+ 			function muda_input() {
+ 				if(PasswordEyeInput.classList.contains('texto')) {
+ 					PasswordEyeInput.setAttribute('type', 'password');
+ 				}
+ 				else {
+ 					PasswordEyeInput.setAttribute('type', 'text');
+ 				}
+ 				PasswordEyeInput.classList.toggle('texto');
+ 			}
+ 			//Ao clicar no olho, a função criada anteriormente é executada.
+ 			olho.addEventListener('click', muda_input);
+ 		</script>
+
+    </main>
+    <footer>
+    	<a href="http://piim-lab.decom.cefetmg.br"><img class="piim-lab" src="/static/imgs/Logo%20Piim-LAB_mini.png"></a>
+    	<a href="http://www.cefetmg.br"><img src="/static/imgs/logoCEFETMG_mini.png"></a>
+    </footer>
+
+  </body>
+</html>
