@@ -180,11 +180,15 @@ class DatasetCreateFromSharedFeaturesetView(DatasetCreateView):
             if(not objFeatureSet.bol_is_public):
                 if(self.request.user != objFeatureSet.user):
                     context['feature_set_to_use'] = "NOT_FOUND"
+                    context['user_url'] = self.kwargs["user"]
+                    context['nam_feature_set_url'] = self.kwargs["nam_feature_set"]
                     return context
         #check if the feature set exists
         except FeatureSet.DoesNotExist:
 
             context['feature_set_to_use'] = "NOT_FOUND"
+            context['user_url'] = self.kwargs["user"]
+            context['nam_feature_set_url'] = self.kwargs["nam_feature_set"]
             return context
         
         arr_features = []
