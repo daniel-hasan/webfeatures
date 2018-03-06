@@ -52,5 +52,7 @@ vim wiki-quality-web/wiki_quality_web/settings/__init__.py
 
 
 
+#deixar um script na inicializacao da vm:
+gcloud compute instances create instance-1 --metadata-from-file startup-script=run_scheduler.sh
 
 
