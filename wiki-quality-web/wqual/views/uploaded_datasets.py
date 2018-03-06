@@ -193,6 +193,7 @@ class DatasetCreateFromSharedFeaturesetView(DatasetCreateView):
         context['feature_set_to_use'] = {"id":objFeatureSet.id,
                                         "nam_feature_set":objFeatureSet.nam_feature_set,
                                          "dsc_feature_set":objFeatureSet.dsc_feature_set,
+                                         "bol_is_public":objFeatureSet.bol_is_public,
                                          "language":objFeatureSet.language,
                                          "username":self.kwargs["user"],
                                          "arr_features":arr_features
