@@ -15,8 +15,13 @@ from wiki_quality_web.settings.development import *
 
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
+
+#secret key and bd in  files
+with open('/.wqual.cnf/s_key.txt') as f:
+    SECRET_KEY = f.read().strip()
+
+with open('/.wqual.cnf/ac.txt') as f:
+    DATABASES['default']['PASSWORD'] = f.read().strip()
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ['wqual_SECRET_KEY']
