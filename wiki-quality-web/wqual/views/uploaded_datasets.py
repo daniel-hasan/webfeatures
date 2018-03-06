@@ -6,12 +6,6 @@ Views relacionadas a upload dos datasets
 '''
 from _io import BytesIO
 from datetime import datetime
-import json
-import lzma
-import os
-import uuid
-import zipfile
-
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.forms.utils import ErrorList
 from django.http import HttpResponse, request
@@ -19,6 +13,12 @@ from django.http.response import HttpResponseNotFound
 from django.urls.base import reverse, resolve
 from django.views.generic.base import View
 from django.views.generic.edit import CreateView, DeleteView
+import json
+import lzma
+import os
+from tempfile import TemporaryFile , NamedTemporaryFile
+import uuid
+import zipfile
 
 from wqual.models import Dataset
 from wqual.models.exceptions import FileSizeException, FileCompressionException
@@ -42,44 +42,50 @@ class DatasetDownloadView(LoginRequiredMixin, View):
         
         s = BytesIO()
         zf = zipfile.ZipFile(s, "w")
-        with open(txt_file_name+"."+format, "w") as f:
-            if(format=="json"):
-                f.write("{\n")
-                f.write("\t\"feature_descriptions\":"+json.dumps(objDataset.dsc_result_header)+",\n")
-                f.write("\t\"data\": [")
-                for document in Document.objects.all().filter(dataset_id=dataset_id):
-                    strResult = "{\"docname\":\"" + document.nam_file+"\""
-                    for doc_result in DocumentResult.objects.filter(document = document):
-                        arrFeatures = ["\""+str(i)+"\":"+str(feat) for i,feat in enumerate(doc_result.dsc_result) ]
-                        strResult = strResult + ", \"result\": {" +(",".join(arrFeatures))+"}"
-                    strResult = strResult + "},\n"
-                    f.write(strResult)
-                f.write("\t]\n")
-                f.write("}")
-            else:
-                dictArrFeatures = Dataset.objects.get(id=dataset_id).dsc_result_header
-                #print header
-                f.write("doc_name")
-                i=0
-                #print("FEATUS: "+str(dictArrFeatures))
-                while(str(i) in dictArrFeatures):
-                    f.write(","+dictArrFeatures[str(i)]['name'])
-                    i = i+1
-                f.write("\n")
-                
-                #print each line per doc
-                for document in Document.objects.all().filter(dataset_id=dataset_id):
-                    strResult = document.nam_file+","
-                    for doc_result in DocumentResult.objects.filter(document = document):
-                        arrFeatures = [str(feat) for i,feat in enumerate(doc_result.dsc_result) ]
-                        strResult = strResult +(",".join(arrFeatures))
-                    strResult = strResult + "\n"
-                    f.write(strResult)    
-                    
-                                    
-        zf.write(txt_file_name+"."+format,arcname="result."+format, compress_type=zipfile.ZIP_DEFLATED)   
+        f = NamedTemporaryFile("w",delete=False)
+        
+             
+        if(format=="json"):
+            f.write("{\n")
+            f.write("\t\"feature_descriptions\":"+json.dumps(objDataset.dsc_result_header)+",\n")
+            f.write("\t\"data\": [")
+            for document in Document.objects.all().filter(dataset_id=dataset_id):
+                strResult = "{\"docname\":\"" + document.nam_file+"\""
+                for doc_result in DocumentResult.objects.filter(document = document):
+                    arrFeatures = ["\""+str(i)+"\":"+str(feat) for i,feat in enumerate(doc_result.dsc_result) ]
+                    strResult = strResult + ", \"result\": {" +(",".join(arrFeatures))+"}"
+                strResult = strResult + "},\n"
+                f.write(strResult)
+            f.write("\t]\n")
+            f.write("}")
+        else:
+            dictArrFeatures = Dataset.objects.get(id=dataset_id).dsc_result_header
+            #print header
+            f.write("doc_name")
+            i=0
+            #print("FEATUS: "+str(dictArrFeatures))
+            while(str(i) in dictArrFeatures):
+                f.write(","+dictArrFeatures[str(i)]['name'])
+                i = i+1
+            f.write("\n")
+            
+            #print each line per doc
+            for document in Document.objects.all().filter(dataset_id=dataset_id):
+                strResult = document.nam_file+","
+                for doc_result in DocumentResult.objects.filter(document = document):
+                    arrFeatures = [str(feat) for i,feat in enumerate(doc_result.dsc_result) ]
+                    strResult = strResult +(",".join(arrFeatures))
+                strResult = strResult + "\n"
+                f.write(strResult)    
+                        
+                                   
+            #zf.write(txt_file_name+"."+format,arcname="result."+format, compress_type=zipfile.ZIP_DEFLATED)
+            #print("NOME do arquivo: "f.name)
+            #f.close()   
+        f.close()
+        zf.write(f.name,arcname="result."+format, compress_type=zipfile.ZIP_DEFLATED)
         zf.close()
-        os.remove(txt_file_name+"."+format)
+        
 
                 
         resp = HttpResponse(s.getvalue(), content_type="application/force-download")
