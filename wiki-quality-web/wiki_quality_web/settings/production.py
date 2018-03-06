@@ -23,15 +23,11 @@ with open('/.wqual.cnf/s_key.txt') as f:
 with open('/.wqual.cnf/ac.txt') as f:
     DATABASES['default']['PASSWORD'] = f.read().strip()
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ['wqual_SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
 ALLOWED_HOSTS = [".webfeatures.com.br"]
-
-DATABASES['default']['PASSWORD'] = os.environ['wqual_db_PASSWORD']
 
 ADMINS = (
 	('Daniel Hasan Dalip', 'prof.daniel.hasan@gmail.com'),
