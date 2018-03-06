@@ -121,7 +121,7 @@
   	{% endif %}	
   		
   		let boolSave = {% if object.id %}true{%else%}false{%endif%};
-		  		
+		let boolRedirectAfterSave = false;
   		$( function() {
 	         $("#alertSaveFeature").dialog({
 			    autoOpen: false,
@@ -132,7 +132,7 @@
 			    buttons: {
 			        "Yes": function() {
 			          	salveData();
-			          	window.location.href = href_button_clicked;
+			          	boolRedirectAfterSave = true;
 			          	$( this ).dialog( "close" );
 			        
 			          },
@@ -157,16 +157,21 @@
 			let idNamFeaturesSet = $("#last_saved_name")[0].value;
 		  	let arrElementsFeatureSet = [];
 		  	let arrCreateElementsFeatureSet = [];
-		  	
-			arrElementsFeatureSet.push({"id_nam_feature_set":idNamFeaturesSet,"nam_feature_set": $('#id_nam_feature_set').val(),"dsc_feature_set":$('#id_dsc_feature_set').val(), "language":$('#id_language').val()});
-			arrCreateElementsFeatureSet.push({"nam_feature_set": $('#id_nam_feature_set').val(),"dsc_feature_set":$('#id_dsc_feature_set').val(), "language":$('#id_language').val()});
+		  	console.log("Name to save"+idNamFeaturesSet);
+			arrElementsFeatureSet.push({"id_nam_feature_set":idNamFeaturesSet,
+										"nam_feature_set": $('#id_nam_feature_set').val(),
+										"dsc_feature_set":$('#id_dsc_feature_set').val(), 
+										"language":$('#id_language').val(),
+										"bol_is_public":$("#id_bol_is_public")[0].checked});
+										
+
 		
 			if(boolSave){
 				
 				updateFeatureSet(arrElementsFeatureSet);
 				
 			}else{
-				createFeatureSet(arrCreateElementsFeatureSet);
+				createFeatureSet(arrElementsFeatureSet);
 	  			boolSave = true;	  		
 	  		}		
 	 	}
@@ -187,6 +192,10 @@
 				  		changeShareURL();
 				  		alert("Feature set description saved");
 				  		$("#sharing_link").removeClass("invisible");
+				  		if(boolRedirectAfterSave){
+				  			window.location.href = href_button_clicked;
+				  		}
+				  		
 				  		
 				  },
 				  error: function(xhr,status,error){
@@ -202,11 +211,16 @@
 				  type: "POST",
 			  	  data: { "arrEditElementsFeatureSet" : JSON.stringify(arrElementsFeatureSet)},
 				  success: function(response) {
-				  		console.log("It is working");
+				  		//console.log("It is working");
 				  		changeShareURL();
+				  		$("#last_saved_name")[0].value = response.arrFeauteSetEdit[0]["nam_feature_set"];
 				  		alert("Feature set description saved");
+				  		if(boolRedirectAfterSave){
+				  			window.location.href = href_button_clicked;
+				  		}
 				  },
 				  error: function(xhr,status,error){
+				  		
 				  		alert("An error occured when trying to save the new configurations:\n"+error);
 		       	  }
 				});
