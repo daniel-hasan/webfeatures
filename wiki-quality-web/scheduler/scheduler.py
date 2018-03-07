@@ -47,7 +47,6 @@ class Scheduler(object):
 		objSubmited = Status.objects.get_enum(StatusEnum.SUBMITTED)
 		
 		#print("AUTOCOMIT: "+str(transaction.get_autocommit()))
-		Machine.objects.get_or_create()
 		i = 0
 		bolIsSleeping = False
 		#print("oioi dormindo por: "+str(int_wait_minutes))
