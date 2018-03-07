@@ -56,3 +56,8 @@ vim wiki-quality-web/wiki_quality_web/settings/__init__.py
 gcloud compute instances create instance-1 --metadata-from-file startup-script=run_scheduler.sh
 
 
+#verificar status dos datsets:
+>>> for dat in Dataset.objects.all():
+...     print("Completed in:"+str((dat.end_dat_processing-dat.start_dat_processing).total_seconds()))
+
+
