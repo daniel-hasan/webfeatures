@@ -13,10 +13,7 @@ pipelines:
         services:
           - mysql
         script: # Modify the commands below to build your repository.
-          - pip install django==1.11.4
-          - pip install mysqlclient
-          - pip install django_mysql
-          - pip install plainbox
+          - pip install -r requirements.txt
           - echo "from wiki_quality_web.settings.bitbucket_pipeline_build import *">wiki-quality-web/wiki_quality_web/settings/__init__.py
           - python wiki-quality-web/manage.py test wqual.tests --failfast
           #- python wiki-quality-web/manage.py test scheduler.test_docs_io --failfast
