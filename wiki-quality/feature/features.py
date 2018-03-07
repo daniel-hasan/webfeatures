@@ -192,12 +192,13 @@ class FeatureCalculatorManager(object):
         timeToProc = CheckTime()
         if format is FormatEnum.HTML:
             aux = 0
-            for feat in arr_features:
+            
+            for feat in arr_features[0:1]:
                 if isinstance(feat, TagBasedFeature):
                     parser = ParserTags(feat, docText)
                     parser.feed(str_text)
                 aux = aux + 1
-            #timeToProc.printDelta("HTML parser tags")         
+            timeToProc.printDelta("HTML parser tags")         
             
             '''considera apenas o que estiver dentro de <body> </body> (se esses elementos existirem)'''
             str_text_lower = str_text.lower()
@@ -212,7 +213,7 @@ class FeatureCalculatorManager(object):
             '''elimina as html entities'''
             str_text = html.unescape(str_text)
             str_text_for_char = html.unescape(str_text_for_char)
-            #timeToProc.printDelta("String parsing")
+            timeToProc.printDelta("String parsing")
         
         #armazo as word based features e sentence based feature
         word_buffer = ""
@@ -226,17 +227,19 @@ class FeatureCalculatorManager(object):
         arrParFeats = [feat for feat in arr_features if isinstance(feat, ParagraphBasedFeature)]
         
         
-        #timeToProc.printDelta("proc char feats")
+        timeToProc.printDelta("proc char feats")
         #print("Arr features size: "+str(len(arr_features))+" Char: "+str(len(arrCharFeats)))
-        for str_char_for_char in str_text_for_char:
-            for feat in arrCharFeats:
-                feat.checkChar(docText,str_char_for_char)
+        t = 1
+        for feat in arrCharFeats:
+            for str_char_for_char in str_text_for_char:
+                #feat.checkChar(docText,str_char_for_char)
+                t = 1+t
                 #if isinstance(feat, CharBasedFeature):
                 #    xx = xx+1
                 #if isinstance(feat, CharBasedFeature):
-
+            #timeToProc.printDelta("Feature "+feat.name)
                     
-        #timeToProc.printDelta("Check char")
+        timeToProc.printDelta("Check char"+str(t))
         for str_char in str_text:
             word_proc = word_buffer.strip()
             if(len(word_proc) > 0 and str_char in FeatureCalculator.word_divisors):
