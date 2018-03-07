@@ -86,8 +86,15 @@ class FeatureSetInsert(LoginRequiredMixin, CreateView):
 class FeatureSetInsertAJAX(View):
     
     def post(self, request):
-        arrCreateFeatureSet =  json.loads(request.POST["arrCreateElementsFeatureSet"])[0]            
-        objFeatureSet = FeatureSet.objects.create(user=self.request.user,nam_feature_set = arrCreateFeatureSet["nam_feature_set"], dsc_feature_set = arrCreateFeatureSet["dsc_feature_set"], language = Language.objects.get(id=int(arrCreateFeatureSet["language"])))
+        
+        arrCreateFeatureSet =  json.loads(request.POST["arrCreateElementsFeatureSet"])[0]
+                   
+        objFeatureSet = FeatureSet.objects.create(user=self.request.user,
+                                                  nam_feature_set = arrCreateFeatureSet["nam_feature_set"], 
+                                                  dsc_feature_set = arrCreateFeatureSet["dsc_feature_set"], 
+                                                  language = Language.objects.get(id=int(arrCreateFeatureSet["language"])),
+                                                  bol_is_public=arrCreateFeatureSet["bol_is_public"]
+                                                  )
         arrCreateFeatureSet["nam_feature_set"] = objFeatureSet.nam_feature_set;
         return JsonResponse({"arrCreateFeatureSet" : arrCreateFeatureSet })
       
@@ -123,9 +130,10 @@ class FeatureSetEditAJAX(View):
             objFeatureSetEdit = FeatureSet.objects.get(user=self.request.user, nam_feature_set=featureSet["id_nam_feature_set"])
             objFeatureSetEdit.nam_feature_set = featureSet["nam_feature_set"]
             objFeatureSetEdit.dsc_feature_set = featureSet["dsc_feature_set"]
+            objFeatureSetEdit.bol_is_public=featureSet["bol_is_public"]
             objFeatureSetEdit.language = Language.objects.get(id=featureSet["language"])
             objFeatureSetEdit.save()
-            
+            featureSet["nam_feature_set"] = objFeatureSetEdit.nam_feature_set;
         return JsonResponse({"arrFeauteSetEdit" : arrFeatureSetEdit }) 
 
 

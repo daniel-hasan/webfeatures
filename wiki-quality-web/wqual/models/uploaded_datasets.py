@@ -46,8 +46,8 @@ class Status(EnumModel):
         return StatusEnum
     
 class Machine(models.Model):
-    nam_machine = models.CharField(max_length=45)
-    ip_field = models.GenericIPAddressField()
+    nam_machine = models.CharField(max_length=45,unique=True)
+    #ip_field = models.GenericIPAddressField()
     
     
 class Dataset(models.Model):
@@ -66,9 +66,8 @@ class Dataset(models.Model):
     end_dat_processing = models.DateTimeField(blank=True, null=True)
     dsc_result_header = JSONField(blank=True, null=True)
     
-    num_proc_extractor = models.IntegerField(blank=True, null=True)
-    machine_extractor = models.ForeignKey(Machine, models.PROTECT,blank=True, null=True)    
-    
+
+
     format = models.ForeignKey(Format, models.PROTECT)
     
     feature_set = models.ForeignKey(FeatureSet, models.PROTECT)
@@ -105,8 +104,12 @@ class Dataset(models.Model):
             self.bol_ready_to_process = True
             self.save()
 
-                
-                
+class ProcessingDataset(models.Model):          
+    dataset = models.OneToOneField(Dataset, models.PROTECT)        
+    num_proc_extractor = models.IntegerField()
+    machine_extractor = models.ForeignKey(Machine, models.PROTECT)
+
+
 class ResultValityPerUserGroup(models.Model):
     '''
     Created on 16 de ago de 2017

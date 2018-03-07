@@ -4,15 +4,16 @@ Created on 15 de dez de 2017
 
 '''
 
-from django.db import transaction
-from django.db.models import Max
-from django.utils import timezone
 import os
 import threading
 
+from django.db import transaction
+from django.db.models import Max
+from django.utils import timezone
+
 from scheduler.scheduler import Scheduler
 from wqual.models import UsedFeature
-from wqual.models.uploaded_datasets import Dataset, Status
+from wqual.models.uploaded_datasets import Dataset, Status, ProcessingDataset
 from wqual.models.uploaded_datasets import StatusEnum
 
 
@@ -48,7 +49,9 @@ class OldestFirstScheduler(Scheduler):
 
 			dataset_oldest.status= objProcessing
 			dataset_oldest.start_dat_processing=timezone.now()
-			dataset_oldest.num_proc_extractor = os.getpid() 
+			ProcessingDataset.objects.create(dataset=dataset_oldest,
+											 num_proc_extractor=os.getpid(),
+											 machine_extractor=self.objMachine)
 			dataset_oldest.save()
 
 						

@@ -6,21 +6,30 @@ Created on 15 de dez de 2017
 
 from abc import abstractmethod
 from datetime import datetime
-from django.utils import timezone
 import os
+import socket
 import threading
 import time
+
+from django.db import transaction
+from django.utils import timezone
 
 from feature.features import FeatureCalculator
 from scheduler.utils import DatasetModelDocReader, DatasetModelDocWriter
 from wqual.models.featureset_config import UsedFeature
-from wqual.models.uploaded_datasets import Document, DocumentText, Dataset
+from wqual.models.uploaded_datasets import Document, DocumentText, Dataset, \
+	ProcessingDataset, Machine
 from wqual.models.uploaded_datasets import StatusEnum, Status
 
 
 class Scheduler(object):
 	SCHEDULER_DATASET_LOCK = threading.Lock()
-	
+	def __init__(self,str_machine_name=None):
+		if(str_machine_name==None):
+			self.str_machine_name = socket.gethostname()
+		self.objMachine = Machine.objects.get_or_create(nam_machine=self.str_machine_name)[0]
+		
+		
 	@abstractmethod
 	def get_next(self):
 		pass
@@ -36,8 +45,8 @@ class Scheduler(object):
 	def run(self, int_wait_seconds,int_max_iterations = float("inf")):
 		numth = str(threading.get_ident())+"("+str(os.getpid())+") "
 		objSubmited = Status.objects.get_enum(StatusEnum.SUBMITTED)
-		#print("AUTOCOMIT: "+str(transaction.get_autocommit()))
 		
+		#print("AUTOCOMIT: "+str(transaction.get_autocommit()))
 		i = 0
 		bolIsSleeping = False
 		#print("oioi dormindo por: "+str(int_wait_minutes))
@@ -47,7 +56,9 @@ class Scheduler(object):
 			dataset=None
 			
 			#print("Prox dataset...")
-			while dataset == None or dataset.num_proc_extractor!=os.getpid():
+			while dataset == None or ProcessingDataset.objects.filter(dataset=dataset,
+																	num_proc_extractor=os.getpid(),
+																	machine_extractor=self.objMachine).count()==0:
 				dataset = self.get_next()
 				if(dataset != None):
 					dataset.refresh_from_db()
@@ -68,15 +79,25 @@ class Scheduler(object):
 
 				FeatureCalculator.featureManager.computeFeatureSetDocuments(datReader=doc_read,docWriter=doc_write,arr_features_to_extract=arr_feats_used,format=dataset.format.get_enum())
 					
-				dataset.status = Status.objects.get_enum(StatusEnum.COMPLETE)
-					
-				#delete os textos do doc
-				DocumentText.objects.filter(document__dataset_id=dataset.id).delete()
 				
-					
+				
+				
+				
+				
+				dataset.status = Status.objects.get_enum(StatusEnum.COMPLETE)	
 				dataset.end_dat_processing = timezone.now()
+
+				
+				with transaction.atomic():
+					#delete os textos do doc
+					DocumentText.objects.filter(document__dataset_id=dataset.id).delete()
+					
+					ProcessingDataset.objects.filter(dataset=dataset,
+																		num_proc_extractor=os.getpid(),
+																		machine_extractor=self.objMachine).delete()
+					dataset.save()
+				
 				timeDeltaProc = dataset.end_dat_processing-dataset.start_dat_processing
-				dataset.save()
 				print(str(numth)+": Dataset '"+dataset.nam_dataset+"' processed in "+str(timeDeltaProc))
 					
 

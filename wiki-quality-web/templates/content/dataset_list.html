@@ -103,7 +103,7 @@
 								{% if field.label == "Feature set" and feature_set_to_use == "NOT_FOUND" %}
 									<script>
 											$(function(){
-												alert("Error: could not found the requested feature set");
+												alert("Error: could not found the requested feature set through the URL: http://{{request.get_host}}{% url "public_extract_features" user_url nam_feature_set_url %}");
 											}
 											);
 									</script>
