@@ -15,21 +15,26 @@ from wiki_quality_web.settings.development import *
 
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ['wqual_SECRET_KEY']
+#secret key and bd in  files
+with open('/.wqual.cnf/s_key.txt') as f:
+    SECRET_KEY = f.read().strip()
+
+with open('/.wqual.cnf/ac.txt') as f:
+    DATABASES['default']['PASSWORD'] = f.read().strip()
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-#ALLOWED_HOSTS = ["www.webfeatures.com.br"]
+ALLOWED_HOSTS = [".webfeatures.com.br"]
 
-DATABASES['default']['PASSWORD'] = os.environ['wqual_db_PASSWORD']
-
+ADMINS = (
+	('Daniel Hasan Dalip', 'prof.daniel.hasan@gmail.com'),
+	)
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
-STATIC_ROOT = "/home/hdalip/www/wqual/static/"
+STATIC_ROOT = "/wqual-static"
+
 
