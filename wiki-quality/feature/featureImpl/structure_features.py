@@ -83,9 +83,6 @@ class TagCountFeature(TagBasedFeature,WordBasedFeature,SentenceBasedFeature,Char
         if(self.objFeature != None and isinstance(self.objFeature,TagBasedFeature)):
             self.objFeature.startTag(document,tag,attrs)  
     def compute_feature(self, document):
-        if(self.name == "Complete URL link Count per length"):
-            x = 1
-            x = x+1
         intNorm = None
         if(self.objFeature != None):
             intNorm = self.objFeature.compute_feature(document)
@@ -98,11 +95,11 @@ class TagCountFeature(TagBasedFeature,WordBasedFeature,SentenceBasedFeature,Char
         
     #### Tag based Feature overide #########
     def data(self,document,str_data):
-        if(self.objFeature != None and isinstance(self.objFeature,TagBasedFeature)):
+        if(self.objFeature != None and self.intPropotionalTo == Proportional.SECTION_COUNT):
             self.objFeature.data(document,str_data)
             
     def endTag(self,document,tag):
-        if(self.objFeature != None and isinstance(self.objFeature,TagBasedFeature)):
+        if(self.objFeature != None  and self.intPropotionalTo == Proportional.SECTION_COUNT):
             self.objFeature.endTag(document,tag)
     
     
@@ -110,16 +107,16 @@ class TagCountFeature(TagBasedFeature,WordBasedFeature,SentenceBasedFeature,Char
         
     #### WordBasedFeature,CharBasedFeature,SentenceBasedFeature overide #########
     def checkWord(self, document, word):
-        if(self.objFeature != None and isinstance(self.objFeature,WordBasedFeature)):
+        if(self.objFeature != None and self.intPropotionalTo == Proportional.WORD_COUNT):
             self.objFeature.checkWord(document,word)
             
     def checkSentence(self, document, word):
-        if(self.objFeature != None and isinstance(self.objFeature,SentenceBasedFeature)):
+        if(self.objFeature != None and self.intPropotionalTo == Proportional.SENTENCE_COUNT):
             self.objFeature.checkWord(document,word)
             
             
     def checkChar(self, document, word):
-        if(self.objFeature != None and isinstance(self.objFeature,CharBasedFeature)):
+        if(self.objFeature != None and self.intPropotionalTo == Proportional.CHAR_COUNT): #isinstance(self.objFeature,CharBasedFeature)):
             self.objFeature.checkChar(document,word)
     
     

@@ -60,7 +60,7 @@ class TestReadability(unittest.TestCase):
         
         arr_result = FeatureCalculator.featureManager.computeFeatureSet(doc1, arr_features, FormatEnum.HTML)
         
-        #print(*arr_result)
+        print(*arr_result)
         
 if __name__ == "__main__":
     unittest.main()

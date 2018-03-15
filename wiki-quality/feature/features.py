@@ -39,6 +39,7 @@ class DocumentCache(object):
     def setCacheItem(self, itemName, intValue, objRequest):
         if not self.hasCacheItem(itemName):
             self.setOwnership(itemName, objRequest)
+        
         if self.owner[itemName] != objRequest:
             raise NotTheOwner()
         self.cache[itemName] = intValue
@@ -121,19 +122,20 @@ class DocSetReaderDummy(FeatureDocumentsReader):
 #        return Klass(**self.arr_feature_arguments)
 
 class ParserTags(HTMLParser):
-    def __init__(self, feat, document):
+    def __init__(self, arrParserFeats, document):
         HTMLParser.__init__(self)
         self.document = document
-        self.feat = feat
+        self.arrParserFeats = arrParserFeats
         
     def handle_data(self,str_data):
-        self.feat.data(self.document, str_data)
+        [feat.data(self.document, str_data) for feat in self.arrParserFeats]
 
     def handle_starttag(self, tag, attrs):
-        self.feat.startTag(self.document, tag, attrs)
-    
+        [feat.startTag(self.document, tag, attrs) for feat in self.arrParserFeats]
+        
     def handle_endtag(self, tag):
-        self.feat.endTag(self.document, tag)
+        [feat.endTag(self.document, tag) for feat in self.arrParserFeats]
+        #self.feat.endTag(self.document, tag)
 
 class FeatureCalculatorManager(object):
 
@@ -191,13 +193,12 @@ class FeatureCalculatorManager(object):
         str_text_for_char = str_text
         timeToProc = CheckTime()
         if format is FormatEnum.HTML:
-            aux = 0
             
-            for feat in arr_features[0:1]:
-                if isinstance(feat, TagBasedFeature):
-                    parser = ParserTags(feat, docText)
-                    parser.feed(str_text)
-                aux = aux + 1
+            arrTagFeats = [feat for feat in arr_features if isinstance(feat, TagBasedFeature)]
+            
+            parser = ParserTags(arrTagFeats, docText)
+            parser.feed(str_text)
+            
             timeToProc.printDelta("HTML parser tags")         
             
             '''considera apenas o que estiver dentro de <body> </body> (se esses elementos existirem)'''
@@ -232,14 +233,14 @@ class FeatureCalculatorManager(object):
         t = 1
         for feat in arrCharFeats:
             for str_char_for_char in str_text_for_char:
-                #feat.checkChar(docText,str_char_for_char)
-                t = 1+t
+                feat.checkChar(docText,str_char_for_char)
+                #t = 1+t
                 #if isinstance(feat, CharBasedFeature):
                 #    xx = xx+1
                 #if isinstance(feat, CharBasedFeature):
-            #timeToProc.printDelta("Feature "+feat.name)
-                    
-        timeToProc.printDelta("Check char"+str(t))
+            timeToProc.printDelta("Feature "+feat.name)
+            
+        timeToProc.printDelta("Check char")
         for str_char in str_text:
             word_proc = word_buffer.strip()
             if(len(word_proc) > 0 and str_char in FeatureCalculator.word_divisors):

@@ -47,7 +47,7 @@ class TestWordsFeatureFactory(unittest.TestCase):
         timeToProc.printDelta("Leitura do arquivo")
         #gerar todas ass features
         objEnglish = LanguageEnum.en
-        arrFeaturesFactory = [WordBasedFeature]
+        
         arrFeatures = []
         for SubClass in FeatureFactory.__subclasses__():
             objFeatFact = None
