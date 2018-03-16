@@ -192,6 +192,7 @@ class Format(EnumModel):
         return FormatEnum
     def __str__(self):
         return self.value
+    
 class CompressedTextField(models.TextField):
 
     #__metaclass__ = models.SubfieldBase  #Algumas versoes django nao aceitam Subfield
