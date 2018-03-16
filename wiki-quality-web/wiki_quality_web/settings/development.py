@@ -76,7 +76,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'wiki_quality_web.wsgi.application'
 
-
+MEDIA_URL = os.path.join(BASE_DIR, 'uploads')+"/"
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 

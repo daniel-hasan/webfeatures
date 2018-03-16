@@ -38,7 +38,9 @@ virtualenv ~/wqual-env -p /usr/bin/python3
 #ativando o ambiente virtual
 source ~/wqual-env/bin/activate
 #coleta os staticos 
+mkdir /wqual-static (checar permissoes)
 python3 manage.py collectstatic 
+mkdir /wqual-media (checar permissoes)
 
 #desativando ambiente virtual
 deactivate
@@ -54,6 +56,8 @@ vim wiki-quality-web/wiki_quality_web/settings/__init__.py
 
 #deixar um script na inicializacao da vm:
 gcloud compute instances create instance-1 --metadata-from-file startup-script=run_scheduler.sh
+
+
 
 
 #verificar status dos datsets:
