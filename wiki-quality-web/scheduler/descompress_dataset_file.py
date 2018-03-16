@@ -31,7 +31,7 @@ class DescompressDatasetFile(object):
                     sub_data.file.delete()
                     sub_data.delete()
                 else:
-                    print(int_wait_seconds)
+                    #print(int_wait_seconds)
                     time.sleep(int_wait_seconds)
             i = i + 1
         
