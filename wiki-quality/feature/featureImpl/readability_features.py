@@ -65,6 +65,8 @@ class ReadabilityBasedFeature(CharBasedFeature, WordBasedFeature, SentenceBasedF
             self.isFirstTimeChar = False
         if self.isOwnerCheckChar:
             self.charCountFeat.checkChar(document,char)
+            return True
+        return False
         
     def checkWord(self, document, word):
         

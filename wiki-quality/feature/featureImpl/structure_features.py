@@ -81,7 +81,10 @@ class TagCountFeature(TagBasedFeature,WordBasedFeature,SentenceBasedFeature,Char
             self.int_tag_counter = self.int_tag_counter + 1
             
         if(self.objFeature != None and isinstance(self.objFeature,TagBasedFeature)):
-            self.objFeature.startTag(document,tag,attrs)  
+            self.objFeature.startTag(document,tag,attrs)
+        return True
+            
+              
     def compute_feature(self, document):
         intNorm = None
         if(self.objFeature != None):
@@ -95,30 +98,35 @@ class TagCountFeature(TagBasedFeature,WordBasedFeature,SentenceBasedFeature,Char
         
     #### Tag based Feature overide #########
     def data(self,document,str_data):
-        if(self.objFeature != None and self.intPropotionalTo == Proportional.SECTION_COUNT):
+        if(self.objFeature != None and self.intPropotionalTo == Proportional.SECTION_COUNT.value):
             self.objFeature.data(document,str_data)
+            return True
+        return False
             
     def endTag(self,document,tag):
-        if(self.objFeature != None  and self.intPropotionalTo == Proportional.SECTION_COUNT):
+        if(self.objFeature != None  and self.intPropotionalTo == Proportional.SECTION_COUNT.value):
             self.objFeature.endTag(document,tag)
-    
+            return True
+        return False
     
         
         
     #### WordBasedFeature,CharBasedFeature,SentenceBasedFeature overide #########
     def checkWord(self, document, word):
-        if(self.objFeature != None and self.intPropotionalTo == Proportional.WORD_COUNT):
+        if(self.objFeature != None and self.intPropotionalTo == Proportional.WORD_COUNT.value):
             self.objFeature.checkWord(document,word)
             
     def checkSentence(self, document, word):
-        if(self.objFeature != None and self.intPropotionalTo == Proportional.SENTENCE_COUNT):
+        if(self.objFeature != None and self.intPropotionalTo == Proportional.SENTENCE_COUNT.value):
             self.objFeature.checkWord(document,word)
             
             
     def checkChar(self, document, word):
-        if(self.objFeature != None and self.intPropotionalTo == Proportional.CHAR_COUNT): #isinstance(self.objFeature,CharBasedFeature)):
+        if(self.objFeature != None and self.intPropotionalTo == Proportional.CHAR_COUNT.value): #isinstance(self.objFeature,CharBasedFeature)):
             self.objFeature.checkChar(document,word)
-    
+            return True
+        else:
+            return False
     
     
 class LinkCountFeature(TagCountFeature):
@@ -152,7 +160,7 @@ class LinkCountFeature(TagCountFeature):
                 (bolIsSameDomain and self.bolInternalSameDomain)
         
         super().startTag(document, tag, attrs,ignoreCount=not count)
-  
+        return True
     
         
 
@@ -197,7 +205,7 @@ class SectionSizeFeature(TagBasedFeature):
             if(self.bolReadingSection and intCurrentLevel<=self.intSectionLevel):
                 #print("Terminou a seção!")
                 self.sectionFinished()
-
+        return True
                 
             
                             
@@ -213,6 +221,7 @@ class SectionSizeFeature(TagBasedFeature):
             if(not self.bolReadingSection and intCurrentLevel==self.intSectionLevel):
                 self.bolReadingSection = True
                 #print("Começou a ler a seção!")
+        return True
     
     def data(self,document,str_data):
         #print("\tdados: "+str_data)
@@ -220,7 +229,8 @@ class SectionSizeFeature(TagBasedFeature):
             self.sectionSize += len(html.unescape(str_data))
             #print("\t\tTamanho '"+str_data+"':"+str(len(str_data)))
             #print("\t\tTamanho atual:"+str(self.sectionSize))
-            
+        return True
+    
     def compute_feature(self, document):
         if(self.bolReadingSection):
             #print("Terminou a seção!")

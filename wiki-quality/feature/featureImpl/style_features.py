@@ -257,8 +257,9 @@ class CharacterCountFeature(CharBasedFeature):
     
     def checkChar(self, document, char):
         if self.ignore_punctuation is True and char in FeatureCalculator.word_divisors:
-            return
+            return True
         self.int_char_counter = self.int_char_counter + 1
+        return True
     
     def compute_feature(self,document):
         return self.int_char_counter

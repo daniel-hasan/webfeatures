@@ -126,7 +126,8 @@ class ParserTags(HTMLParser):
         HTMLParser.__init__(self)
         self.document = document
         self.arrParserFeats = arrParserFeats
-        
+
+    
     def handle_data(self,str_data):
         [feat.data(self.document, str_data) for feat in self.arrParserFeats]
 
@@ -230,15 +231,16 @@ class FeatureCalculatorManager(object):
         
         timeToProc.printDelta("proc char feats")
         #print("Arr features size: "+str(len(arr_features))+" Char: "+str(len(arrCharFeats)))
-        t = 1
+        #t = 1
         for feat in arrCharFeats:
             for str_char_for_char in str_text_for_char:
-                feat.checkChar(docText,str_char_for_char)
+                if not feat.checkChar(docText,str_char_for_char):
+                    break
                 #t = 1+t
                 #if isinstance(feat, CharBasedFeature):
                 #    xx = xx+1
                 #if isinstance(feat, CharBasedFeature):
-            timeToProc.printDelta("Feature "+feat.name)
+            #timeToProc.printDelta("Feature "+feat.name)
             
         timeToProc.printDelta("Check char")
         for str_char in str_text:
@@ -273,6 +275,7 @@ class FeatureCalculatorManager(object):
             else:
                     paragraph_buffer = paragraph_buffer + str_char                    
                     
+        timeToProc.printDelta("Check word, paragraph and sentence")
         #timeToProc.printDelta("Other checks")    
         #se necessario, le a ultima palavra/frase/paragrafo do buffer
         
@@ -289,17 +292,17 @@ class FeatureCalculatorManager(object):
             
             if(len(paragraph_buffer) > 0 and isinstance(feat, ParagraphBasedFeature)):
                 feat.checkParagraph(docText, paragraph_buffer)
-        #timeToProc.printDelta("Last  checking")
+        timeToProc.printDelta("Last  checking")
         #para todoas as WordBasedFeatue ou SentenceBased feature, rodar o compute_feature
         
         aux = 0
         for feat in arr_features:
             arr_feat_result[aux] = feat.compute_feature(docText)
             aux = aux + 1
-        #timeToProc.printDelta("Compute feature")
+        timeToProc.printDelta("Compute feature")
         for feat in arr_features:
             feat.finish_document(docText)
-        #timeToProc.printDelta("Finish document")
+        timeToProc.printDelta("Finish document")
         return arr_feat_result
 
 class FeatureVisibilityEnum(Enum):
@@ -385,13 +388,13 @@ class WordBasedFeature(FeatureCalculator):
 class TagBasedFeature(FeatureCalculator):
     
     def startTag(self,tag, attrs):
-        pass
+        return False
     
     def endTag(self,tag, attrs):
-        pass
+        return False
     
     def data(self,document,str_data):
-        pass
+        return False
     
 class CharBasedFeature(FeatureCalculator):
     
