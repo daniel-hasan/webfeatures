@@ -61,3 +61,11 @@ gcloud compute instances create instance-1 --metadata-from-file startup-script=r
 ...     print("Completed in:"+str((dat.end_dat_processing-dat.start_dat_processing).total_seconds()))
 
 
+
+### Merge de prod
+source ~/wqual-env/bin/activate
+python3 manage.py migrate
+.  merge/pullrequest do master para prod
+. Testa no seu pc o prod 
+. funcionou? no serv de prod, da checkout, volta pra prod e da pull
+
