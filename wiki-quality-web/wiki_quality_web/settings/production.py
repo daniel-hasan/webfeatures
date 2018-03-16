@@ -32,6 +32,7 @@ ALLOWED_HOSTS = [".webfeatures.com.br"]
 ADMINS = (
 	('Daniel Hasan Dalip', 'prof.daniel.hasan@gmail.com'),
 	)
+SERVER_EMAIL = "error@webfeatures.com.br"
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
