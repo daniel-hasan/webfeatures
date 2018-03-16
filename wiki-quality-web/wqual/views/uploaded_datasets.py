@@ -141,7 +141,7 @@ class DatasetCreateView(LoginRequiredMixin, CreateView):
         
         #save (tratar a exceção: e adicionar erro na lista de erro e retornar form_invalid se houver exceção)
         try:
-            form.instance.save_compressed_file(self.request.FILES['file_dataset'])
+            form.instance.save_compressed_file(self.request.FILES['file_dataset'],save_docs_later=True)
             
         except FileSizeException as e:
             errors = form._errors.setdefault("feature_set", ErrorList())

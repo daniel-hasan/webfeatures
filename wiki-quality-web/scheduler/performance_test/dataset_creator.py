@@ -88,7 +88,7 @@ class PerformanceTest(object):
         #mudar o caminho do arquivo USAR O BASE
         # o arquivo deve ser salvo no git?
         
-        self.num_dataset = num_dataset +1
+        self.num_dataset = num_dataset
         arr_end_compress_file = []
         for i in range(11):
             #print("Base dir: "+BASE_DIR)
@@ -107,12 +107,13 @@ class PerformanceTest(object):
             x=i
             if (i >= len(arr_end_compress_file)-1):
                 x = i - ((i//10)*10)
-
+                   
             f = open(arr_end_compress_file[x], 'rb')
-            objDataset.save_compressed_file(f)
+            objDataset.save_compressed_file(comp_file_pointer=f, save_docs_later=False)
             f.close() 
+            
             print("Dataset #"+str(i)+" created")
-
+            
     def run_experiment(self, int_num_dataset, num_parallel_oldest = 2):
         arr_end_compress_files = []
         self.num_dataset = int_num_dataset

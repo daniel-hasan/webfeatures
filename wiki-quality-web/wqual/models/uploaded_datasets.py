@@ -10,10 +10,13 @@ As tabelas relacionadas com o resultado desta extração também está neste arq
 from distutils.archive_util import zipfile
 from enum import IntEnum, Enum
 import lzma
+import uuid
 
 from django.contrib.auth.models import User, Group
 from django.db import models, transaction
 from django_mysql.models import JSONField
+
+from wiki_quality_web.settings.development import BASE_DIR
 from utils.uncompress_data import CompressedFile
 from wqual.models import FeatureSet, Format
 from wqual.models.exceptions import FileSizeException, FileCompressionException
@@ -75,7 +78,7 @@ class Dataset(models.Model):
     status = models.ForeignKey(Status, models.PROTECT)
 
          
-    def save_compressed_file(self,comp_file_pointer):
+    def save_compressed_file(self,comp_file_pointer,save_docs_later=False):
             #validacao ser feita aqui
             
             #se um dos arquivos for maior que XX, 
@@ -90,20 +93,62 @@ class Dataset(models.Model):
             for name,int_file_size in objFileZip.get_each_file_size():
                 if int_file_size > int_limit:
                     raise FileSizeException("The file "+name+" exceeds the limit of "+str(int_limit)+" bytes")
-                
+            self.bol_ready_to_process = False
             self.save()
-            i = 0   
-            for name,strFileTxt in objFileZip.read_each_file():
+            
+            if(save_docs_later):                
+                objSubmittedFile = SubmittedDataset(dataset=self,file=comp_file_pointer)
+                objSubmittedFile.save()
+                
+            
+            else:
+                f = open(BASE_DIR+"/dummy_dataset_tests/txt_0.zip", 'rb')
+                
+                if(type(comp_file_pointer) != type(f)):
+                    objSubmittedFile = SubmittedDataset(dataset=self,file=comp_file_pointer)
+                    objSubmittedFile.grava_arq_no_dataset()
+                    objSubmittedFile.save()
+                
+                else:
+                    for name,strFileTxt in objFileZip.read_each_file():
+                        with transaction.atomic():
+                            objDocumento = Document(nam_file=name,dataset=self)
+                            objDocumento.save()
+                            objDocumentoTexto = DocumentText(document=objDocumento,dsc_text=strFileTxt)
+                            objDocumentoTexto.save()
+                            self.document_set.add(objDocumento,bulk=False)
+                    self.bol_ready_to_process = True
+                    self.save()
+                
+                
+    def save_zip_to_dataset(self, file_zip):
+            for name,strFileTxt in file_zip.read_each_file():
                 with transaction.atomic():
-                    i = i+1
                     objDocumento = Document(nam_file=name,dataset=self)
                     objDocumento.save()
                     objDocumentoTexto = DocumentText(document=objDocumento,dsc_text=strFileTxt)
                     objDocumentoTexto.save()
                     self.document_set.add(objDocumento,bulk=False)
+                        
             self.bol_ready_to_process = True
             self.save()
-
+            
+def content_file_name(instance, filename):
+    name, ext = filename.split('.')
+    
+    file_path = '{dir_name}{nam_file}_{dataset_id}.{ext}'.format(
+         dir_name="uploaded_datasets/", nam_file = name, dataset_id = instance.dataset.id, ext=ext) 
+    return file_path
+   
+class SubmittedDataset(models.Model):
+    dataset = models.OneToOneField(Dataset, models.PROTECT) 
+    file = models.FileField(upload_to=content_file_name)
+    
+    def grava_arq_no_dataset(self):
+        objFileZip = CompressedFile.get_compressed_file(self.file)
+        self.dataset.save_zip_to_dataset(objFileZip)
+    
+    
 class ProcessingDataset(models.Model):          
     dataset = models.OneToOneField(Dataset, models.PROTECT)        
     num_proc_extractor = models.IntegerField()
