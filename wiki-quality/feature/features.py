@@ -16,6 +16,7 @@ import re
 from utils.basic_entities import FormatEnum, CheckTime
 
 
+
 class NotTheOwner(Exception):
     def __init__(self):
         super().__init__(self, "Object is not the owner: Permission denied or cache's empty")
@@ -39,6 +40,7 @@ class DocumentCache(object):
     def setCacheItem(self, itemName, intValue, objRequest):
         if not self.hasCacheItem(itemName):
             self.setOwnership(itemName, objRequest)
+        
         if self.owner[itemName] != objRequest:
             raise NotTheOwner()
         self.cache[itemName] = intValue
@@ -121,19 +123,43 @@ class DocSetReaderDummy(FeatureDocumentsReader):
 #        return Klass(**self.arr_feature_arguments)
 
 class ParserTags(HTMLParser):
-    def __init__(self, feat, document):
+    def __init__(self, arrParserFeats, document):
         HTMLParser.__init__(self)
         self.document = document
-        self.feat = feat
+        self.arrParserFeats = arrParserFeats
         
+        
+        self.firstTimeData = True
+        self.firstTimeStartTag = True
+        self.firstTimeEndTag = True
+        self.arrFeatsStartTag = []
+        self.arrFeatsEndTag = []
+        self.arrFeatsData = []
     def handle_data(self,str_data):
-        self.feat.data(self.document, str_data)
+        if(self.firstTimeData):
+            self.arrFeatsData = [feat for feat in self.arrParserFeats if feat.data(self.document, str_data)]
+            self.firstTimeData = False
+        else:
+            for feat in self.arrFeatsData:
+                feat.data(self.document, str_data) 
 
     def handle_starttag(self, tag, attrs):
-        self.feat.startTag(self.document, tag, attrs)
-    
+        if(self.firstTimeStartTag):
+            self.arrFeatsStartTag = [feat for feat in self.arrParserFeats if feat.startTag(self.document, tag, attrs)]
+            self.firstTimeStartTag = False
+        else:
+            for feat in self.arrFeatsStartTag:
+                feat.startTag(self.document, tag, attrs) 
+        
     def handle_endtag(self, tag):
-        self.feat.endTag(self.document, tag)
+        if(self.firstTimeEndTag):
+            self.arrFeatsEndTag = [feat for feat in self.arrParserFeats if feat.endTag(self.document, tag)]
+            self.firstTimeEndTag = False
+        else:
+            for feat in self.arrFeatsEndTag:
+                feat.endTag(self.document, tag)
+        #[feat.endTag(self.document, tag) for feat in self.arrParserFeats]
+        #self.feat.endTag(self.document, tag)
 
 class FeatureCalculatorManager(object):
 
@@ -162,8 +188,11 @@ class FeatureCalculatorManager(object):
             
         pass
     
-    
-    
+    def reduce_array(self,arrToReduce,arrIdx):
+            arrIdx.sort(reverse=True)
+            for idx in arrIdx:
+                del arrToReduce[idx]
+                   
     def computeFeatureSet(self,docText,arr_features,format):
         '''
         Analisa o texto e calcula todas as features do array.
@@ -191,12 +220,12 @@ class FeatureCalculatorManager(object):
         str_text_for_char = str_text
         timeToProc = CheckTime()
         if format is FormatEnum.HTML:
-            aux = 0
-            for feat in arr_features:
-                if isinstance(feat, TagBasedFeature):
-                    parser = ParserTags(feat, docText)
-                    parser.feed(str_text)
-                aux = aux + 1
+            
+            arrTagFeats = [feat for feat in arr_features if isinstance(feat, TagBasedFeature)]
+            
+            parser = ParserTags(arrTagFeats, docText)
+            parser.feed(str_text)
+            
             #timeToProc.printDelta("HTML parser tags")         
             
             '''considera apenas o que estiver dentro de <body> </body> (se esses elementos existirem)'''
@@ -225,39 +254,81 @@ class FeatureCalculatorManager(object):
         arrSentFeats = [feat for feat in arr_features if isinstance(feat, SentenceBasedFeature)]
         arrParFeats = [feat for feat in arr_features if isinstance(feat, ParagraphBasedFeature)]
         
-        
+
         #timeToProc.printDelta("proc char feats")
         #print("Arr features size: "+str(len(arr_features))+" Char: "+str(len(arrCharFeats)))
-        for str_char_for_char in str_text_for_char:
-            for feat in arrCharFeats:
-                feat.checkChar(docText,str_char_for_char)
+        #t = 1
+        for feat in arrCharFeats:
+            for str_char_for_char in str_text_for_char:
+                if not feat.checkChar(docText,str_char_for_char):
+                    #print("Ignored: "+feat.name)
+                    break
+                #t = 1+t
                 #if isinstance(feat, CharBasedFeature):
                 #    xx = xx+1
                 #if isinstance(feat, CharBasedFeature):
-
-                    
+            #timeToProc.printDelta("Feature "+feat.name)
+            
         #timeToProc.printDelta("Check char")
+        firstTimeWord = True
+        arrCheckWordIdxToRemove = []
+        firstTimeSentence = True
+        arrCheckSentIdxToRemove = []
+        # Checagem de pontos das palavras
+        #arrParagraphsPoints = []
+        #arrSentencePoints =[]
+        #arrWordsPoints = []
+        #for i,str_char in enumerate(str_text):
+        #    if(str_char in FeatureCalculator.word_divisors):
+        #        arrWordsPoints.append(i)
+        #    if(str_char in FeatureCalculator.sentence_divisors):
+        #        arrSentencePoints.append(i)
+        #    if(str_char in FeatureCalculator.paragraph_divisor):
+        #        arrParagraphsPoints.append(i)
+        #timeToProc.printDelta("Check word,sentence and paragraph points")
+        #print("numchar: "+str(len(str_text))+" Num words: "+str(len(arrWordsPoints))+" NumSents: "+str(len(arrSentencePoints))+"Num Pars: "+str(len(arrParagraphsPoints)))
+        
+        
         for str_char in str_text:
             word_proc = word_buffer.strip()
             if(len(word_proc) > 0 and str_char in FeatureCalculator.word_divisors):
-                for feat in arrWordFeats:
-                    feat.checkWord(docText, word_proc)
+                for i,feat in enumerate(arrWordFeats):
+                    
+                    if(firstTimeWord):
+                        bolChecked = feat.checkWord(docText, word_proc)
+                        if(not bolChecked):
+                            arrCheckWordIdxToRemove.append(i)
+                    else:
+                        feat.checkWord(docText, word_proc)
                     if(str_char != " "):
                         feat.checkWord(docText, str_char)
-                    #if(isinstance(feat, WordBasedFeature)):
-                    #    feat.checkWord(docText, word_proc)
-                    #    if(str_char != " "):
-                    #        feat.checkWord(docText, str_char)
+                        
                     word_buffer = ""
-                
+                if(firstTimeWord):
+                    firstTimeWord = False
+                    #lenWordFeats = len(arrWordFeats)
+                    self.reduce_array(arrWordFeats, arrCheckWordIdxToRemove)
+                    #print("Words reduced From: "+str(lenWordFeats)+ " to "+str(len(arrWordFeats)))
+                    
             else:
                 word_buffer = word_buffer + str_char
             
             sentence_buffer = sentence_buffer + str_char
             if(str_char in FeatureCalculator.sentence_divisors):
-                    for feat in arrSentFeats:
-                        feat.checkSentence(docText,sentence_buffer)
+                    for i,feat in enumerate(arrSentFeats):
+                        if(firstTimeSentence):
+                            bolCheck = feat.checkSentence(docText,sentence_buffer)
+                            if(not bolCheck):
+                                arrCheckSentIdxToRemove.append(i)
+                        else:
+                            feat.checkSentence(docText,sentence_buffer)
                     sentence_buffer = ""
+                    
+                    if(firstTimeSentence):
+                        firstTimeSentence = False
+                        #lenSentFeats = len(arrSentFeats)
+                        self.reduce_array(arrSentFeats, arrCheckSentIdxToRemove)
+                        #print("sentences reduced From: "+str(lenSentFeats)+ " to "+str(len(arrSentFeats)))
 
 
             
@@ -269,6 +340,7 @@ class FeatureCalculatorManager(object):
             else:
                     paragraph_buffer = paragraph_buffer + str_char                    
                     
+        #timeToProc.printDelta("Check word, paragraph and sentence")
         #timeToProc.printDelta("Other checks")    
         #se necessario, le a ultima palavra/frase/paragrafo do buffer
         
@@ -381,13 +453,13 @@ class WordBasedFeature(FeatureCalculator):
 class TagBasedFeature(FeatureCalculator):
     
     def startTag(self,tag, attrs):
-        pass
+        return False
     
     def endTag(self,tag, attrs):
-        pass
+        return False
     
     def data(self,document,str_data):
-        pass
+        return False
     
 class CharBasedFeature(FeatureCalculator):
     

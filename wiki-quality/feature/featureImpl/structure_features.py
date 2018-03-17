@@ -69,23 +69,34 @@ class TagCountFeature(TagBasedFeature,WordBasedFeature,SentenceBasedFeature,Char
         self.objFeature = None
         #adicionando o param intPropotionalTo como atributos (para serem gravadas no bd)
         self.intPropotionalTo = intPropotionalTo
+        self.bolPerSection = False
+        self.bolPerWord = False
+        self.bolPerChar = False
+        self.bolPerSentence = False
         
         if(intPropotionalTo!=None):
             self.enumProportional = Proportional.get_enum(intPropotionalTo) 
             self.objFeature = self.enumProportional.get_feature()
-
-    
+            if(self.intPropotionalTo == Proportional.SECTION_COUNT.value):
+                self.bolPerSection = True
+            elif(self.intPropotionalTo == Proportional.WORD_COUNT.value):
+                self.bolPerWord = True
+            elif(self.intPropotionalTo == Proportional.SENTENCE_COUNT.value):
+                self.bolPerSentence = True
+            elif(self.intPropotionalTo == Proportional.CHAR_COUNT.value):
+                self.bolPerChar = True
+                
     def startTag(self,document,tag,attrs,ignoreCount=False):
     
         if not ignoreCount and tag.lower() in self.setTagsToCount:
             self.int_tag_counter = self.int_tag_counter + 1
             
-        if(self.objFeature != None and isinstance(self.objFeature,TagBasedFeature)):
-            self.objFeature.startTag(document,tag,attrs)  
+        if(self.bolPerSection):
+            self.objFeature.startTag(document,tag,attrs)
+        return True
+            
+              
     def compute_feature(self, document):
-        if(self.name == "Complete URL link Count per length"):
-            x = 1
-            x = x+1
         intNorm = None
         if(self.objFeature != None):
             intNorm = self.objFeature.compute_feature(document)
@@ -98,30 +109,38 @@ class TagCountFeature(TagBasedFeature,WordBasedFeature,SentenceBasedFeature,Char
         
     #### Tag based Feature overide #########
     def data(self,document,str_data):
-        if(self.objFeature != None and isinstance(self.objFeature,TagBasedFeature)):
+        if(self.bolPerSection):
             self.objFeature.data(document,str_data)
+            return True
+        return False
             
     def endTag(self,document,tag):
-        if(self.objFeature != None and isinstance(self.objFeature,TagBasedFeature)):
+        if(self.bolPerSection):
             self.objFeature.endTag(document,tag)
-    
+            return True
+        return False
     
         
         
     #### WordBasedFeature,CharBasedFeature,SentenceBasedFeature overide #########
     def checkWord(self, document, word):
-        if(self.objFeature != None and isinstance(self.objFeature,WordBasedFeature)):
+        if(self.bolPerWord):
             self.objFeature.checkWord(document,word)
-            
+            return True
+        return False
     def checkSentence(self, document, word):
-        if(self.objFeature != None and isinstance(self.objFeature,SentenceBasedFeature)):
-            self.objFeature.checkWord(document,word)
-            
+        if(self.bolPerSentence):
+            self.objFeature.checkSentence(document,word)
+            return True
+        return False
             
     def checkChar(self, document, word):
-        if(self.objFeature != None and isinstance(self.objFeature,CharBasedFeature)):
+        #return True
+        if(self.bolPerChar): #isinstance(self.objFeature,CharBasedFeature)):
             self.objFeature.checkChar(document,word)
-    
+            return True
+        else:
+            return False
     
     
 class LinkCountFeature(TagCountFeature):
@@ -144,7 +163,7 @@ class LinkCountFeature(TagCountFeature):
             
         if str_href == "" or str_href == None:
             super().startTag(document, tag, attrs,ignoreCount=True)
-            return
+            return True
         
         str_href = str_href.strip()
         bolIsExternal = str_href.startswith("http://") or str_href.startswith("https://")
@@ -155,7 +174,7 @@ class LinkCountFeature(TagCountFeature):
                 (bolIsSameDomain and self.bolInternalSameDomain)
         
         super().startTag(document, tag, attrs,ignoreCount=not count)
-  
+        return True
     
         
 
@@ -200,7 +219,7 @@ class SectionSizeFeature(TagBasedFeature):
             if(self.bolReadingSection and intCurrentLevel<=self.intSectionLevel):
                 #print("Terminou a seção!")
                 self.sectionFinished()
-
+        return True
                 
             
                             
@@ -216,6 +235,7 @@ class SectionSizeFeature(TagBasedFeature):
             if(not self.bolReadingSection and intCurrentLevel==self.intSectionLevel):
                 self.bolReadingSection = True
                 #print("Começou a ler a seção!")
+        return True
     
     def data(self,document,str_data):
         #print("\tdados: "+str_data)
@@ -223,7 +243,8 @@ class SectionSizeFeature(TagBasedFeature):
             self.sectionSize += len(html.unescape(str_data))
             #print("\t\tTamanho '"+str_data+"':"+str(len(str_data)))
             #print("\t\tTamanho atual:"+str(self.sectionSize))
-            
+        return True
+    
     def compute_feature(self, document):
         if(self.bolReadingSection):
             #print("Terminou a seção!")

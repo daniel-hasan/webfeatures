@@ -60,7 +60,9 @@ class TestReadability(unittest.TestCase):
         
         arr_result = FeatureCalculator.featureManager.computeFeatureSet(doc1, arr_features, FormatEnum.HTML)
         
-        #print(*arr_result)
+        arr_expected_result = [-1.82,-0.05,87.68,3.02,5.7,14.25,7]
+        for i,result in enumerate(arr_result):
+            self.assertAlmostEqual(result, arr_expected_result[i], 1)
         
 if __name__ == "__main__":
     unittest.main()

@@ -34,69 +34,67 @@ class ReadabilityBasedFeature(CharBasedFeature, WordBasedFeature, SentenceBasedF
         
         self.sentenceCountFeat = SentenceCountFeature("Sentence Count","Count the number of sentences in the text.","reference",
                     FeatureVisibilityEnum.public, FormatEnum.text_plain, FeatureTimePerDocumentEnum.MILLISECONDS)
-    
-    def checkChar(self, document, char):
-        try:
-            if ReadabilityBasedFeature.CHARCOUNT in self.arr_feat_to_compute:
-                objCharCount = document.obj_cache.setCacheItem(ReadabilityBasedFeature.CHARCOUNT,self.charCountFeat,self)
-                
-                objCharCount.checkChar(document,char)
+
+        self.arrWordFeatures = [self.wordCountFeat,self.syllableCountFeat,self.complexWordCountFeat,self.polysyllableCountFeat]
+        self.arrWordFeatTypes= [ReadabilityBasedFeature.WORDCOUNT,ReadabilityBasedFeature.SYLLABLECOUNT,ReadabilityBasedFeature.COMPLEXWORDCOUNT, ReadabilityBasedFeature.POLYSYLLABLESCOUNT]
+        self.initialize_cache_flags()
+         
+    def initialize_cache_flags(self):
+        
+        
+        self.isFirstTimeChar = True
+        self.isFirstTimeSentence = True
+        
+        self.isOwnerCheckChar = False
+        self.isOwnerCheckSentence = False
             
+    def hasToCompute(self,document,objFeature,strFeatType):
+        if(strFeatType not in self.arr_feat_to_compute):
+            return False
+        try:
+            document.obj_cache.setCacheItem(strFeatType,objFeature,self)
+            return True
         except (NotTheOwner):
-            pass
+            return False
+            
+    
+                
+    def checkChar(self, document, char):
+        if(self.isFirstTimeChar):
+            self.isOwnerCheckChar = self.hasToCompute(document, self.charCountFeat, ReadabilityBasedFeature.CHARCOUNT)
+            self.isFirstTimeChar = False
+        if self.isOwnerCheckChar:
+            self.charCountFeat.checkChar(document,char)
+            return True
+        return False
         
     def checkWord(self, document, word):
-        try:
-            if ReadabilityBasedFeature.WORDCOUNT in self.arr_feat_to_compute:
-                objWordCount = document.obj_cache.setCacheItem(ReadabilityBasedFeature.WORDCOUNT,self.wordCountFeat,self)
-                
-                objWordCount.checkWord(document,word)
         
-        except (NotTheOwner):
-            pass
-        
-        try:
-            if ReadabilityBasedFeature.SYLLABLECOUNT in self.arr_feat_to_compute:
-                objWordCount = document.obj_cache.setCacheItem(ReadabilityBasedFeature.SYLLABLECOUNT,self.syllableCountFeat,self)
+        bolIsCheckWord = False
+        for i,objFeature in enumerate(self.arrWordFeatures):
+            checkWord = self.hasToCompute(document, objFeature, self.arrWordFeatTypes[i])
                 
-                objWordCount.checkWord(document,word)
-                
-        except (NotTheOwner):
-            pass
-        
-        try:
-            if ReadabilityBasedFeature.COMPLEXWORDCOUNT in self.arr_feat_to_compute:
-                objWordCount = document.obj_cache.setCacheItem(ReadabilityBasedFeature.COMPLEXWORDCOUNT,self.complexWordCountFeat,self)
-                objWordCount.checkWord(document,word)
-            
-        except (NotTheOwner):
-            pass
-        
-        try:
-            if ReadabilityBasedFeature.POLYSYLLABLESCOUNT in self.arr_feat_to_compute:
-                objWordCount = document.obj_cache.setCacheItem(ReadabilityBasedFeature.POLYSYLLABLESCOUNT,self.polysyllableCountFeat,self)
-                
-                objWordCount.checkWord(document,word)
-            
-            
-        except (NotTheOwner):
-            pass
-    
+            if(checkWord):
+                objFeature.checkWord(document,word)
+                bolIsCheckWord = True
+        return bolIsCheckWord
     def checkSentence(self, document, sentence):
-        try:
-            if ReadabilityBasedFeature.SENTENCECOUNT in self.arr_feat_to_compute:
-                objSentenceCount = document.obj_cache.setCacheItem(ReadabilityBasedFeature.SENTENCECOUNT,self.sentenceCountFeat,self)
-                
-                objSentenceCount.checkSentence(document,sentence)
-            
-        except (NotTheOwner):
-            pass
+        
+        if(self.isFirstTimeSentence):
+            self.isOwnerCheckSentence = self.hasToCompute(document, self.sentenceCountFeat, ReadabilityBasedFeature.SENTENCECOUNT)
+            self.isFirstTimeSentence = False
+        if self.isOwnerCheckSentence:
+            self.sentenceCountFeat.checkSentence(document,sentence)
+            return True
+        return False
     
     @abstractmethod
     def compute_feature(self,document):
         raise NotImplementedError
  
     def finish_document(self, document):
+        self.initialize_cache_flags()
+        
         for strCacheValue in ReadabilityBasedFeature.ARR_FEATS_IN_CACHE:
             objFeatItem = document.obj_cache.getCacheItem(strCacheValue)
             if(objFeatItem != None):
