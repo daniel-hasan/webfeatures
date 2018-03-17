@@ -70,14 +70,14 @@ class ReadabilityBasedFeature(CharBasedFeature, WordBasedFeature, SentenceBasedF
         
     def checkWord(self, document, word):
         
- 
+        bolIsCheckWord = False
         for i,objFeature in enumerate(self.arrWordFeatures):
             checkWord = self.hasToCompute(document, objFeature, self.arrWordFeatTypes[i])
                 
             if(checkWord):
                 objFeature.checkWord(document,word)
-      
-    
+                bolIsCheckWord = True
+        return bolIsCheckWord
     def checkSentence(self, document, sentence):
         
         if(self.isFirstTimeSentence):
@@ -85,7 +85,8 @@ class ReadabilityBasedFeature(CharBasedFeature, WordBasedFeature, SentenceBasedF
             self.isFirstTimeSentence = False
         if self.isOwnerCheckSentence:
             self.sentenceCountFeat.checkSentence(document,sentence)
-
+            return True
+        return False
     
     @abstractmethod
     def compute_feature(self,document):

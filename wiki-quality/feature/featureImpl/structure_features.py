@@ -69,18 +69,29 @@ class TagCountFeature(TagBasedFeature,WordBasedFeature,SentenceBasedFeature,Char
         self.objFeature = None
         #adicionando o param intPropotionalTo como atributos (para serem gravadas no bd)
         self.intPropotionalTo = intPropotionalTo
+        self.bolPerSection = False
+        self.bolPerWord = False
+        self.bolPerChar = False
+        self.bolPerSentence = False
         
         if(intPropotionalTo!=None):
             self.enumProportional = Proportional.get_enum(intPropotionalTo) 
             self.objFeature = self.enumProportional.get_feature()
-
-    
+            if(self.intPropotionalTo == Proportional.SECTION_COUNT.value):
+                self.bolPerSection = True
+            elif(self.intPropotionalTo == Proportional.WORD_COUNT.value):
+                self.bolPerWord = True
+            elif(self.intPropotionalTo == Proportional.SENTENCE_COUNT.value):
+                self.bolPerSentence = True
+            elif(self.intPropotionalTo == Proportional.CHAR_COUNT.value):
+                self.bolPerChar = True
+                
     def startTag(self,document,tag,attrs,ignoreCount=False):
     
         if not ignoreCount and tag.lower() in self.setTagsToCount:
             self.int_tag_counter = self.int_tag_counter + 1
             
-        if(self.objFeature != None and isinstance(self.objFeature,TagBasedFeature)):
+        if(self.bolPerSection):
             self.objFeature.startTag(document,tag,attrs)
         return True
             
@@ -98,13 +109,13 @@ class TagCountFeature(TagBasedFeature,WordBasedFeature,SentenceBasedFeature,Char
         
     #### Tag based Feature overide #########
     def data(self,document,str_data):
-        if(self.objFeature != None and self.intPropotionalTo == Proportional.SECTION_COUNT.value):
+        if(self.bolPerSection):
             self.objFeature.data(document,str_data)
             return True
         return False
             
     def endTag(self,document,tag):
-        if(self.objFeature != None  and self.intPropotionalTo == Proportional.SECTION_COUNT.value):
+        if(self.bolPerSection):
             self.objFeature.endTag(document,tag)
             return True
         return False
@@ -113,16 +124,19 @@ class TagCountFeature(TagBasedFeature,WordBasedFeature,SentenceBasedFeature,Char
         
     #### WordBasedFeature,CharBasedFeature,SentenceBasedFeature overide #########
     def checkWord(self, document, word):
-        if(self.objFeature != None and self.intPropotionalTo == Proportional.WORD_COUNT.value):
+        if(self.bolPerWord):
             self.objFeature.checkWord(document,word)
-            
+            return True
+        return False
     def checkSentence(self, document, word):
-        if(self.objFeature != None and self.intPropotionalTo == Proportional.SENTENCE_COUNT.value):
-            self.objFeature.checkWord(document,word)
-            
+        if(self.bolPerSentence):
+            self.objFeature.checkSentence(document,word)
+            return True
+        return False
             
     def checkChar(self, document, word):
-        if(self.objFeature != None and self.intPropotionalTo == Proportional.CHAR_COUNT.value): #isinstance(self.objFeature,CharBasedFeature)):
+        #return True
+        if(self.bolPerChar): #isinstance(self.objFeature,CharBasedFeature)):
             self.objFeature.checkChar(document,word)
             return True
         else:
@@ -149,7 +163,7 @@ class LinkCountFeature(TagCountFeature):
             
         if str_href == "" or str_href == None:
             super().startTag(document, tag, attrs,ignoreCount=True)
-            return
+            return True
         
         str_href = str_href.strip()
         bolIsExternal = str_href.startswith("http://") or str_href.startswith("https://")

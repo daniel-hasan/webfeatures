@@ -23,7 +23,7 @@ class SentenceCountFeature(SentenceBasedFeature):
     
     def checkSentence(self,document,sentence):
         self.int_sentences_counter = self.int_sentences_counter + 1
-    
+        return True
     def compute_feature(self, document):
         return self.int_sentences_counter
     
@@ -48,7 +48,7 @@ class LargeSentenceCountFeature(WordBasedFeature):
             
         elif word not in FeatureCalculator.word_divisors:
             self.int_word_counter = self.int_word_counter + 1
-            
+        return True
     def large_sentence(self,int_sentence_size):
         if(int_sentence_size >= self.int_size):
             self.int_large_sentence = self.int_large_sentence + 1
@@ -77,7 +77,7 @@ class LargeSentenceSizeFeature(WordBasedFeature):
             
         elif word not in FeatureCalculator.word_divisors:
             self.int_word_counter = self.int_word_counter + 1
-            
+        return True 
     def large_sentence(self,int_sentence_size):
         if(int_sentence_size >= self.int_large_sentence):
             self.int_large_sentence = int_sentence_size
@@ -114,11 +114,11 @@ class WordCountFeature(WordBasedFeature):
      
     def checkWord(self,document,word):
         if(self.ignore_punctuation and word in FeatureCalculator.word_divisors):
-            return 
+            return True
         
         if len(self.setWordsToCount) ==0 or word in self.setWordsToCount or (not self.case_sensitive and word.lower() in self.setWordsToCount):
             self.int_word_counter = self.int_word_counter + 1
-    
+        return True
     def compute_feature(self,document):
         return self.int_word_counter
     def reset_counter(self):
@@ -144,7 +144,7 @@ class PhraseRateMoreThanAvgFeature(SentenceBasedFeature,WordCountFeature):
     def checkSentence(self,document,sentence):
         self.arr_sentences.append(self.int_word_counter)
         self.reset_counter()
-    
+        return True
     def compute_feature(self, document):
         int_count = 0
         avgSize = mean(self.arr_sentences)
@@ -182,7 +182,7 @@ class BeginningSentenceWordCountFeature(SentenceBasedFeature):
         pos = 0
         sentence = sentence.strip()
         if(len(sentence)<1):
-            return
+            return True
         
         while(pos < len(sentence) and sentence[pos] not in word_divisors):
             word += sentence[pos]
@@ -192,7 +192,7 @@ class BeginningSentenceWordCountFeature(SentenceBasedFeature):
         #check if exists and count
         if word in self.setWordsToCount:
             self.int_word_counter = self.int_word_counter + 1
-    
+        return True
     def compute_feature(self,document):
         return self.int_word_counter
     
@@ -236,6 +236,7 @@ class LargeParagraphCountFeature(WordBasedFeature):
             self.large_paragraph(self.int_word_counter)
         elif word not in FeatureCalculator.word_divisors:
             self.int_word_counter = self.int_word_counter + 1
+        return True
         
     def large_paragraph(self,int_paragraph_size):
         if(int_paragraph_size >= self.size):
@@ -276,7 +277,7 @@ class SyllableCountFeature(WordBasedFeature):
     def checkWord(self, document, word):
         syllable = hyphenator.hyphenate_word(word)
         self.int_syllable_counter = self.int_syllable_counter + len(syllable)
-        
+        return True
     def compute_feature(self, document):
         return self.int_syllable_counter
     
@@ -295,7 +296,7 @@ class WordsSyllablesCountFeature(WordBasedFeature):
         
         if int_syllable_counter >= self.int_syllables:
             self.int_complexword_counter = self.int_complexword_counter + 1
-    
+        return True
     def compute_feature(self, document):
         return self.int_complexword_counter
     
