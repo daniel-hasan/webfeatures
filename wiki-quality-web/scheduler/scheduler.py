@@ -64,7 +64,7 @@ class Scheduler(object):
 					dataset.refresh_from_db()
 					dataset = Dataset.objects.get(id = dataset.id)
 				else:
-					while(Dataset.objects.filter(status=objSubmited).count()==0):
+					while(Dataset.objects.filter(status=objSubmited,bol_ready_to_process=True).count()==0):
 						time.sleep(int_wait_seconds)
 				
 
