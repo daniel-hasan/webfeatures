@@ -134,10 +134,10 @@ class Dataset(models.Model):
             self.save()
             
 def content_file_name(instance, filename):
-    name, ext = filename.split('.')
-    
+  
+
     file_path = '{dir_name}{nam_file}_{dataset_id}.{ext}'.format(
-         dir_name="uploaded_datasets/", nam_file = name, dataset_id = instance.dataset.id, ext=ext) 
+         dir_name="uploaded_datasets/", nam_file = "dataset", dataset_id = instance.dataset.id, ext="zip") 
     return file_path
    
 class SubmittedDataset(models.Model):
