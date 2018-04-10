@@ -10,18 +10,29 @@ Created on 30/10/2017
 
 
 '''
-from django.utils import timezone
+import json
+import os
 
 from django.contrib.auth.models import User
+from django.core.files import uploadedfile
 from django.test.testcases import TestCase
+from django.utils import timezone
 
+from feature.features import Document as DocumentFeature
 from scheduler.utils import DatasetModelDocReader, DatasetModelDocWriter
 from wqual.models.featureset_config import FeatureSet, Language
-from wqual.models.uploaded_datasets import Dataset, Format, DocumentText, Status
-from feature.features import Document as DocumentFeature
+from wqual.models.uploaded_datasets import Dataset, Format, Status, \
+    SubmittedDataset
 from wqual.models.uploaded_datasets import Document as DocumentDataset
-import json
 
+from django.http import HttpResponseRedirect
+from django.shortcuts import render
+
+from django import forms
+
+class UploadFileForm(forms.Form):
+    title = forms.CharField(max_length=50)
+    file = forms.FileField()
 
 class TestDocIO(TestCase):
     
@@ -59,7 +70,6 @@ class TestDocIO(TestCase):
     '''        
     def tearDown(self):
         for doc in self.arrDocs:
-            doc.documenttext.delete()
             doc.delete()
             
         self.objDataset.delete()
@@ -69,10 +79,22 @@ class TestDocIO(TestCase):
     '''      
             
     def testReader(self):
+        my_base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))) + "/dummy_dataset_tests/txt_2.zip"
+        #<class 'django.core.files.uploadedfile.InMemoryUploadedFile'>
+        f = UploadFileForm(request.POST, request.FILES)
+        
+        with open(my_base_dir, 'wb+') as destination:
+            for chunk in f.chunks():
+                destination.write(chunk)
+                
+        destination
+        '''
         d = DatasetModelDocReader(dataset=self.objDataset)
-
-        for i in range(10):
-            DocumentText.objects.create(dsc_text = "Insira um texto aqui", document =self.arrDocs[i])
+        print(my_base_dir)
+        #for i in range(10):
+        f = open (my_base_dir, "rb");
+        SubmittedDataset.objects.create(dataset=self.objDataset, file=f)
+        
         
         for doc in d.get_documents():
             bol_encontrou = False
@@ -80,11 +102,11 @@ class TestDocIO(TestCase):
                 if(doc.int_doc_id == docCriado.id):
                     bol_encontrou = True
                     self.assertEqual(doc.str_doc_name, docCriado.nam_file, "O nome do arquivo não esta igual!")
-                    self.assertEqual(doc.str_text, docCriado.documenttext.dsc_text, "O nome do arquivo não esta igual!")
+                    #self.assertEqual(doc.str_text, docCriado.documenttext.dsc_text, "O nome do arquivo não esta igual!")
                     
             self.assertTrue(bol_encontrou, "Nao foi possivel encontrar o documento de id: "+str(doc.int_doc_id)+" nome: "+doc.str_doc_name)
-        
-    
+        '''
+    '''
     def testWriter(self):
         d = DatasetModelDocWriter(self.objDataset)
         arr_feats_used = ["Texto das features usadas"]
@@ -101,5 +123,5 @@ class TestDocIO(TestCase):
             
                 
     
-    
+    '''
             

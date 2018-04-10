@@ -77,6 +77,7 @@ class Dataset(models.Model):
     user = models.ForeignKey(User, models.PROTECT)
     status = models.ForeignKey(Status, models.PROTECT)
 
+    num_total_size = models.IntegerField(blank=True, null=True)
          
     def save_compressed_file(self,comp_file_pointer,save_docs_later=False):
             #validacao ser feita aqui
@@ -93,7 +94,7 @@ class Dataset(models.Model):
             for name,int_file_size in objFileZip.get_each_file_size():
                 if int_file_size > int_limit:
                     raise FileSizeException("The file "+name+" exceeds the limit of "+str(int_limit)+" bytes")
-            self.bol_ready_to_process = False
+            self.bol_ready_to_process = True
             self.save()
             
             if(save_docs_later):                
@@ -110,6 +111,9 @@ class Dataset(models.Model):
                     objSubmittedFile.save()
                 
                 else:
+                    print("lugar errado")
+                    
+                    '''
                     for name,strFileTxt in objFileZip.read_each_file():
                         with transaction.atomic():
                             objDocumento = Document(nam_file=name,dataset=self)
@@ -119,19 +123,28 @@ class Dataset(models.Model):
                             self.document_set.add(objDocumento,bulk=False)
                     self.bol_ready_to_process = True
                     self.save()
-                
+                    '''
                 
     def save_zip_to_dataset(self, file_zip):
-            for name,strFileTxt in file_zip.read_each_file():
+        arr_strFileTxt = []
+        int_total_file_size = 0
+        
+        for name,strFileTxt in file_zip.read_each_file():
+            for n, int_file_size in file_zip.get_each_file_size():
                 with transaction.atomic():
-                    objDocumento = Document(nam_file=name,dataset=self)
+                    objDocumento = Document(nam_file=name, dataset=self, num_file_size = int_file_size)
                     objDocumento.save()
-                    objDocumentoTexto = DocumentText(document=objDocumento,dsc_text=strFileTxt)
-                    objDocumentoTexto.save()
+                    
+                    #objDocumentoTexto = DocumentText(document=objDocumento,dsc_text=strFileTxt)
+                    #objDocumentoTexto.save()
                     self.document_set.add(objDocumento,bulk=False)
-                        
-            self.bol_ready_to_process = True
-            self.save()
+                    int_total_file_size += int_file_size
+                    
+                arr_strFileTxt.append(strFileTxt)
+        self.bol_ready_to_process = True
+        self.num_total_size = int_total_file_size
+        self.save()
+        return arr_strFileTxt
             
 def content_file_name(instance, filename):
     name, ext = filename.split('.')
@@ -146,7 +159,9 @@ class SubmittedDataset(models.Model):
     
     def grava_arq_no_dataset(self):
         objFileZip = CompressedFile.get_compressed_file(self.file)
-        self.dataset.save_zip_to_dataset(objFileZip)
+        arr_text = self.dataset.save_zip_to_dataset(objFileZip)
+        return arr_text
+        
     
     
 class ProcessingDataset(models.Model):          
@@ -178,7 +193,7 @@ class Document(models.Model):
 
     nam_file = models.CharField(max_length=255, blank=True, null=True)
     dataset = models.ForeignKey(Dataset, models.CASCADE)
-    
+    num_file_size = models.IntegerField(blank=True, null=True)
     
     
 class DocumentText(models.Model):

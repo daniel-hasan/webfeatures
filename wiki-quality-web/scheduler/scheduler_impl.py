@@ -42,9 +42,10 @@ class OldestFirstScheduler(Scheduler):
 	
 		with transaction.atomic():
 			
-			dataset_oldest = Dataset.objects.select_for_update().filter(status=objSubmited,bol_ready_to_process=True).order_by('dat_submitted').first()
-			
-			if not dataset_oldest:
+			try:
+				dataset_oldest = Dataset.objects.select_for_update().filter(status=objSubmited,bol_ready_to_process=True).order_by('dat_submitted')[0]
+			except IndexError: #else:
+			#	if not dataset_oldest:
 				return None
 
 			dataset_oldest.status= objProcessing
@@ -76,10 +77,7 @@ class SchedulerSmallJobFirst(Scheduler):
 			return None
 		return dataset_small_job
 	
-	
-	
-	
-	
+
 	
 	
 	

@@ -23,7 +23,7 @@ import zipfile
 from wqual.models import Dataset
 from wqual.models.exceptions import FileSizeException, FileCompressionException
 from wqual.models.featureset_config import FeatureSet
-from wqual.models.uploaded_datasets import  Status, StatusEnum, DocumentText, \
+from wqual.models.uploaded_datasets import  Status, StatusEnum, \
     Document, DocumentResult
 
 

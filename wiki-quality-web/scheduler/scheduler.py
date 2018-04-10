@@ -17,7 +17,7 @@ from django.utils import timezone
 from feature.features import FeatureCalculator
 from scheduler.utils import DatasetModelDocReader, DatasetModelDocWriter
 from wqual.models.featureset_config import UsedFeature
-from wqual.models.uploaded_datasets import Document, DocumentText, Dataset, \
+from wqual.models.uploaded_datasets import Document, Dataset, \
 	ProcessingDataset, Machine
 from wqual.models.uploaded_datasets import StatusEnum, Status
 
@@ -64,12 +64,12 @@ class Scheduler(object):
 					dataset.refresh_from_db()
 					dataset = Dataset.objects.get(id = dataset.id)
 				else:
-					while(Dataset.objects.filter(status=objSubmited).count()==0):
+					while(len(Dataset.objects.filter(status=objSubmited))==0):
 						time.sleep(int_wait_seconds)
 				
 
 			if dataset:
-				#print("Peguei o dateaset: " + dataset.nam_dataset)
+				print("Peguei o dateaset: " + dataset.nam_dataset)
 				bolIsSleeping = False
 				bolFoundDataset = True				
 				arr_feats_used = self.get_arr_features(dataset)
@@ -89,13 +89,12 @@ class Scheduler(object):
 
 				
 				with transaction.atomic():
-					#delete os textos do doc
-					DocumentText.objects.filter(document__dataset_id=dataset.id).delete()
 					
 					ProcessingDataset.objects.filter(dataset=dataset,
 																		num_proc_extractor=os.getpid(),
 																		machine_extractor=self.objMachine).delete()
 					dataset.save()
+					ProcessingDataset.objects.filter(dataset=dataset).delete()
 				
 				timeDeltaProc = dataset.end_dat_processing-dataset.start_dat_processing
 				print(str(numth)+": Dataset '"+dataset.nam_dataset+"' processed in "+str(timeDeltaProc))
