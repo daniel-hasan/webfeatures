@@ -25,6 +25,18 @@
     <li><a class="styletabs" id="FeaturesSets" href="#tabs-2">Features Set</a></li>
   </ul>
   <div id="tabs-1">
+  <div class="ui-widget">
+	<div class="hideGif success">
+		<p><span class="ui-icon ui-icon-check"></span>
+		<strong>Success!</strong> Feature set description was saved!</p>
+	</div>
+</div>
+
+<div class="ui-widget">
+	<div class="hideGif error-container">		
+	</div>
+</div>
+  
   	<div class="col-md-6">	
   		{% if object.id %}
   				<form id="updateFeatureForm" onsubmit="return false"  action="{% url "feature_set_edit" object.nam_feature_set %}" method="post">{% csrf_token %}
@@ -54,9 +66,10 @@
 	            
 			<p>&nbsp;
 			Share the feature set. <span id="sharing_link" class="{%if not object.id %}invisible{%endif%}">Sharing link: <a id="anc" href="{% url "public_extract_features" user.get_username object.nam_feature_set %}">http://{{request.get_host}}/p/{{user.get_username}}/<span id="pub_feat_set_name">{{object.nam_feature_set}}</span></a></span></p>
-	    		<button type="submit" id="saveButton" class="ui-button ui-widget ui-corner-all">Save</button>
+	    		<img class="hideGif" id="gif" src=""/>
+	    		<button id="saveButton" class="ui-button ui-widget ui-corner-all">Save</button>
 	    		<input type="button" class="ui-button ui-widget ui-corner-all" onclick="cancelEditFeature()" value = "Cancel" />
-			<input type="hidden" value="{{object.nam_feature_set}}" id="last_saved_name">
+				<input type="hidden" value="{{object.nam_feature_set}}" id="last_saved_name">			
 		</form>
 	</div>
 </div>
@@ -67,14 +80,23 @@
   
   <!-- form create/update via ajax --> 
   <script>
+  		$(function(){
+  						$("#id_language").attr("required",false)
+  					}
+  		); 
+  		  		
+  		$("#saveButton").click(function() {
+  			$("#gif").removeClass("hideGif");
+  			$("#gif").attr("src","{% static "imgs/ajax-loader.gif" %}");	      
+		});
+  
   		function changeShareURL(){
   			let strFeatureSetName = $("#id_nam_feature_set")[0].value;
 			$("#pub_feat_set_name").html(strFeatureSetName);
 			$("#anc")[0].href = "{% url "public_extract_features" user.get_username "" %}"+strFeatureSetName;
   		}
+  		
   		let href_button_clicked = "";
-
-
 		
   		$("#updateFeatureForm").change(function() {
 		   $("#updateFeatureForm").data("changed",true);
@@ -158,14 +180,12 @@
 		  	let arrElementsFeatureSet = [];
 		  	let arrCreateElementsFeatureSet = [];
 		  	console.log("Name to save"+idNamFeaturesSet);
+		  	
 			arrElementsFeatureSet.push({"id_nam_feature_set":idNamFeaturesSet,
 										"nam_feature_set": $('#id_nam_feature_set').val(),
 										"dsc_feature_set":$('#id_dsc_feature_set').val(), 
 										"language":$('#id_language').val(),
 										"bol_is_public":$("#id_bol_is_public")[0].checked});
-										
-
-		
 			if(boolSave){
 				
 				updateFeatureSet(arrElementsFeatureSet);
@@ -173,7 +193,7 @@
 			}else{
 				createFeatureSet(arrElementsFeatureSet);
 	  			boolSave = true;	  		
-	  		}		
+	  		}	
 	 	}
 		  		
 	  	$( "#saveButton" ).click(function() {
@@ -187,19 +207,32 @@
 				  type: "POST",
 			  	  data: { "arrCreateElementsFeatureSet" : JSON.stringify(arrCreateElementsFeatureSet)},
 				  success: function(response) {
-				  		$("#last_saved_name")[0].value = response.arrCreateFeatureSet["nam_feature_set"];
-				  		gUsedFeaturesNames = {};
-				  		changeShareURL();
-				  		alert("Feature set description saved");
-				  		$("#sharing_link").removeClass("invisible");
-				  		if(boolRedirectAfterSave){
-				  			window.location.href = href_button_clicked;
+				  		if(response.arrErr != ""){
+				  			$('#FeaturesSets').addClass("disabled");
+				  			$(".error-container").append( "<p>Error! "+ response.arrErr +"</p>" );
+				  			$(".error-container").removeClass("hideGif");
+				  			$("#gif").addClass("hideGif");
+				  		} else {
+				  			$('#FeaturesSets').removeClass("disabled");
+					  		$("#last_saved_name")[0].value = response.arrCreateFeatureSet["nam_feature_set"];
+					  		gUsedFeaturesNames = {};
+					  		changeShareURL();
+					  		$("#sharing_link").removeClass("invisible");
+					  		if(boolRedirectAfterSave){
+					  			window.location.href = href_button_clicked;
+					  		}
+					  		setTimeout(function(){
+					  			$(".success").removeClass("hideGif");
+				          		$("#gif").addClass("hideGif");
+				        	}, 1000);
+				        	setTimeout(function(){
+				          		$(".success").addClass("hideGif");
+				        	}, 5000);
 				  		}
-				  		
-				  		
 				  },
 				  error: function(xhr,status,error){
 				  		alert("An error occured when trying to save the new configurations:\n"+error);
+				  		$("#gif").addClass("hideGif");
 		       	  }
 				});
 		}
@@ -211,17 +244,33 @@
 				  type: "POST",
 			  	  data: { "arrEditElementsFeatureSet" : JSON.stringify(arrElementsFeatureSet)},
 				  success: function(response) {
-				  		//console.log("It is working");
-				  		changeShareURL();
-				  		$("#last_saved_name")[0].value = response.arrFeauteSetEdit[0]["nam_feature_set"];
-				  		alert("Feature set description saved");
-				  		if(boolRedirectAfterSave){
-				  			window.location.href = href_button_clicked;
-				  		}
+				  		console.log(response.arrErr);
+				  		if(response.arrErr != ""){
+				  			$('#FeaturesSets').addClass("disabled");
+				  			$(".error-container").append( "<p>Error! "+ response.arrErr +"</p>" );
+				  			$(".error-container").removeClass("hideGif");
+				  			$("#gif").addClass("hideGif");
+				  		} else {
+					  		//console.log("It is working");
+					  		changeShareURL();
+					  		$("#last_saved_name")[0].value = response.arrFeauteSetEdit[0]["nam_feature_set"];
+					  		//alert("Feature set description saved");
+					  		if(boolRedirectAfterSave){
+					  			window.location.href = href_button_clicked;
+					  		}
+					  		setTimeout(function(){
+				          		$(".success").removeClass("hideGif");
+				          		$("#gif").addClass("hideGif");
+				        	}, 1000);
+				        	
+				        	setTimeout(function(){
+				          		$(".success").addClass("hideGif");
+				        	}, 5000);
+				        }
 				  },
 				  error: function(xhr,status,error){
-				  		
-				  		alert("An error occured when trying to save the new configurations:\n"+error);
+						alert("An error occured when trying to save the new configurations:\n"+error);
+		       	  		$("#gif").addClass("hideGif");
 		       	  }
 				});
 		}
@@ -254,7 +303,7 @@
 </div>
 
 <div id="add-form" class="listAdd" title="Add Feature Set">
-	<div id="featureList"></div>
+	 <div id="featureList"></div>
 	 <script src="{% url "insert_list_used_features" %}"></script>
 	 <script src="{% static "js/csrf_token_ajax.js" %}"></script>
 </div>

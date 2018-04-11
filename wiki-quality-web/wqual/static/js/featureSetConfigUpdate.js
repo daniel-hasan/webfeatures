@@ -11,7 +11,8 @@ $( function() {
 	     
 	     buttons: {
 	        "Save": function() {
-	          $( this ).dialog( "close" );
+	        
+	        //  $( this ).dialog( "close" );
 	          let arr_checked = $('input[type=checkbox]:checked');
 	          let arrFeaturesNames = new Array();
 	         
@@ -22,6 +23,9 @@ $( function() {
 	         let strFeatureSet = "";
 	         
 	         strFeatureSet = $('#id_nam_feature_set').val();
+	         
+	         console.log(arrFeaturesNames);
+	         console.log(strFeatureSet);
 	         
 	         if(arrFeaturesNames.length != 0){
 	         	insertFeatures(arrFeaturesNames,strFeatureSet);

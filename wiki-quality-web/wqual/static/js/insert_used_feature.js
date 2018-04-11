@@ -8,7 +8,6 @@ class Feature {
     }
 };
 
-
 var gUsedFeaturesNames = {}
 let arrFeaturesToForm = [];
 
@@ -23,6 +22,13 @@ function insereFeature(feature) {
 	
 	HTMLEl_temp_li_feature_set.innerHTML = feature.name;
 	HTMLEl_temp_li_feature_set.title = feature.description;
+	
+	$( HTMLEl_temp_li_feature_set ).tooltip({
+      show: {
+        effect: "slideDown",
+        delay: 250
+      }
+    });
 	
 	HTMLEl_temp_button.innerHTML = '';
 	HTMLEl_temp_button.setAttribute('class', 'button-remove-feature');
@@ -107,52 +113,6 @@ function call_form(idForm){
 		});	
 
 }
-function call_form(idForm){
-
-        create_form_feature_is_configurable('form'+idForm, idForm);	
-         
-	    $( function() {
-	         $( HTMLEl_temp_div_is_configurable_form ).dialog({
-			    autoOpen: false,
-			    modal: true,
-			    title: 'Configure Feature: ' + HTMLEl_temp_label_form.innerHTML,
-			    width: 400, 
-			    height: 'auto',
-			    fluid: true, 
-			    resizable: false
-			 });
-			
-			$( HTMLEl_temp_div_is_configurable_form ).dialog( "open" ); 
-			
-			$(window).resize(function () {
-			    fluidDialog();
-			});
-			
-			// catch dialog if opened within a viewport smaller than the dialog width
-			$(document).on("dialogopen", ".ui-dialog", function (event, ui) {
-			    fluidDialog();
-			});
-			
-			function fluidDialog() {
-			    var $visible = $(".ui-dialog:visible");
-			    $visible.each(function () {
-			        var $this = $(this);
-			        var dialog = $this.find(".ui-dialog-content").data("ui-dialog");
-			        if (dialog.options.fluid) {
-			            var wWidth = $(window).width();
-			            if (wWidth < (parseInt(dialog.options.maxWidth) + 50))  {
-			                $this.css("max-width", "90%");
-			            } else {
-			                $this.css("max-width", dialog.options.maxWidth + "px");
-			            }
-			            dialog.option("position", dialog.options.position);
-			        }
-			    });
-			}			
-		});	
-
-}
-
 
 function create_form_feature_is_configurable(idForms, idButton){	
 
@@ -168,7 +128,6 @@ function create_form_feature_is_configurable(idForms, idButton){
 	
 	insert_feature_is_configurable(arr_temp_parms, idForms, featureName, idButton);
 }
-
 
 let HTMLEl_temp_div_is_configurable_form =  document.createElement('div');
 let HTMLEl_temp_label_form = document.createElement('span');
@@ -288,6 +247,7 @@ function insert_feature_is_configurable(arrParams, idDivForms, featureName, used
 				alert("json ainda não está sendo tratado.");
 			
 			}
+			
 		selectedParam.push(HTMLEl_temp_value_argument);
 			
 		HTMLEl_temp_value_argument.setAttribute('class', 'sizeinputs');	

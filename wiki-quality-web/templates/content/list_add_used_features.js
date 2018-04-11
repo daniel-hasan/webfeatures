@@ -21,6 +21,9 @@
  * @since  09/02/2018
  */
 function insertFeatures(arrFeaturesNames,strFeatureSet){
+	
+	console.log(arrFeaturesNames + strFeatureSet);
+	
 	$.ajax({
 	  url: format_feature_set_url("{% url "insert_used_features" "__feature_set__" %}",strFeatureSet),
 	  dataType: 'json',
@@ -81,10 +84,18 @@ function insertNewFeatureItem(objFeatureItem){
 	
 	//Alt Description + reference 
 	HTMLEl_temp_FeatureItemName.title = objFeatureItem.description + ' | ' + objFeatureItem.reference;
-
+	
+	$( HTMLEl_temp_FeatureItemName ).tooltip({
+      show: {
+        effect: "slideDown",
+        delay: 250
+      }
+    });
+	
 	HTMLEl_temp_div_add_feature.appendChild(HTMLEl_temp_input_checkbox);
 	HTMLEl_temp_div_add_feature.appendChild(HTMLEl_temp_FeatureItemName);
 	HTMLEl_temp_div.appendChild(HTMLEl_temp_div_add_feature);
+	
 	
 }
 /**

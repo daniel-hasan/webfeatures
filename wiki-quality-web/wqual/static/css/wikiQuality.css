@@ -342,17 +342,12 @@ fieldset[disabled] .dataset-file-name {
 			Data de modificação: <13>/<11>/<2017>
 			Autor(<feat-Dlinha-001>): <Aline><Pinto>
 		    AutorM(<feat-Dlinha-002>): <Aline><Pinto>
-		
-			Arquivo: <wikiQuality.css>
-		    Objetivo: {Trocar o css padrão do Tabs jQuery UI.
-		    * O css aqui tem prioridade sobre o css do jQuery UI.
-		    * Pendente retirar esse código desta área.
-		    }
+		}
 		*/
 		
 		.ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active, a.ui-button:active, .ui-button:active, .ui-button.ui-state-active:hover {
 		    border: 1px solid #c5c5c5;
-		    background: #e5e3e3;
+		    background: white;
 		    color: black;
 		    font-weight: normal;
 		}
@@ -422,11 +417,32 @@ fieldset[disabled] .dataset-file-name {
     		left: 50%;
 		}
 		.listAdd div {
-			    overflow: auto;
+			overflow: auto;
 			height:400px;
 		}	
 		.add-form p{
 			margin-left:5px;
+		}
+		#gif{
+			height: 20px;
+    		width: 20px;
+    		position: relative;
+		}
+		.hideGif{
+			display:none;
+		}
+		.success{
+			color: #3c763d;
+    		background-color: #dff0d8;
+   	 		border-color: #d6e9c6;
+   	 		padding: 5px;
+    		margin-bottom: 10px;
+    		border: 1px solid;
+    		border-radius: 1px;
+		}
+		.disabled {
+		    pointer-events:none; //This makes it not clickable
+		    opacity:0.6;         //This grays it out to look disabled
 		}
 
 /***************************** Fim feature_set_update_insert.html e used_features.js*****************************/
