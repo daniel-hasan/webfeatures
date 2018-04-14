@@ -36,5 +36,5 @@ ADMINS = (
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 STATIC_ROOT = "/wqual-static"
-
+MEDIA_URL = "/wqual-media"
 
