@@ -80,10 +80,6 @@ class Scheduler(object):
 				FeatureCalculator.featureManager.computeFeatureSetDocuments(datReader=doc_read,docWriter=doc_write,arr_features_to_extract=arr_feats_used,format=dataset.format.get_enum())
 					
 				
-				
-				
-				
-				
 				dataset.status = Status.objects.get_enum(StatusEnum.COMPLETE)	
 				dataset.end_dat_processing = timezone.now()
 
@@ -95,6 +91,8 @@ class Scheduler(object):
 																		machine_extractor=self.objMachine).delete()
 					dataset.save()
 					ProcessingDataset.objects.filter(dataset=dataset).delete()
+					dataset.submitteddataset.file.delete()
+					dataset.submitteddataset.delete()
 				
 				timeDeltaProc = dataset.end_dat_processing-dataset.start_dat_processing
 				print(str(numth)+": Dataset '"+dataset.nam_dataset+"' processed in "+str(timeDeltaProc))

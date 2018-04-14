@@ -20,21 +20,13 @@ class DatasetModelDocReader(FeatureDocumentsReader):
         self.dataset = dataset
     
     def get_documents(self):
-        
-        timeToProc = CheckTime()
-        i =1
-        
+
         sub_dataset = SubmittedDataset.objects.filter(dataset=self.dataset)[0]
-        arr_dsc_text = sub_dataset.grava_arq_no_dataset()
-        sub_dataset.file.delete()
-        sub_dataset.delete()
-        for i in range(len(self.dataset.document_set.all())):   #Isso faz sentido?
-            for doc in self.dataset.document_set.all():
-                if hasattr(doc, "documenttext"):
-                    objDocmentFeature = DocumentFeature(doc.id, doc.nam_file, arr_dsc_text[i])
-                    yield objDocmentFeature
-                    timeToProc.printDelta("Processing "+str(i))
-                    i=i+1
+        
+        for doc in sub_dataset.dataset.get_zip_to_doc_feature(sub_dataset.file):
+                yield doc
+                
+  
                 
 class DatasetModelDocWriter(FeatureDocumentsWriter):
         def __init__(self, dataset):
@@ -56,7 +48,6 @@ class DatasetModelDocWriter(FeatureDocumentsWriter):
             self.arr_feats_result = arr_feats_result
                                     
             doc=DocumentDataset.objects.get(id = self.document.int_doc_id)
-            print("/n/n/n/nEu         aquiii o ")
             doc_result = DocumentResult(dsc_result=self.arr_feats_result, document=doc)
             doc_result.save()
             
