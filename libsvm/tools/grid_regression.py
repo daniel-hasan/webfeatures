@@ -12,7 +12,7 @@ else:
 
 telnet_workers = []
 ssh_workers = []
-nr_local_worker = 1
+nr_local_worker = 3
 
 class GridOption:
 	def __init__(self, dataset_pathname, options):
@@ -152,9 +152,9 @@ def redraw(db,best_param,gnuplot,options,tofile=False):
 			prevc = line[0]
 		gnuplot.write("{0[0]} {0[1]} {0[2]}\n".format(line).encode())
 	gnuplot.write(b"e\n")
-
 	gnuplot.write(b"\n") # force gnuplot back to prompt when term set failure
 	gnuplot.flush()
+
 
 def calculate_jobs(options):
 	
@@ -254,7 +254,7 @@ class Worker(Thread):
 			(cexp,gexp) = self.job_queue.get()
 			if cexp is WorkerStopToken:
 				self.job_queue.put((cexp,gexp))
-			       # print('worker {0} stop.'.format(self.name))
+				# print('worker {0} stop.'.format(self.name))
 				break
 			try:
 				c, g = None, None
@@ -263,10 +263,6 @@ class Worker(Thread):
 				if gexp != None:
 					g = 2.0**gexp
 				rate = self.run_one(c,g)
-				
-				print(c)
-				print(g)
-				print(rate)
 				if rate is None: raise RuntimeError('get no rate')
 			except:
 				# we failed, let others do that and we just quit
@@ -282,20 +278,17 @@ class Worker(Thread):
 	def get_cmd(self,c,g):
 		options=self.options
 		cmdline = '"' + options.svmtrain_pathname + '"'
-		print(cmdline)
 		if options.grid_with_c: 
 			cmdline += ' -c {0} '.format(c)
 		if options.grid_with_g: 
 			cmdline += ' -g {0} '.format(g)
 		cmdline += ' -s 3 -v {0} {1} {2} '.format\
 			(options.fold,options.pass_through_string,options.dataset_pathname)
-		print("cmdline: "+cmdline)
 		return cmdline
 		
 class LocalWorker(Worker):
 	def run_one(self,c,g):
 		cmdline = self.get_cmd(c,g)
-		print(cmdline)
 		result = Popen(cmdline,shell=True,stdout=PIPE,stderr=PIPE,stdin=PIPE).stdout
 		for line in result.readlines():
 			if str(line).find('Cross') != -1:
@@ -337,7 +330,6 @@ class TelnetWorker(Worker):
 		tn.write('exit\n')			   
 	def run_one(self,c,g):
 		cmdline = self.get_cmd(c,g)
-		print(cmdline)
 		result = self.tn.write(cmdline+'\n')
 		(idx,matchm,output) = self.tn.expect(['Cross.*\n'])
 		for line in output.split('\n'):
@@ -433,7 +425,7 @@ def find_parameters(dataset_pathname, options=''):
 
 
 	db = []
-	best_rate = -1
+	best_rate = float("inf")
 	best_c,best_g = None,None  
 
 	for (c,g) in resumed_jobs:

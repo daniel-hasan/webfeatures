@@ -7,13 +7,13 @@
 ### Rodar scale para o treino:
 
 ```
-  libsvm$ ./svm-scale -s param.scale tools/Folds/TreinoFolds/treino.foldi>treinoScaled.foldi
+  libsvm$ ./svm-scale -s param.scale tools/Folds/TreinoFolds/treino.foldi.txt>treinoScaled.foldi
 ```
 
 ### Rodar scale para o teste:
 
 ```
-  libsvm$ ./svm-scale -r param.scale tools/Folds/TesteFolds/teste.foldi>testeScaled.foldi
+  libsvm$ ./svm-scale -r param.scale tools/Folds/TesteFolds/teste.foldi.txt>testeScaled.foldi
 ```
 
 ### Rodar o grid_regression.py para descobrir o parametro custo e gama:
