@@ -217,6 +217,11 @@ class StyleFeatureFactory(FeatureFactory):
                                                                       16,ParamTypeEnum.int))
         
         
+        charCountFeat = CharacterCountFeature("Char Count","Count the number of characters in the text.","",
+                    FeatureVisibilityEnum.public, FormatEnum.text_plain, FeatureTimePerDocumentEnum.MILLISECONDS, ignore_punctuation=False)
+        
+        wordCountFeat = WordCountFeature("Word Count","Count the number of words in the text.","",
+                    FeatureVisibilityEnum.public, FormatEnum.text_plain, FeatureTimePerDocumentEnum.MILLISECONDS,ignore_punctuation=True)
         
         arrFeatures.append(featSentenceCount)
         arrFeatures.append(featLargeSentenceCount)
@@ -225,6 +230,9 @@ class StyleFeatureFactory(FeatureFactory):
         arrFeatures.append(featLargestSentenceSize)
         arrFeatures.append(featLargePhraseRate)
         arrFeatures.append(featShortPhraseRate)
+        arrFeatures.append(charCountFeat)
+        arrFeatures.append(wordCountFeat)
+        
         return  arrFeatures
         
 

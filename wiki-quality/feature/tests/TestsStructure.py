@@ -176,11 +176,11 @@ class TestSectionFeatures(unittest.TestCase):
 
         
         for document in TestSectionFeatures.DOCUMENTS:
-            parser = ParserTags(objFeature,document)
+            parser = ParserTags([objFeature],document)
             parser.feed(document.str_text)
-            arrSizes = parser.feat.compute_feature(document)
+            arrSizes = parser.arrParserFeats[0].compute_feature(document)
             arrFeaturesResult.append(arrSizes)
-            parser.feat.finish_document(document)
+            parser.arrParserFeats[0].finish_document(document)
             
         #teste seção
         for intI in range(len(arrResultPerDoc)):
@@ -275,9 +275,9 @@ class TestParserTags(unittest.TestCase):
                                          FormatEnum.HTML, 
                                          FeatureTimePerDocumentEnum.MILLISECONDS,["p","h1"])
         document = Document(1,"doc1","O texto nao precisa -necessariamente - ser o texto que sera testado")
-        parser = ParserTags(tcount,document)
+        parser = ParserTags([tcount],document)
         parser.feed("<head></head><body>Dados<p>Parágrafo</p><h1><h123> de teste</body>")
-        intValFeature = parser.feat.compute_feature(document)
+        intValFeature = parser.arrParserFeats[0].compute_feature(document)
         self.assertEqual(intValFeature, 2, "Nao foi contabilizado o numero de seções (h1) e paragrafos (p)"+
                          " no documento testado. Seriam 2 tags e o resultado foi: "+str(intValFeature))
 
