@@ -126,7 +126,7 @@ class Dataset(models.Model):
                 with transaction.atomic():
                     objDocumento = Document(nam_file=name,dataset=self)
                     objDocumento.save()
-                    objDocumentoTexto = DocumentText(document=objDocumento,dsc_text=strFileTxt)
+                    objDocumentoTexto = DocumentText(document=objDocumento,dsc_text=strFileTxt.decode("utf-8"))
                     objDocumentoTexto.save()
                     self.document_set.add(objDocumento,bulk=False)
                         
