@@ -50,6 +50,7 @@ class CharTestFeature(CharBasedFeature):
         
     def checkChar(self,document,char):
         self.arr_str_char.append(char)
+        return True
     
     def compute_feature(self,document):
         arr_aux = self.arr_str_char
@@ -69,6 +70,7 @@ class WordTestFeature(WordBasedFeature):
           
     def checkWord(self,document,word):
         self.arr_str_words.append(word)
+        return True
     
     def compute_feature(self,document):
         arr_aux = self.arr_str_words    
@@ -89,6 +91,7 @@ class SentenceTestFeature(SentenceBasedFeature):
     def checkSentence(self,document,sentence):
         #print("SENTENCA:  "+sentence)
         self.arr_str_sentence.append(sentence)
+        return True
     
     def compute_feature(self,document):
         arr_aux = self.arr_str_sentence
@@ -107,6 +110,7 @@ class ParagraphTestFeature(ParagraphBasedFeature):
           
     def checkParagraph(self,document,paragraph):
         self.arr_str_paragraph.append(paragraph)
+        return True
     
     def compute_feature(self,document):
         arr_aux = self.arr_str_paragraph
@@ -125,6 +129,7 @@ class TagTestFeature(TagBasedFeature):
           
     def startTag(self,document, tag, attrs):
         self.arr_str_tag.append(tag)
+        return True
     
     def compute_feature(self,document):
         arr_aux = self.arr_str_tag    
