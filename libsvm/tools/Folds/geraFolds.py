@@ -22,7 +22,7 @@ with open('MV_results_wiki6.csv', 'r') as ficheiro:
 		dicionario[fold].append(linha)
 
 dicionarioFeat = {}
-with open('data_wiki.csv', 'r') as ficheiro:
+with open('resultDalip09-like.csv', 'r') as ficheiro:
 	reader = list(csv.reader(ficheiro, delimiter=','))
 	
 	for linha in reader[1:]:
