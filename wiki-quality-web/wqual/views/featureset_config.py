@@ -50,7 +50,7 @@ class FeatureSetListView(LoginRequiredMixin, ListView):
     model = FeatureSet
     template_name = "content/feature_set_list.html"
     def get_queryset(self):
-        return FeatureSet.objects.filter(user=self.request.user) if  self.request.user.is_authenticated() else []
+        return FeatureSet.objects.filter(user=self.request.user)# if  self.request.user.is_authenticated() else []
 
 
 class FeatureSetInsert(LoginRequiredMixin, CreateView):
