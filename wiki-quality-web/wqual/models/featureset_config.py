@@ -124,7 +124,7 @@ class FeatureSet(models.Model):
     @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
     Conjunto de features configurado por um usuário
     '''
-    nam_feature_set = models.CharField(max_length=50)
+    nam_feature_set = models.CharField(max_length=20)
     dsc_feature_set = models.CharField(max_length=255, blank=True, null=True)
     bol_is_public = models.BooleanField(default=False)
     

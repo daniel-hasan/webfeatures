@@ -21,6 +21,7 @@ from utils.basic_entities import LanguageEnum
 from wqual.models.featureset_config import FeatureSet, Language, UsedFeature, \
     UsedFeatureArgVal, FeatureFactory
 from django.shortcuts import render
+from django.db.utils import IntegrityError
 
 
 class FormValidation(object):
@@ -49,7 +50,7 @@ class FeatureSetListView(LoginRequiredMixin, ListView):
     model = FeatureSet
     template_name = "content/feature_set_list.html"
     def get_queryset(self):
-        return FeatureSet.objects.filter(user=self.request.user) if  self.request.user.is_authenticated() else []
+        return FeatureSet.objects.filter(user=self.request.user)# if  self.request.user.is_authenticated() else []
 
 
 class FeatureSetInsert(LoginRequiredMixin, CreateView):
@@ -88,16 +89,37 @@ class FeatureSetInsertAJAX(View):
     def post(self, request):
         
         arrCreateFeatureSet =  json.loads(request.POST["arrCreateElementsFeatureSet"])[0]
-                   
-        objFeatureSet = FeatureSet.objects.create(user=self.request.user,
-                                                  nam_feature_set = arrCreateFeatureSet["nam_feature_set"], 
-                                                  dsc_feature_set = arrCreateFeatureSet["dsc_feature_set"], 
-                                                  language = Language.objects.get(id=int(arrCreateFeatureSet["language"])),
-                                                  bol_is_public=arrCreateFeatureSet["bol_is_public"]
-                                                  )
-        arrCreateFeatureSet["nam_feature_set"] = objFeatureSet.nam_feature_set;
-        return JsonResponse({"arrCreateFeatureSet" : arrCreateFeatureSet })
-      
+        arrErr = []
+       
+        if arrCreateFeatureSet["nam_feature_set"] is None:
+            arrErr.append("Feature Set Name is required")
+            
+        if not arrErr:
+            if not arrCreateFeatureSet["language"]:
+                arrErr.append("Language is required")
+        
+        if not arrErr:    
+            try:
+                languageFeature =  Language.objects.get(id=int(arrCreateFeatureSet["language"]))           
+                objFeatureSet = FeatureSet.objects.create(user=self.request.user,
+                                                      nam_feature_set = arrCreateFeatureSet["nam_feature_set"], 
+                                                      dsc_feature_set = arrCreateFeatureSet["dsc_feature_set"], 
+                                                      language = languageFeature,
+                                                      bol_is_public=arrCreateFeatureSet["bol_is_public"]
+                                                      )
+                arrCreateFeatureSet["nam_feature_set"] = objFeatureSet.nam_feature_set;
+            
+            except IntegrityError:        
+                lst_featureSet = FeatureSet.objects.filter(user=self.request.user,
+                                                          nam_feature_set = arrCreateFeatureSet["nam_feature_set"])
+               
+                if lst_featureSet:
+                    arrErr.append("Feature Set with this name already exists.")   
+                
+        
+        return JsonResponse({"arrCreateFeatureSet" : arrCreateFeatureSet,
+                             "arrErr": arrErr })
+        
 class FeatureSetEdit(LoginRequiredMixin, UpdateView):
     '''
     Created on 14 de ago de 2017
@@ -124,18 +146,37 @@ class FeatureSetEdit(LoginRequiredMixin, UpdateView):
 
 class FeatureSetEditAJAX(View):
     def post(self, request):
-        arrFeatureSetEdit =  json.loads(request.POST["arrEditElementsFeatureSet"])
-        
-        for featureSet in arrFeatureSetEdit :
-            objFeatureSetEdit = FeatureSet.objects.get(user=self.request.user, nam_feature_set=featureSet["id_nam_feature_set"])
-            objFeatureSetEdit.nam_feature_set = featureSet["nam_feature_set"]
-            objFeatureSetEdit.dsc_feature_set = featureSet["dsc_feature_set"]
-            objFeatureSetEdit.bol_is_public=featureSet["bol_is_public"]
-            objFeatureSetEdit.language = Language.objects.get(id=featureSet["language"])
-            objFeatureSetEdit.save()
-            featureSet["nam_feature_set"] = objFeatureSetEdit.nam_feature_set;
-        return JsonResponse({"arrFeauteSetEdit" : arrFeatureSetEdit }) 
+        arrFeatureSetEdit =  json.loads(request.POST["arrEditElementsFeatureSet"])[0]
+        arrErr = []
 
+        if arrFeatureSetEdit["nam_feature_set"] is None:
+            arrErr.append("Feature Set Name is required")
+            
+        if not arrErr:
+            if not arrFeatureSetEdit["language"]:
+                arrErr.append("Language is required")
+        
+        if not arrErr:    
+            try:
+                arrFeatureSetEdit
+                objFeatureSetEdit = FeatureSet.objects.get(user=self.request.user, nam_feature_set=arrFeatureSetEdit["id_nam_feature_set"])
+                objFeatureSetEdit.nam_feature_set = arrFeatureSetEdit["nam_feature_set"]
+                objFeatureSetEdit.dsc_feature_set = arrFeatureSetEdit["dsc_feature_set"]
+                objFeatureSetEdit.bol_is_public = arrFeatureSetEdit["bol_is_public"]
+                objFeatureSetEdit.language = Language.objects.get(id=arrFeatureSetEdit["language"])
+                objFeatureSetEdit.save()
+                arrFeatureSetEdit["nam_feature_set"] = objFeatureSetEdit.nam_feature_set;
+            
+            except IntegrityError:        
+            
+                lst_featureSet = FeatureSet.objects.filter(user=self.request.user,
+                                                          nam_feature_set = arrFeatureSetEdit["nam_feature_set"])
+               
+                if lst_featureSet:
+                    arrErr.append("Feature Set with this name already exists.")   
+            
+        
+        return JsonResponse({"arrFeauteSetEdit" : arrFeatureSetEdit, "arrErr": arrErr}) 
 
      
 class UsedFeatureListView(LoginRequiredMixin, ListView):
