@@ -6,13 +6,6 @@ Views relacionadas a upload dos datasets
 '''
 from _io import BytesIO
 from datetime import datetime
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.forms.utils import ErrorList
-from django.http import HttpResponse, request
-from django.http.response import HttpResponseNotFound
-from django.urls.base import reverse, resolve
-from django.views.generic.base import View
-from django.views.generic.edit import CreateView, DeleteView
 import json
 import lzma
 import os
@@ -20,11 +13,21 @@ from tempfile import TemporaryFile , NamedTemporaryFile
 import uuid
 import zipfile
 
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.models import User
+from django.forms.utils import ErrorList
+from django.http import HttpResponse, request
+from django.http.response import HttpResponseNotFound
+from django.urls.base import reverse, resolve
+from django.views.generic.base import View
+from django.views.generic.edit import CreateView, DeleteView
+from utils.uncompress_data import UncompatibleTypeError
 from wqual.models import Dataset
 from wqual.models.exceptions import FileSizeException, FileCompressionException
-from wqual.models.featureset_config import FeatureSet
+from wqual.models.featureset_config import FeatureSet, Language
 from wqual.models.uploaded_datasets import  Status, StatusEnum, DocumentText, \
     Document, DocumentResult
+from wqual.models.utils import Format
 
 
 class DatasetDownloadView(LoginRequiredMixin, View):
@@ -47,16 +50,17 @@ class DatasetDownloadView(LoginRequiredMixin, View):
              
         if(format=="json"):
             f.write("{\n")
-            f.write("\t\"feature_descriptions\":"+json.dumps(objDataset.dsc_result_header)+",\n")
-            f.write("\t\"data\": [")
+            f.write("\t\"features_description\":"+json.dumps(objDataset.dsc_result_header)+",\n")
+            f.write("\t\"data\": {")
             for document in Document.objects.all().filter(dataset_id=dataset_id):
-                strResult = "{\"docname\":\"" + document.nam_file+"\""
+                #strResult = "\"docname\":\"" + document.nam_file+"\""
+                strResult = "\"" + document.nam_file+"\":"
                 for doc_result in DocumentResult.objects.filter(document = document):
                     arrFeatures = ["\""+str(i)+"\":"+str(feat) for i,feat in enumerate(doc_result.dsc_result) ]
-                    strResult = strResult + ", \"result\": {" +(",".join(arrFeatures))+"}"
-                strResult = strResult + "},\n"
+                    strResult = strResult + " {" +(",".join(arrFeatures))+"}"
+                strResult = strResult + ",\n"
                 f.write(strResult)
-            f.write("\t]\n")
+            f.write("\t}\n")
             f.write("}")
         else:
             dictArrFeatures = Dataset.objects.get(id=dataset_id).dsc_result_header
@@ -111,10 +115,6 @@ class DatasetCreateView(LoginRequiredMixin, CreateView):
     template_name = "content/dataset_list.html"
     
     
-    
-
-                
-    
         
     def descompacta(self):
         return lzma.decompress(self.arquivo).decode("utf-8")
@@ -152,7 +152,11 @@ class DatasetCreateView(LoginRequiredMixin, CreateView):
             errors = form._errors.setdefault("feature_set", ErrorList())
             errors.append(u"Action not allowed. The file isn't a zip file.")           
             return super(CreateView, self).form_invalid(form)
-            
+        except UncompatibleTypeError as u: 
+            errors = form._errors.setdefault("feature_set", ErrorList())
+            errors.append(u"Action not allowed. The file isn't a zip file.")           
+            return super(CreateView, self).form_invalid(form)
+        
         return super(CreateView, self).form_valid(form)
     
     def get_success_url(self):

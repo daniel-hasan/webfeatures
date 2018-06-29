@@ -302,7 +302,7 @@ class UsedFeature(models.Model):
                 arrConfigParamsFeat.append(argValParam)
                 isConfigurable = True
             
-        print("Parametros do "+objFeature.name+":"+str(arrConfigParamsFeat))
+        #print("Parametros do "+objFeature.name+":"+str(arrConfigParamsFeat))
         return {"used_feature_id":self.id,
                  "name":objFeature.name,
                  "description":objFeature.description,
