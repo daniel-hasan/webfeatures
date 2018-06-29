@@ -112,7 +112,7 @@ class Dataset(models.Model):
                     comp_file_pointer = File(comp_file_pointer)
                     
                 objSubmittedFile = SubmittedDataset(dataset=self,file=comp_file_pointer)
-                objSubmittedFile.grava_arq_no_dataset()
+                objSubmittedFile.get_zip_to_doc_feature()
                 objSubmittedFile.save()
                     
                                     
