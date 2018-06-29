@@ -24,8 +24,8 @@ from django.views.generic.edit import CreateView, DeleteView
 from utils.uncompress_data import UncompatibleTypeError
 from wqual.models import Dataset
 from wqual.models.exceptions import FileSizeException, FileCompressionException
-from wqual.models.featureset_config import FeatureSet, Language
-from wqual.models.uploaded_datasets import  Status, StatusEnum, DocumentText, \
+from wqual.models.featureset_config import FeatureSet
+from wqual.models.uploaded_datasets import  Status, StatusEnum, \
     Document, DocumentResult
 from wqual.models.utils import Format
 

@@ -10,7 +10,8 @@ import json
 from feature.features import Document as DocumentFeature, FeatureDocumentsReader, FeatureDocumentsWriter
 from utils.basic_entities import CheckTime
 from wqual.models.uploaded_datasets import Dataset, DocumentResult
-from wqual.models.uploaded_datasets import Document as DocumentDataset
+from wqual.models.uploaded_datasets import SubmittedDataset, Document as DocumentDataset
+
 
 
 class DatasetModelDocReader(FeatureDocumentsReader):
@@ -19,16 +20,14 @@ class DatasetModelDocReader(FeatureDocumentsReader):
         self.dataset = dataset
     
     def get_documents(self):
+
+        sub_dataset = SubmittedDataset.objects.filter(dataset=self.dataset)[0]
         
-        timeToProc = CheckTime()
-        i =1
-        for doc in self.dataset.document_set.all():
-            if hasattr(doc, "documenttext"):
-                objDocmentFeature = DocumentFeature(doc.id, doc.nam_file, doc.documenttext.dsc_text)
-                #timeToProc.printDelta("Query ")
-                yield objDocmentFeature
-                timeToProc.printDelta("Processing "+str(i))
-                i=i+1
+        for doc in sub_dataset.dataset.get_zip_to_doc_feature(sub_dataset.file):
+                yield doc
+                
+  
+                
 class DatasetModelDocWriter(FeatureDocumentsWriter):
         def __init__(self, dataset):
             self.dataset = dataset
