@@ -46,6 +46,8 @@ class Status(EnumModel):
     Modelo para armazenar da extração de features
     '''
     
+    
+    
     @staticmethod
     def get_enum_class():
         return StatusEnum
@@ -93,10 +95,13 @@ class Dataset(models.Model):
             objFileZip = CompressedFile.get_compressed_file(comp_file_pointer)
             
             int_limit = 4*(1024*1024)
+            int_total_size = 0
             for name,int_file_size in objFileZip.get_each_file_size():
                 if int_file_size > int_limit:
                     raise FileSizeException("The file "+name+" exceeds the limit of "+str(int_limit)+" bytes")
+                int_total_size += int_file_size
             self.bol_ready_to_process = True
+            self.num_total_size = int_total_size
             self.save()
             
             if(save_docs_later):                
@@ -116,7 +121,6 @@ class Dataset(models.Model):
                     
                                     
     def get_zip_to_doc_feature(self, file):
-        arr_strFileTxt = []
         int_total_file_size = 0
         file_zip = CompressedFile.get_compressed_file(file)
         int_file_size = list(file_zip.get_each_file_size())
@@ -148,7 +152,7 @@ def content_file_name(instance, filename):
     return file_path
    
 class SubmittedDataset(models.Model):
-    dataset = models.OneToOneField(Dataset, models.PROTECT) 
+    dataset = models.OneToOneField(Dataset, models.CASCADE) 
     file = models.FileField(upload_to=content_file_name)     
     
     

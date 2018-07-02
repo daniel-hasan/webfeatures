@@ -49,19 +49,19 @@ class DatasetDownloadView(LoginRequiredMixin, View):
         
              
         if(format=="json"):
-            f.write("{\n")
-            f.write("\t\"features_description\":"+json.dumps(objDataset.dsc_result_header)+",\n")
-            f.write("\t\"data\": {")
+
+            dictData = {}
             for document in Document.objects.all().filter(dataset_id=dataset_id):
                 #strResult = "\"docname\":\"" + document.nam_file+"\""
-                strResult = "\"" + document.nam_file+"\":"
+                dictData[document.nam_file] = {}
                 for doc_result in DocumentResult.objects.filter(document = document):
-                    arrFeatures = ["\""+str(i)+"\":"+str(feat) for i,feat in enumerate(doc_result.dsc_result) ]
-                    strResult = strResult + " {" +(",".join(arrFeatures))+"}"
-                strResult = strResult + ",\n"
-                f.write(strResult)
-            f.write("\t}\n")
-            f.write("}")
+                    for i,feat in enumerate(doc_result.dsc_result):
+                        dictData[document.nam_file][str(i)] = feat if type(feat)==float else str(feat) 
+                    
+            dictOuput = {"features_description":objDataset.dsc_result_header,
+                         "data":dictData
+                            }
+            f.write(json.dumps(dictOuput))
         else:
             dictArrFeatures = Dataset.objects.get(id=dataset_id).dsc_result_header
             #print header
@@ -80,7 +80,7 @@ class DatasetDownloadView(LoginRequiredMixin, View):
                     arrFeatures = [str(feat) for i,feat in enumerate(doc_result.dsc_result) ]
                     strResult = strResult +(",".join(arrFeatures))
                 strResult = strResult + "\n"
-                f.write(strResult)    
+                f.write(strResult)
                         
                                    
             #zf.write(txt_file_name+"."+format,arcname="result."+format, compress_type=zipfile.ZIP_DEFLATED)

@@ -56,16 +56,17 @@ class Scheduler(object):
 			dataset=None
 			
 			#print("Prox dataset...")
-			while dataset == None or ProcessingDataset.objects.filter(dataset=dataset,
+			while (dataset == None or ProcessingDataset.objects.filter(dataset=dataset,
 																	num_proc_extractor=os.getpid(),
-																	machine_extractor=self.objMachine).count()==0:
+																	machine_extractor=self.objMachine).count()==0) and i<int_max_iterations:
 				dataset = self.get_next()
 				if(dataset != None):
 					dataset.refresh_from_db()
 					dataset = Dataset.objects.get(id = dataset.id)
 				else:
-					while(len(Dataset.objects.filter(status=objSubmited))==0):
+					while(len(Dataset.objects.filter(status=objSubmited))==0 and i<int_max_iterations):
 						time.sleep(int_wait_seconds)
+						i = i+1
 				
 
 			if dataset:

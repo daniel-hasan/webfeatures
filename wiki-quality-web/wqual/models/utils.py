@@ -103,7 +103,6 @@ class EnumManager(models.Manager.from_queryset(EnumQuerySet)):
 
 
 
-
     def get_queryset(self):
         '''
         Created on 15 de ago de 2017

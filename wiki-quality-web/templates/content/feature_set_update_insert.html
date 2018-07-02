@@ -7,14 +7,31 @@
 {% block content %}
 
 <script>
+	
 	function cancelEditFeature(){
 		window.location.href = '{% url "feature_set_list" %}';
 	}
-
+	var bolChanged = false;
 	$( function() {
-	    $( "#tabs" ).tabs();
-	});
+		
+		$("#updateFeatureForm input").focus(function(){
+			bolChanged = true;
+		});
+	    $( "#tabs" ).tabs({
+			activate: function( event, ui ) {
+				if (bolChanged) {
+					bolChanged = false;
+					if(evaluatesData()){
+						salveData();
+					} else {
+						$('#tabs').tabs("option","active",0);
+						alert("Invalid input! You must correct it to save the changes.");
+					}
+				}
 
+			}
+		});
+	});
 </script>
 
 <script src="{% static "js/insert_used_feature.js"%}"></script>
@@ -26,17 +43,17 @@
 	</div>
 </div>
 
+<div class="ui-widget">
+	<div class="hideGif error-container">
+	</div>
+</div>
+
 <div id="tabs">
   <ul>
     <li><a class="styletabs" href="#tabs-1">Description</a></li>
     <li><a class="styletabs" id="FeaturesSets" href="#tabs-2">Features Set</a></li>
   </ul>
   <div id="tabs-1">
-
-<div class="ui-widget">
-	<div class="hideGif error-container">
-	</div>
-</div>
 
   	<div class="col-md-6">
   		{% if object.id %}
@@ -86,13 +103,19 @@
   <!-- form create/update via ajax -->
   <script>
   		$(function(){
-  						$("#id_language").attr("required",false)
-  					}
-  		);
+  			$("#id_language").attr("required",false);
+  		});
 
   		$("#saveButton").click(function() {
-  			$("#gif").removeClass("hideGif");
-  			$("#gif").attr("src","{% static "imgs/ajax-loader.gif" %}");
+  			if(!evaluatesData()){
+  				href_button_clicked = '{% url "feature_set_list"%}';
+  				$("#alertInvalidInput").html('<p>Invalid input! You must correct it to save the changes.</p>');
+				$( "#alertInvalidInput" ).dialog( "open" );
+  			} else {
+	  			$("#gif").removeClass("hideGif");
+	  			$("#gif").attr("src","{% static "imgs/ajax-loader.gif" %}");
+	  			salveData();
+  			}
 		});
 
   		function changeShareURL(){
@@ -106,7 +129,6 @@
   		$("#updateFeatureForm").change(function() {
 		  $("#updateFeatureForm").data("changed",true);
 		});
-
 
 	 	function alertSaveFeatures(modificador, hreffinal){
 			href_button_clicked = "";
@@ -129,21 +151,24 @@
 		}
 
 		$( "#configureFeatureSet" ).click(function() {
-			$(this).removeAttr( "href" );
-			alertSaveFeatures("configureFeatureSet", '{% url "feature_set_list"%}');
+			if (!bolChanged) {
+				$(this).removeAttr( "href" );
+				alertSaveFeatures("configureFeatureSet", '{% url "feature_set_list"%}');	
+	 		}
 	 	});
 
 	 	$( "#analyseTexts" ).click(function() {
-	 		$(this).removeAttr( "href" );
-			alertSaveFeatures("analyseTexts", '{% url "extract_features"%}');
-  	});
-
-
+	 		if (!bolChanged) {
+	 			$(this).removeAttr( "href" );
+				alertSaveFeatures("analyseTexts", '{% url "extract_features"%}');
+			}
+  		});
 
   		let boolSave = {% if object.id %}true{%else%}false{%endif%};
-		  let boolRedirectAfterSave = false;
-			let validationFirstTime = true;
-			$( function() {
+		let boolRedirectAfterSave = false;
+		let validationFirstTime = true;
+		
+		$( function() {
 	        $("#alertSaveFeature").dialog({
 			    autoOpen: false,
 			    modal: true,
@@ -165,7 +190,7 @@
 			 	});
 			});
 
-			$( function() {
+		$( function() {
 	        $("#alertInvalidInput").dialog({
 			    autoOpen: false,
 			    modal: true,
@@ -185,40 +210,6 @@
 			 	});
 			});
 
-		var abaFeatureSet = document.querySelector("#FeaturesSets");
-		abaFeatureSet.addEventListener("click",function(){
-			if ($("#updateFeatureForm").data("changed")) {
-				if(evaluatesData()){
-					salveData();
-				} else {
-				$("#tabs").tabs({
-		        disabled: [1]
-		      });
-					alert("Invalid input! You must correct it to save the changes.");
-				}
-			} else if(!evaluatesData()){
-				$("#tabs").tabs({
-					disabled: [1]
-				});
-				alert("Invalid input! You must correct it to save the changes.");
-			}
-			if(validationFirstTime){
-				$("#updateFeatureForm input").focus( function() {
-						$("#tabs").tabs("enable", 1);
-				});
-				validationFirstTime = false;
-			}
-		});
-
-		$('#id_nam_feature_set').keyup(function() {
-			if(evaluatesData()){
-				$("#tabs").tabs("enable", 1);
-			}
-		});
-
-		// Não funciona
-		//$('#id_language').selectmenu({ change: function( event, ui ) { alert('x'); }});
-
 		function evaluatesData(){
 			let nam_f = $('#id_nam_feature_set').val();
 			let language_f = $('#id_language').val();
@@ -229,7 +220,7 @@
 		}
 
 		function salveData(){
-				let idNamFeaturesSet = $("#last_saved_name")[0].value;
+			let idNamFeaturesSet = $("#last_saved_name")[0].value;
 		  	let arrElementsFeatureSet = [];
 		  	let arrCreateElementsFeatureSet = [];
 
@@ -244,13 +235,8 @@
 
 			}else{
 				createFeatureSet(arrElementsFeatureSet);
-	  			boolSave = true;
 	  		}
 	 	}
-
-	  	$( "#saveButton" ).click(function() {
-	  		salveData();
-		});
 
 		function createFeatureSet(arrCreateElementsFeatureSet){
 			$.ajax({
@@ -264,8 +250,11 @@
 				  			$(".error-container").append( "<p>Error! "+ response.arrErr +"</p>" );
 				  			$(".error-container").removeClass("hideGif");
 				  			$("#gif").addClass("hideGif");
+				  			setTimeout(function(){
+				          		$(".error-container").addClass("hideGif");
+				        	}, 5000);
 				  		} else {
-				  			$('#FeaturesSets').removeClass("disabled");
+				  			$('#FeaturesSets').removeClass("enable");
 					  		$("#last_saved_name")[0].value = response.arrCreateFeatureSet["nam_feature_set"];
 					  		gUsedFeaturesNames = {};
 					  		changeShareURL();
@@ -273,13 +262,14 @@
 					  		if(boolRedirectAfterSave){
 									window.location.href = href_button_clicked;
 					  		}
-									setTimeout(function(){
-					  			    $(".success").removeClass("hideGif");
+							setTimeout(function(){
+					  		    $(".success").removeClass("hideGif");
 				          		$("#gif").addClass("hideGif");
 				        	}, 1000);
 				        	setTimeout(function(){
 				          		$(".success").addClass("hideGif");
 				        	}, 5000);
+				        	boolSave = true;
 				  		}
 				  },
 				  error: function(xhr,status,error){
@@ -301,6 +291,9 @@
 				  			$(".error-container").append( "<p>Error! "+ response.arrErr +"</p>" );
 				  			$(".error-container").removeClass("hideGif");
 				  			$("#gif").addClass("hideGif");
+				  			setTimeout(function(){
+				          		$(".error-container").addClass("hideGif");
+				        	}, 5000);
 				  		} else {
 					  		changeShareURL();
 								if(boolRedirectAfterSave){
