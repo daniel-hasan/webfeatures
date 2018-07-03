@@ -38,7 +38,7 @@ class TestReadability(unittest.TestCase):
         objfre = FleschReadingEaseFeature("FRE Feature","Compute FRE metric","reference", FeatureVisibilityEnum.public,
                             FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS)
                 
-        objfkf = FleschKincaidFeature("FRE Feature","Compute FK metric","reference", FeatureVisibilityEnum.public,
+        objfkf = FleschKincaidFeature("FK Feature","Compute FK metric","reference", FeatureVisibilityEnum.public,
                             FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS)
         
         objgfi = GunningFogIndexFeature("GFI Feature","Compute GFI metric","reference", FeatureVisibilityEnum.public,
@@ -50,19 +50,36 @@ class TestReadability(unittest.TestCase):
         objsmog = SmogGradingFeature("SMOG Feature","Compute SMOG metric","reference", FeatureVisibilityEnum.public,
                             FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS)
         
-        arr_features = [objari]
+        
+        arr_features = []
         arr_features.append(objcl)
-        arr_features.append(objfre)
-        arr_features.append(objfkf)
-        arr_features.append(objgfi)
-        arr_features.append(objlbi)
         arr_features.append(objsmog)
+        arr_features.append(objlbi)
+        arr_features.append(objgfi)
+        arr_features.append(objfkf)
+        arr_features.append(objfre)
+        arr_features.append(objari)
+        
+        
+        
+        
+        
+        
         
         arr_result = FeatureCalculator.featureManager.computeFeatureSet(doc1, arr_features, FormatEnum.HTML)
         
-        arr_expected_result = [-1.82,-0.05,87.68,3.02,5.7,14.25,7]
+        
+        dictExpectedResultPerFeat = {"ARI Feature":-1.82,
+                                     "CL Feature":-0.05,
+                                     "FRE Feature":87.68,
+                                     "FK Feature":3.02,
+                                     "GFI Feature":5.7,
+                                     "LBI Feature":14.25,
+                                     "SMOG Feature":7}
+        
         for i,result in enumerate(arr_result):
-            self.assertAlmostEqual(result, arr_expected_result[i], 1)
+            strFeatName = arr_features[i].name
+            self.assertAlmostEqual(result, dictExpectedResultPerFeat[strFeatName], 1)
         
 if __name__ == "__main__":
     unittest.main()

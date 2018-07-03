@@ -147,7 +147,7 @@
     				<td>{{ dataset.feature_set }}</td>
     				<!--<td>{{ dataset.format.name }}</td>-->
     				{% ifequal dataset.status.name "COMPLETE" %}
-						<td><a href="{% url "download_result" dataset.id "json" %}">json</a> <a href="{% url "download_result" dataset.id "csv" %}">csv</a></td>
+						<td><a href="{% url "download_result" dataset.id "json" %}">JSON</a> <a href="{% url "download_result" dataset.id "csv" %}">CSV</a></td>
 					{% else %}
 						<td></td>
 					{% endifequal %}

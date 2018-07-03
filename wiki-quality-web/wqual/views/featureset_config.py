@@ -301,7 +301,9 @@ class ListFeaturesView(LoginRequiredMixin, View):
         return JsonResponse({"arrFeatures":arr_features})
     
 
-
+class JSFeatureSetUpdateView(LoginRequiredMixin, TemplateView):
+    template_name = "content/feature_set_update.js"
+     
 class JSListAddUsedFeatureView(LoginRequiredMixin, TemplateView):
     template_name = "content/list_add_used_features.js"    
     

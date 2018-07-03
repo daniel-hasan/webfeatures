@@ -23,6 +23,10 @@ from wqual.models.featureset_config import Language, FeatureSet, UsedFeature
 from wqual.models.uploaded_datasets import Status, StatusEnum
 from wqual.models.utils import Format
 from wqual.views.featureset_config import ListFeaturesView
+from feature.featureImpl.readability_features import ReadabilityBasedFeature
+
+
+CHECK_IF_FEAT_NOT_EXISTS = True
 
 def JSONToDict(strTxt):
         return json.loads(strTxt)
@@ -71,16 +75,20 @@ class TestDataset(TestCase):
         dict_feat_per_id = ListFeaturesView.get_features(self.language.name)
         
         #obtain the objects to insert by name
-        arrNames = [] 
-        with open("/home/profhasan/saida.json","r") as f:
-            arrNames = json.load(f)
-        arrObjFeaturesToInsert = [dict_feat_per_id[nam_feature] for nam_feature in arrNames]
-        #arrFeats = []
-    
-        #for i,feat in enumerate(arrObjFeaturesToInsert):
-        #    arrFeats.append(feat.name)
-        #with open("/home/profhasan/saida.json","w") as fp:
-        #    json.dump(arrFeats, fp)
+        arrNames = dict_feat_per_id.keys()
+        #Para ler a ordem de arquivo (Caso a ordem tenha dado algum erro)
+        #with open("/home/profhasan/saida.json","r") as f:
+        #    arrNames = json.load(f)
+        arrObjFeaturesToInsert = [dict_feat_per_id[nam_feature] for nam_feature in arrNames] #if isinstance(dict_feat_per_id[nam_feature], ReadabilityBasedFeature)]
+        #Imprime features
+        #[print("Feat:"+feat.name) for feat in arrObjFeaturesToInsert]
+        
+        #grava as features usadas na ordem 
+        arrFeats = []
+        for i,feat in enumerate(arrObjFeaturesToInsert):
+            arrFeats.append(feat.name)
+        with open("/home/profhasan/saida.json","w") as fp:
+            json.dump(arrFeats, fp)
             
         #inser them
         UsedFeature.objects.insert_features_object(self.feature_set,arrObjFeaturesToInsert)
@@ -158,12 +166,15 @@ class TestDataset(TestCase):
         for arqName,featDictAtual in dataAtual.items():
             for featId,featVal in dataOld[arqName].items():
                 strFeatName = mapFeatureOldPerFeatId[featId]["name"]
-                self.assertTrue(strFeatName in mapFeatureAtualPerName, "Could not found the feature '"+strFeatName+"' in the current FeatureSet")
-                featIdAtual = mapFeatureAtualPerName[strFeatName]
-                if(str(featDictAtual[featIdAtual]) != str(featVal)):
-                    if strFeatName not in dictDifs:
-                        dictDifs[strFeatName] = []
-                    dictDifs[strFeatName].append((arqName,featVal,featDictAtual[featIdAtual]))
+                
+                if(CHECK_IF_FEAT_NOT_EXISTS):
+                    self.assertTrue(strFeatName in mapFeatureAtualPerName, "Could not found the feature '"+strFeatName+"' in the current FeatureSet")
+                if(strFeatName in mapFeatureAtualPerName):
+                    featIdAtual = mapFeatureAtualPerName[strFeatName]
+                    if(str(featDictAtual[featIdAtual]) != str(featVal)):
+                        if strFeatName not in dictDifs:
+                            dictDifs[strFeatName] = []
+                        dictDifs[strFeatName].append((arqName,featVal,featDictAtual[featIdAtual]))
         self.assertEqual(len(dictDifs.keys()), 0, self.dictDifsToStr(dictDifs))        
     def compare_old_result(self,strArqLastResult,resultadoAtual):
         with open(strArqLastResult) as f:
@@ -198,8 +209,8 @@ class TestDataset(TestCase):
         
         strDir = BASE_DIR+"/dummy_dataset_tests/"
         strDirResult = BASE_DIR+"/test_results/"
-        arqName = "wiki_small.zip" #if IS_BITBUCKET else "wiki_big.zip"
-        
+        #arqName = "wiki_small.zip" #if IS_BITBUCKET else "wiki_big.zip"
+        arqName = "wiki_big.zip"
          
         arrDatasetURLNames = [("extract_features",{}),
                        ("public_extract_features",{"nam_feature_set":self.feature_set.nam_feature_set,"user":self.my_admin.username})]

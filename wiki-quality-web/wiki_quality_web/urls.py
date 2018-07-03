@@ -31,6 +31,7 @@ urlpatterns = [
     url(r'^featureSetConfig/(?P<nam_feature_set>.*)/delete/$', views.FeatureSetDelete.as_view(), name='feature_set_delete'),#Test:OK
     url(r'^featureSetConfig/(?P<nam_feature_set>.*)$', views.FeatureSetEdit.as_view(), name='feature_set_edit'),#Test:OK
     url(r'^featureSetConfig/(?P<nam_feature_set>[^#]*)#featuresEdit$', views.FeatureSetEdit.as_view(), name='feature_set_edit_features'),#Test:OK
+        url(r'^featureSetConfig.js$', views.JSFeatureSetUpdateView.as_view(), name='feature_set_edit_js'),
     url(r'^featureSetConfigajax$', views.FeatureSetEditAJAX.as_view(), name='feature_set_editAJAX'),#Test:OK
     
     
