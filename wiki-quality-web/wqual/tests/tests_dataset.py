@@ -209,8 +209,8 @@ class TestDataset(TestCase):
         
         strDir = BASE_DIR+"/dummy_dataset_tests/"
         strDirResult = BASE_DIR+"/test_results/"
-        #arqName = "wiki_small.zip" #if IS_BITBUCKET else "wiki_big.zip"
-        arqName = "wiki_big.zip"
+        arqName = "wiki_small.zip" #if IS_BITBUCKET else "wiki_big.zip"
+        #arqName = "wiki_big.zip"
          
         arrDatasetURLNames = [("extract_features",{}),
                        ("public_extract_features",{"nam_feature_set":self.feature_set.nam_feature_set,"user":self.my_admin.username})]
