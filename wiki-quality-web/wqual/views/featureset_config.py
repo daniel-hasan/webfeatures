@@ -4,24 +4,23 @@ Created on 14 de ago de 2017
 @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
 Views relacionadas a configuração das features
 '''
-from django.forms.utils import ErrorList
-from django.views.generic.list import ListView
 import json
 
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db import transaction
+from django.db.utils import IntegrityError
+from django.forms.utils import ErrorList
 from django.http.response import JsonResponse, HttpResponse, \
     HttpResponseRedirect
-from django.views.generic.list import ListView
-
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import render
 from django.urls.base import reverse, reverse_lazy
 from django.views.generic.base import View, TemplateView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-
+from django.views.generic.list import ListView
+from django.views.generic.list import ListView
 from utils.basic_entities import LanguageEnum
 from wqual.models.featureset_config import FeatureSet, Language, UsedFeature, \
     UsedFeatureArgVal, FeatureFactory
-from django.shortcuts import render
-from django.db.utils import IntegrityError
 
 
 class FormValidation(object):
@@ -100,14 +99,15 @@ class FeatureSetInsertAJAX(View):
         
         if not arrErr:    
             try:
-                languageFeature =  Language.objects.get(id=int(arrCreateFeatureSet["language"]))           
-                objFeatureSet = FeatureSet.objects.create(user=self.request.user,
-                                                      nam_feature_set = arrCreateFeatureSet["nam_feature_set"], 
-                                                      dsc_feature_set = arrCreateFeatureSet["dsc_feature_set"], 
-                                                      language = languageFeature,
-                                                      bol_is_public=arrCreateFeatureSet["bol_is_public"]
-                                                      )
-                arrCreateFeatureSet["nam_feature_set"] = objFeatureSet.nam_feature_set;
+                with transaction.atomic():
+                    languageFeature =  Language.objects.get(id=int(arrCreateFeatureSet["language"]))           
+                    objFeatureSet = FeatureSet.objects.create(user=self.request.user,
+                                                          nam_feature_set = arrCreateFeatureSet["nam_feature_set"], 
+                                                          dsc_feature_set = arrCreateFeatureSet["dsc_feature_set"], 
+                                                          language = languageFeature,
+                                                          bol_is_public=arrCreateFeatureSet["bol_is_public"]
+                                                          )
+                    arrCreateFeatureSet["nam_feature_set"] = objFeatureSet.nam_feature_set;
             
             except IntegrityError:        
                 lst_featureSet = FeatureSet.objects.filter(user=self.request.user,
@@ -115,7 +115,8 @@ class FeatureSetInsertAJAX(View):
                
                 if lst_featureSet:
                     arrErr.append("Feature Set with this name already exists.")   
-                
+                else:
+                    arrErr.append("Could not insert the feature set.")
         
         return JsonResponse({"arrCreateFeatureSet" : arrCreateFeatureSet,
                              "arrErr": arrErr })
@@ -138,7 +139,11 @@ class FeatureSetEdit(LoginRequiredMixin, UpdateView):
         return super(UpdateView, self).form_valid(form) if bol_valid else super(UpdateView, self).form_invalid(form)
      
     def get_object(self):
-        return FeatureSet.objects.get(user=self.request.user,nam_feature_set=self.kwargs["nam_feature_set"])
+        strFeatName = self.kwargs["nam_feature_set"]
+        if(strFeatName.endswith("#featuresEdit")):
+            strFeatName = strFeatName[:len(strFeatName)-13]
+        #print("Tetnando: "+strFeatName)
+        return FeatureSet.objects.get(user=self.request.user,nam_feature_set=strFeatName)
     
     def get_success_url(self):
         return reverse('feature_set_list')
@@ -160,12 +165,13 @@ class FeatureSetEditAJAX(View):
             try:
                 arrFeatureSetEdit
                 objFeatureSetEdit = FeatureSet.objects.get(user=self.request.user, nam_feature_set=arrFeatureSetEdit["id_nam_feature_set"])
-                objFeatureSetEdit.nam_feature_set = arrFeatureSetEdit["nam_feature_set"]
-                objFeatureSetEdit.dsc_feature_set = arrFeatureSetEdit["dsc_feature_set"]
-                objFeatureSetEdit.bol_is_public = arrFeatureSetEdit["bol_is_public"]
-                objFeatureSetEdit.language = Language.objects.get(id=arrFeatureSetEdit["language"])
-                objFeatureSetEdit.save()
-                arrFeatureSetEdit["nam_feature_set"] = objFeatureSetEdit.nam_feature_set;
+                with transaction.atomic():
+                    objFeatureSetEdit.nam_feature_set = arrFeatureSetEdit["nam_feature_set"]
+                    objFeatureSetEdit.dsc_feature_set = arrFeatureSetEdit["dsc_feature_set"]
+                    objFeatureSetEdit.bol_is_public = arrFeatureSetEdit["bol_is_public"]
+                    objFeatureSetEdit.language = Language.objects.get(id=arrFeatureSetEdit["language"])
+                    objFeatureSetEdit.save()
+                    arrFeatureSetEdit["nam_feature_set"] = objFeatureSetEdit.nam_feature_set;
             
             except IntegrityError:        
             
@@ -174,7 +180,8 @@ class FeatureSetEditAJAX(View):
                
                 if lst_featureSet:
                     arrErr.append("Feature Set with this name already exists.")   
-            
+                else:
+                    arrErr.append("Could not update teh feature set.")
         
         return JsonResponse({"arrFeauteSetEdit" : arrFeatureSetEdit, "arrErr": arrErr}) 
 
@@ -294,7 +301,9 @@ class ListFeaturesView(LoginRequiredMixin, View):
         return JsonResponse({"arrFeatures":arr_features})
     
 
-
+class JSFeatureSetUpdateView(LoginRequiredMixin, TemplateView):
+    template_name = "content/feature_set_update.js"
+     
 class JSListAddUsedFeatureView(LoginRequiredMixin, TemplateView):
     template_name = "content/list_add_used_features.js"    
     
@@ -305,7 +314,7 @@ class InsertUsedFeaturesView(LoginRequiredMixin, View):
         
         #get the features to add
         arrStrFeatureNames = [strName for strName in json.loads(request.POST["hidUsedFeaturesToInsert"])]
-        print(str(arrStrFeatureNames))
+        #print(str(arrStrFeatureNames))
         
         #get all the possible features
         dict_feat_per_id = ListFeaturesView.get_features(objFeatureSet.language.name)

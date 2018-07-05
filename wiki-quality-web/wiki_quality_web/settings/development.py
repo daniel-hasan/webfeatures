@@ -17,6 +17,7 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE_DIR = os.path.abspath(os.path.join(BASE_DIR,os.pardir))
+IS_BITBUCKET = False
 
 #Set  the login url and the login redirect url as "/"
 LOGIN_URL = "/"

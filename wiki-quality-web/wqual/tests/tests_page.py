@@ -16,7 +16,10 @@ class UrlName(object):
 
 class HomePageOpenTest(TestCase):
     ARR_URL_NAMES_ARGS = [UrlName("feature_set_list"),
-                          UrlName("extract_features")]
+                          UrlName("feature_set_insert"),
+                          
+                          UrlName("extract_features"),
+                          UrlName("insert_list_used_features")]
 
     def setUp(self):
         self.password = 'mypassword'

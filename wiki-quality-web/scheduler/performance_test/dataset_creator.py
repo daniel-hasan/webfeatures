@@ -69,8 +69,8 @@ class PerformanceTest(object):
         
         arr_object_feature = FeatureFactory.objects.get_all_features_from_language(obj_english)
         if(len(arr_object_feature) == 0):
-            FeatureFactory.objects.create(nam_module = "wqual.tests.tests_featureset_model", nam_factory_class = "FeatureFactoryDummy" )
-            FeatureFactory.objects.create(nam_module = "wqual.tests.tests_featureset_model", nam_factory_class = "FeatureFactoryDummyLangDep" )            
+            FeatureFactory.objects.create(nam_module = "wqual.tests.tests_featureset_config", nam_factory_class = "FeatureFactoryDummy" )
+            FeatureFactory.objects.create(nam_module = "wqual.tests.tests_featureset_config", nam_factory_class = "FeatureFactoryDummyLangDep" )            
             arr_object_feature = FeatureFactory.objects.get_all_features_from_language(obj_english)
 
         

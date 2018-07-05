@@ -157,7 +157,7 @@ class ColemanLiauFeature(ReadabilityBasedFeature):
     def checkWord(self, document, word):
         super().checkWord(document, word)
         self.objwf.checkWord(document, word)
-        
+        return True
     def compute_feature(self, document):
         
         objCharCount = document.obj_cache.getCacheItem(ReadabilityBasedFeature.CHARCOUNT)
