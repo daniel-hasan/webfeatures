@@ -87,8 +87,9 @@ class TestDataset(TestCase):
         arrFeats = []
         for i,feat in enumerate(arrObjFeaturesToInsert):
             arrFeats.append(feat.name)
-        with open("/home/profhasan/saida.json","w") as fp:
-            json.dump(arrFeats, fp)
+        if(not IS_BITBUCKET):
+            with open("~/saida.json","w") as fp:
+                json.dump(arrFeats, fp)
             
         #inser them
         UsedFeature.objects.insert_features_object(self.feature_set,arrObjFeaturesToInsert)
