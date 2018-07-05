@@ -88,7 +88,7 @@ class TestDataset(TestCase):
         for i,feat in enumerate(arrObjFeaturesToInsert):
             arrFeats.append(feat.name)
         if(not IS_BITBUCKET):
-            with open("~/saida.json","w") as fp:
+            with NamedTemporaryFile("w",delete=False) as fp:
                 json.dump(arrFeats, fp)
             
         #inser them
@@ -172,7 +172,13 @@ class TestDataset(TestCase):
                     self.assertTrue(strFeatName in mapFeatureAtualPerName, "Could not found the feature '"+strFeatName+"' in the current FeatureSet")
                 if(strFeatName in mapFeatureAtualPerName):
                     featIdAtual = mapFeatureAtualPerName[strFeatName]
-                    if(str(featDictAtual[featIdAtual]) != str(featVal)):
+                    bolIsDifferent = False
+                    if(type(featDictAtual[featIdAtual]) == float):
+                        if(abs(featDictAtual[featIdAtual]-float(featVal))>0.001):
+                            bolIsDifferent = True
+                    elif(str(featDictAtual[featIdAtual]) != str(featVal)):
+                        bolIsDifferent = True
+                    if(bolIsDifferent):
                         if strFeatName not in dictDifs:
                             dictDifs[strFeatName] = []
                         dictDifs[strFeatName].append((arqName,featVal,featDictAtual[featIdAtual]))
