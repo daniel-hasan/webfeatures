@@ -1,11 +1,15 @@
-import bz2
-import gzip
-import zipfile
 '''
 Created on 28 de nov de 2017
 Baseado em: https://stackoverflow.com/questions/13044562/python-mechanism-to-identify-compressed-file-type-and-uncompress
 @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
 '''
+
+import bz2
+import gzip
+import os
+import zipfile
+
+
 class CompressedFile(object):
     magic = None
     file_type = None
@@ -39,7 +43,17 @@ class CompressedFile(object):
                 return cls(file_pointer)
         
         raise UncompatibleTypeError(file_pointer)
-
+    
+    def descomprime_files(self,strDirPrefix):
+        for name,strFileTxt in self.read_each_file():
+            #cria o diretorio dentro do tmp
+            arrPastasEArq = name.split("/")
+            strDir = strDirPrefix+"/".join(arrPastasEArq[:len(arrPastasEArq)-1])
+            os.makedirs(strDir)
+            #grava o arquivo
+            with open(strDir+arrPastasEArq[len(arrPastasEArq)-1]) as file:
+                file.write(strFileTxt)
+                
     def open(self):
         return None
 
