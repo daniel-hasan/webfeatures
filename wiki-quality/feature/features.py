@@ -488,3 +488,11 @@ class ConfigurableParam(object):
         self.default_value = default_value
         self.param_type = param_type
         self.arr_choices = arr_choices
+
+class GraphBasedFeature(FeatureCalculator):
+        @abstractmethod
+        def compute_feature(graph):
+                pass
+
+
+
