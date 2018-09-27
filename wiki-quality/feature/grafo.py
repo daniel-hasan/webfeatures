@@ -4,8 +4,13 @@
         Metodos:
             Le_aresta: Nome auto descritivo 
 """
+
 class LeitorAresta():
+    #@abstractmethod
     def le_aresta(self):
+        pass
+    #@abstractmethod
+    def fechar(self):
         pass
 
 """ 
@@ -35,15 +40,19 @@ class Grafo():
 
 
 
-
+    #@abstractmethod
     def adicionaAresta(self,de_nodo,para_nodo):
         pass 
+    #@abstractmethod
     def getverticesaidas(self):
         pass  
+    #@abstractmethod
     def getverticesentrada(self):
         pass
+    #@abstractmethod
     def getvertices(self):
         pass
+    #@abstractmethod
     def getvertice(self,index):
         pass
 
