@@ -1,3 +1,8 @@
+'''
+Created on 26 de Set de 2018
+
+@author: Rubio Torres Castro Viana <rubiotorres15@gmail.com>
+'''
 """ 
     Classe LeitorAresta:
     Classe abstrata para ler arestas

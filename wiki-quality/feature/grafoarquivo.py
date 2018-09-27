@@ -1,4 +1,9 @@
 from grafo import*
+'''
+Created on 26 de Set de 2018
+
+@author: Rubio Torres Castro Viana <rubiotorres15@gmail.com>
+'''
 """ 
     Classe LeitorArestaarquivo:
     Classe para ler arestas de arquivos
