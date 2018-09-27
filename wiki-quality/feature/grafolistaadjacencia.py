@@ -44,53 +44,30 @@ class LeitorArestaArquivo(LeitorAresta):
             getvertices: Retorna todos os vertices
             getvertice: Retorna o vertice de certo index
 """
-class Grafoarquivo(Grafo):
+class grafolistaadjacencia(Grafo):
     lista_adjacencia = []
     lista_incidencia = []
     vertices = []
-    arestas = []
     def __init__(self,leitor_aresta):
         self.extraiarestas(leitor_aresta)
     def extraiarestas(self,leitor_aresta):
         line = leitor_aresta.le_aresta()        
         while  line != None:
-            tupla = []
-            for nodo in line:
-                tupla.append(nodo)
-            self.adicionaAresta(tupla[0],tupla[1])
+            self.adicionaAresta(line[0],line[1])
             line = leitor_aresta.le_aresta()
         leitor_aresta.fechar()
-        self.lista_adjacencia = self.gerasaidas()
-        self.lista_incidencia = self.gerasaidas()
-
 
     def adicionaAresta(self,de_nodo,para_nodo):
-        line_aresta = []
         if((de_nodo in self.vertices) == False):
             self.vertices.append(de_nodo)
+            self.lista_adjacencia.append([])
+            self.lista_incidencia.append([])
         if((para_nodo in self.vertices) == False):
             self.vertices.append(para_nodo)
-        line_aresta.append(self.vertices.index(de_nodo))
-        line_aresta.append(self.vertices.index(para_nodo))
-        self.arestas.append(line_aresta)
-    def gerasaidas(self):
-        lista=[]
-        for i in range(0,len(self.vertices)):
-            vertice=[]
-            for x in self.arestas:
-                if i==x[0]:
-                    vertice.append(x[1])
-            lista.append(vertice)
-        return lista
-    def geraentrada(self):
-        lista=[]
-        for i in range(0,len(self.vertices)):
-            vertice=[]
-            for x in self.arestas:
-                if i==x[1]:
-                    vertice.append(x[0])
-            lista.append(vertice)
-        return lista
+            self.lista_adjacencia.append([])
+            self.lista_incidencia.append([])
+        self.lista_adjacencia[self.vertices.index(de_nodo)].append(self.vertices.index(para_nodo))        
+        self.lista_incidencia[self.vertices.index(para_nodo)].append(self.vertices.index(de_nodo))
     def getverticesaidas(self,index):
         return self.lista_adjacencia[index]  
     def getverticesentrada(self,index):
@@ -105,7 +82,6 @@ class Grafoarquivo(Grafo):
 
 if __name__ == "__main__":
     arquivo = LeitorArestaArquivo("grafo_mini.txt")
-    artigo = Grafoarquivo(arquivo)
-    print artigo.vertices
-    print artigo.vertices
-    print artigo.getverticesaidas(0)
+    artigo = grafolistaadjacencia(arquivo)
+    print artigo.getverticesentrada(0)
+    print artigo.getvertices()

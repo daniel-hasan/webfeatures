@@ -1,3 +1,5 @@
+from abc import abstractmethod
+
 '''
 Created on 26 de Set de 2018
 
@@ -11,10 +13,10 @@ Created on 26 de Set de 2018
 """
 
 class LeitorAresta():
-    #@abstractmethod
+    @abstractmethod
     def le_aresta(self):
         pass
-    #@abstractmethod
+    @abstractmethod
     def fechar(self):
         pass
 
@@ -35,29 +37,22 @@ class LeitorAresta():
 """
 
 class Grafo():
-
+    @abstractmethod
     def __init__(self,leitor_aresta):
-        self.vertices = []
-        self.arestas = []
-        for de_nodo,para_nodo in leitor_aresta.le_aresta():
-            self.adicionaAresta(de_nodo,para_nodo)
-        leitor_aresta.fechar
-
-
-
-    #@abstractmethod
+        pass
+    @abstractmethod
     def adicionaAresta(self,de_nodo,para_nodo):
         pass 
-    #@abstractmethod
+    @abstractmethod
     def getverticesaidas(self):
         pass  
-    #@abstractmethod
+    @abstractmethod
     def getverticesentrada(self):
         pass
-    #@abstractmethod
+    @abstractmethod
     def getvertices(self):
         pass
-    #@abstractmethod
+    @abstractmethod
     def getvertice(self,index):
         pass
 
