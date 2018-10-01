@@ -1,4 +1,6 @@
 from grafo import*
+from featuresnew import*
+
 '''
 Created on 26 de Set de 2018
 
@@ -79,9 +81,9 @@ class grafolistaadjacencia(Grafo):
 
 
 
-
 if __name__ == "__main__":
     arquivo = LeitorArestaArquivo("grafo_mini.txt")
     artigo = grafolistaadjacencia(arquivo)
     print artigo.getverticesentrada(0)
-    print artigo.getvertices()
+    feature = features()
+    print feature.rgs(0,artigo)

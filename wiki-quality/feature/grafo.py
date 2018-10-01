@@ -1,4 +1,5 @@
 from abc import abstractmethod
+from featuresnew import*
 
 '''
 Created on 26 de Set de 2018
@@ -44,10 +45,10 @@ class Grafo():
     def adicionaAresta(self,de_nodo,para_nodo):
         pass 
     @abstractmethod
-    def getverticesaidas(self):
+    def getverticesaidas(self,index):
         pass  
     @abstractmethod
-    def getverticesentrada(self):
+    def getverticesentrada(self,index):
         pass
     @abstractmethod
     def getvertices(self):
