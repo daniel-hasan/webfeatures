@@ -1,5 +1,16 @@
-from grafo import Grafo
-class pgrank(Grafo):
+'''
+Created on 2 de Out de 2018
+
+@author: Rubio Torres Castro Viana <rubiotorres15@gmail.com>
+'''
+""" 
+    Classe pgrank:
+    Classe para produzir o page rank do vertice:
+        Metodos:
+            compute_feature: ...
+"""
+from GraphBasedFeature import *
+class pgrank(GraphBasedFeature):
     rank = []
     def compute_feature(self,grafo):
         cont = len(grafo.getvertices())

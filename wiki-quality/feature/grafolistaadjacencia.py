@@ -84,5 +84,5 @@ if __name__ == "__main__":
     arquivo = LeitorArestaArquivo("grafo_mini.txt")
     artigo = grafolistaadjacencia(arquivo)
     print artigo.getverticesentrada(0)
-    ran = pgrank(arquivo)
+    ran = pgrank()
     print ran.compute_feature(artigo)
