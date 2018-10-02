@@ -1,4 +1,5 @@
 class GraphBasedFeature():
-        def __init__(self):
-            pass
+    featuregrafo = []
+    def __init__(self):
+        pass
         

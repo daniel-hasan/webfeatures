@@ -13,7 +13,9 @@ Created on 2 de Out de 2018
 from GraphBasedFeature import *
 
 class Clusterizacao(GraphBasedFeature):
-    def compute_feature(self,index,grafo):
+    def compute_feature(self,grafo):
+        dicresult={}
+        for index in range(0,len(grafo.getvertices())):
             cont = 0
             lista = grafo.getverticesaidas(index)
             for dados in lista:
@@ -22,4 +24,11 @@ class Clusterizacao(GraphBasedFeature):
                         cont+=1
                     else:
                         pass
-            return len(lista)/cont
+            print cont
+            if(cont != 0):
+                dicresult[index] =len(lista)/cont
+            else:
+                dicresult[index] = 0
+        return dicresult
+
+

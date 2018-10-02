@@ -7,12 +7,13 @@ Created on 2 de Out de 2018
     Classe Reciprocidade:
     Classe para produzir o coeficiente de reciprocidade de um vertice:
         Metodos:
-            compute_feature: Retorna a quantidade de vertice que tambem tem uma ligação de volta com o vertice origem
+            compute_feature: Retorna a quantidade de vertice que tambem tem uma ligacao de volta com o vertice origem
 """
 from GraphBasedFeature import *
 
 class reciprocidade(GraphBasedFeature):
-    def compute_feature(self,index,grafo):
+    def compute_feature(self,grafo):
+        for index in range(0,len(grafo.getvertices())):
             cont = 0
             lista = grafo.getverticesaidas(index)
             for dados in lista:
@@ -20,4 +21,4 @@ class reciprocidade(GraphBasedFeature):
                     cont+=1
                 else:
                     pass
-            return cont 
+            self.featuregrafo.insert(index,cont) 

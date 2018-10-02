@@ -12,5 +12,8 @@ Created on 2 de Out de 2018
 from GraphBasedFeature import *
 
 class GrauEntrada(GraphBasedFeature):
-    def compute_feature(self,index,grafo):
-        return len(grafo.getverticesentrada(index))
+    def compute_feature(self,grafo):
+        dicresult={}
+        for index in range(0,len(grafo.getvertices())):
+            dicresult[index] = len(grafo.getverticesentrada(index))
+        return dicresult 
