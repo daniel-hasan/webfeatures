@@ -1,6 +1,5 @@
 from grafo import*
-from featuresnew import*
-
+from pgrank import *
 '''
 Created on 26 de Set de 2018
 
@@ -85,5 +84,5 @@ if __name__ == "__main__":
     arquivo = LeitorArestaArquivo("grafo_mini.txt")
     artigo = grafolistaadjacencia(arquivo)
     print artigo.getverticesentrada(0)
-    feature = features()
-    print feature.rgs(0,artigo)
+    ran = pgrank(arquivo)
+    print ran.compute_feature(artigo)
