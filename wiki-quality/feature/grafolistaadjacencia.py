@@ -4,10 +4,12 @@ from reciprocidade import *
 from pgrank import *
 from rge import *
 from rgs import *
+from raee import *
+from raes import *
+from rase import *
 
 '''
 Created on 26 de Set de 2018
-
 @author: Rubio Torres Castro Viana <rubiotorres15@gmail.com>
 '''
 """ 
@@ -74,20 +76,25 @@ class grafolistaadjacencia(Grafo):
             self.lista_incidencia.append([])
         self.lista_adjacencia[self.vertices.index(de_nodo)].append(self.vertices.index(para_nodo))        
         self.lista_incidencia[self.vertices.index(para_nodo)].append(self.vertices.index(de_nodo))
-    def getverticesaidas(self,index):
+    def get_vertices_saida(self,index):
         return self.lista_adjacencia[index]  
-    def getverticesentrada(self,index):
+    def get_vertices_entrada(self,index):
         return self.lista_incidencia[index]  
     def getvertices(self):
         return self.vertices
     def getvertice(self,index):
-        return self.vertices[index]  
+        return self.vertices[index] 
+    def get_vertice_ids(self):
+        vertices = []
+        for entrada in self.vertices:
+            vertices.append(self.vertices.index(entrada))
+        return vertices
 
 
 
 if __name__ == "__main__":
     arquivo = LeitorArestaArquivo("grafo_mini.txt")
     artigo = grafolistaadjacencia(arquivo)
-    print artigo.getverticesentrada(0)
-    ran = pgrank()
+    print artigo.get_vertices_entrada(0)
+    ran = AssortatividadeSaidaEntrada()
     print ran.compute_feature(artigo)

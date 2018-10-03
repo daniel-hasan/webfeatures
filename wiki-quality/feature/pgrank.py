@@ -24,8 +24,8 @@ class pgrank(GraphBasedFeature):
         norma = sum(ran)
         for index in range(0,len(ran)):
             cont=0
-            for entrada in grafo.getverticesentrada(index):
-                cont+=ran[entrada]/len(grafo.getverticesaidas(entrada))
+            for entrada in grafo.get_vertices_entrada(index):
+                cont+=ran[entrada]/len(grafo.get_vertices_saida(entrada))
             ranka[index]=((1-0.85) + 0.85 * cont)/norma
         s=sum(ran)-sum(ranka)
         if(abs(s)<0.1):

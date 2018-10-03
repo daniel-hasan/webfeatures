@@ -45,15 +45,18 @@ class Grafo():
     def adicionaAresta(self,de_nodo,para_nodo):
         pass 
     @abstractmethod
-    def getverticesaidas(self,index):
+    def get_vertices_saida(self,index):
         pass  
     @abstractmethod
-    def getverticesentrada(self,index):
+    def get_vertices_entrada(self,index):
         pass
     @abstractmethod
     def getvertices(self):
         pass
     @abstractmethod
     def getvertice(self,index):
+        pass
+    @abstractmethod
+    def get_vertice_ids(self):
         pass
 

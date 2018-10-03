@@ -17,9 +17,9 @@ class Clusterizacao(GraphBasedFeature):
         dicresult={}
         for index in range(0,len(grafo.getvertices())):
             cont = 0
-            lista = grafo.getverticesaidas(index)
+            lista = grafo.get_vertices_saida(index)
             for dados in lista:
-                for li in grafo.getverticesaidas(dados):
+                for li in grafo.get_vertices_saida(dados):
                     if(li in lista):
                         cont+=1
                     else:

@@ -13,12 +13,14 @@ from GraphBasedFeature import *
 
 class reciprocidade(GraphBasedFeature):
     def compute_feature(self,grafo):
+        dicresult = {}
         for index in range(0,len(grafo.getvertices())):
             cont = 0
-            lista = grafo.getverticesaidas(index)
+            lista = grafo.get_vertices_saida(index)
             for dados in lista:
-                if(index in grafo.getverticesaidas(dados)):
+                if(index in grafo.get_vertices_saida(dados)):
                     cont+=1
                 else:
                     pass
-            self.featuregrafo.insert(index,cont) 
+            dicresult[index] = cont 
+        return dicresult
