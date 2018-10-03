@@ -99,6 +99,16 @@ class FeatureFactory(models.Model):
     class Meta:
         db_table = 'wqual_feature_factory'
 
+class Source(models.Model):
+	'''
+	Created on 2 de out de 2018
+
+	@author: Gabriel Silva Brandão <gabriel.silva.brandao7@gmail.com>
+	Indica o tipo de fonte de um FeatureSet, sendo que inicialmente temos os 
+	tipos Textual e grafo.
+	'''
+	int_id = models.IntegerField(primary_key=True, unique=True)
+	nam_source = models.CharField( max_length=45)
 
 class Language(EnumModel):
     '''
