@@ -24,6 +24,20 @@ from wqual.models.utils import EnumManager, EnumModel
 from wqual.models.utils import Format
 
 
+class Source(models.Model):
+    '''
+    Created on 2 de out de 2018
+
+    @author: Gabriel Silva Brandão <gabriel.silva.brandao7@gmail.com>
+    Indica o tipo de fonte de um FeatureSet, sendo que inicialmente temos os
+    tipos Textual e grafo.
+    '''
+    id = models.IntegerField(primary_key=True, unique=True)
+    nam_source = models.CharField( max_length=45)
+    DEFAULT_SOURCE_ID=1
+    SOURCES = [{"id":1,"nam_source":"Textual"},
+                {"id":2,"nam_source":"Graph"},
+                {"id":3,"nam_source":"Revision"}]
 class Feature(models.Model):
     '''
     Created on 13 de ago de 2017
@@ -75,6 +89,7 @@ class FeatureFactoryManager(models.Manager):
             [arr_features.append(objFeature) for objFeature in objFeatureFactory.createFeatures()]
         return arr_features
 
+
 class FeatureFactory(models.Model):
     '''
     Created on 13 de ago de 2017
@@ -83,11 +98,12 @@ class FeatureFactory(models.Model):
     FeatureFactory usados para obter as instancias de features.feature.FeatureCalculator a serem usados
     As classes inseridas devem ser subclasses de feature_factory.FeatureFactory
     '''
-    DEFAULT_SOURCE_ID=1
+
     nam_module = models.CharField( max_length=45)
     nam_factory_class = models.CharField( max_length=45)
     objects = FeatureFactoryManager()
-    int_source_id = models.ForeignKey("Source", default=DEFAULT_SOURCE_ID, on_delete=models.CASCADE)
+    source = models.ForeignKey("Source", default=Source.DEFAULT_SOURCE_ID, on_delete=models.PROTECT)
+
     def get_class(self):
         '''
         resgata a classe com um vocabulario dependente de linguagem a ser usa
@@ -101,16 +117,7 @@ class FeatureFactory(models.Model):
     class Meta:
         db_table = 'wqual_feature_factory'
 
-class Source(models.Model):
-	'''
-	Created on 2 de out de 2018
 
-	@author: Gabriel Silva Brandão <gabriel.silva.brandao7@gmail.com>
-	Indica o tipo de fonte de um FeatureSet, sendo que inicialmente temos os
-	tipos Textual e grafo.
-	'''
-	int_id = models.IntegerField(primary_key=True, unique=True)
-	nam_source = models.CharField( max_length=45)
 
 class Language(EnumModel):
     '''
@@ -136,14 +143,14 @@ class FeatureSet(models.Model):
     @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
     Conjunto de features configurado por um usuário
     '''
-    DEFAULT_SOURCE_ID=1
+
     nam_feature_set = models.CharField(max_length=20)
     dsc_feature_set = models.CharField(max_length=255, blank=True, null=True)
     bol_is_public = models.BooleanField(default=False)
 
     language = models.ForeignKey(Language, models.PROTECT)
     user = models.ForeignKey(User, models.PROTECT)
-    int_source_id = models.ForeignKey("Source", default=DEFAULT_SOURCE_ID, on_delete=models.CASCADE)
+    source = models.ForeignKey("Source", default=Source.DEFAULT_SOURCE_ID, on_delete=models.PROTECT)
 
 
     def __str__(self):
