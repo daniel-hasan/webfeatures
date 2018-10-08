@@ -49,7 +49,7 @@ class TestGraphFeatures(unittest.TestCase):
                                         3,# numero de casas decimais que devem ser iguais nesse resultado
                                         "A feature "+feat.name+" produziu um resultado errado para o vértice "+vertices[posVertice]+". Resultado esperado: "+str(arrResultadoPorVertice[i][vertices[posVertice]])+" resulado obtido: "+str(resultado)
                                         )
-            print(feat.name+" [ok]")
+            print(feat.name+" [OK]")
 
 if __name__ == "__main__":
     unittest.main()
