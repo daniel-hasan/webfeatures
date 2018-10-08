@@ -1,16 +1,16 @@
 from abc import abstractmethod
-from featuresnew import*
+
 
 '''
 Created on 26 de Set de 2018
 
 @author: Rubio Torres Castro Viana <rubiotorres15@gmail.com>
 '''
-""" 
+"""
     Classe LeitorAresta:
     Classe abstrata para ler arestas
         Metodos:
-            Le_aresta: Nome auto descritivo 
+            Le_aresta: Nome auto descritivo
 """
 
 class LeitorAresta():
@@ -21,13 +21,13 @@ class LeitorAresta():
     def fechar(self):
         pass
 
-""" 
+"""
     Classe Grafo:
     Classe abstrata para criar grafos
         Metodos:
-            __init__: 
+            __init__:
                 Possui arestas[] para armazenar todos os arestas no formato:
-                    <[x,y],[x,y],[x,y]  
+                    <[x,y],[x,y],[x,y]
                 Possui vertices[] para armazenar os vetices unicos no formato:
                     <x,y,z,w>
             adicionaAresta: Adiciona arestas
@@ -43,10 +43,10 @@ class Grafo():
         pass
     @abstractmethod
     def adicionaAresta(self,de_nodo,para_nodo):
-        pass 
+        pass
     @abstractmethod
     def get_vertices_saida(self,index):
-        pass  
+        pass
     @abstractmethod
     def get_vertices_entrada(self,index):
         pass
@@ -59,4 +59,3 @@ class Grafo():
     @abstractmethod
     def get_vertice_ids(self):
         pass
-
