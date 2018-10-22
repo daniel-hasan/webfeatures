@@ -39,23 +39,20 @@ class LeitorAresta():
 
 class Grafo():
     @abstractmethod
-    def __init__(self,leitor_aresta):
-        pass
-    @abstractmethod
     def adicionaAresta(self,de_nodo,para_nodo):
-        pass
+        raise NotImplementedError("Voce deve criar uma subclasse e a mesma deve sobrepor este método")
     @abstractmethod
     def get_vertices_saida(self,index):
-        pass
+        raise NotImplementedError("Voce deve criar uma subclasse e a mesma deve sobrepor este método")
     @abstractmethod
     def get_vertices_entrada(self,index):
-        pass
+        raise NotImplementedError("Voce deve criar uma subclasse e a mesma deve sobrepor este método")
     @abstractmethod
     def getvertices(self):
-        pass
+        raise NotImplementedError("Voce deve criar uma subclasse e a mesma deve sobrepor este método")
     @abstractmethod
     def getvertice(self,index):
-        pass
+        raise NotImplementedError("Voce deve criar uma subclasse e a mesma deve sobrepor este método")
     @abstractmethod
     def get_vertice_ids(self):
-        pass
+        raise NotImplementedError("Voce deve criar uma subclasse e a mesma deve sobrepor este método")

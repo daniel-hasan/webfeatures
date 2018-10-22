@@ -1,5 +1,5 @@
 
-from feature.grafo import *
+from feature.graph import *
 '''
 Created on 26 de Set de 2018
 @author: Rubio Torres Castro Viana <rubiotorres15@gmail.com>
@@ -50,15 +50,15 @@ class grafolistaadjacencia(Grafo):
     vertices = []
     def __init__(self,leitor_aresta=None):
         if(leitor_aresta):
-            self.extraiarestas(leitor_aresta)
-    def extraiarestas(self,leitor_aresta):
+            self.extrai_arestas(leitor_aresta)
+    def extrai_arestas(self,leitor_aresta):
         line = leitor_aresta.le_aresta()
         while  line != None:
-            self.adicionaAresta(line[0],line[1])
+            self.adiciona_Aresta(line[0],line[1])
             line = leitor_aresta.le_aresta()
         leitor_aresta.fechar()
 
-    def adicionaAresta(self,de_nodo,para_nodo):
+    def adiciona_Aresta(self,de_nodo,para_nodo):
         if((de_nodo in self.vertices) == False):
             self.vertices.append(de_nodo)
             self.lista_adjacencia.append([])
@@ -79,14 +79,14 @@ class grafolistaadjacencia(Grafo):
         return self.vertices[index]
     def get_vertice_ids(self):
         vertices = []
-        for entrada in self.vertices:
-            vertices.append(self.vertices.index(entrada))
+        for entrada in range(0,len(self.vertices)):
+            vertices.append(entrada)
         return vertices
 
 
 """
 if __name__ == "__main__":
-    arquivo = LeitorArestaArquivo("grafo_mini.txt")
+    arquivo = LeitorArestaArquivo("tests/grafo_mini.txt")
     artigo = grafolistaadjacencia(arquivo)
     print(artigo.get_vertices_entrada(0))
     ran = AssortatividadeSaidaEntrada()
