@@ -49,7 +49,7 @@ class TestWordsFeatureFactory(unittest.TestCase):
         objEnglish = LanguageEnum.en
         
         arrFeatures = []
-        for SubClass in FeatureFactory.__subclasses__():
+        for SubClass in FeatureFactory.subclasses__():
             objFeatFact = None
             if(SubClass.IS_LANGUAGE_DEPENDENT):
                 objFeatFact = SubClass(objEnglish)
