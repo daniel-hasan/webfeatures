@@ -38,23 +38,14 @@
 				{% for field in form %}
 					{{ field.errors }}
 					<div class="form-group">
-						{% ifequal field.label "Nam feature set" %}
-							<span>Feature set name:</span>
-						{% endifequal %}
 
-						{% ifequal field.label "Dsc feature set" %}
-							<span>Description:</span>
-						{% endifequal %}
-
-						{% ifequal field.label "Language" %}
-							<span>Language:</span>
-						{% endifequal %}
+						<span>{{field.label}}:</span>
 
 					<div>
-	                    	{{ field }}
-	                   </div>
-	                </div>
-	            {% endfor %}
+	       		{{ field }}
+	        </div>
+	       </div>
+	   		{% endfor %}
 
 			<p>&nbsp;
 			Share the feature set. <span id="sharing_link" class="{%if not object.id %}invisible{%endif%}">Sharing link: <a id="anc" href="{% url "public_extract_features" user.get_username object.nam_feature_set %}">http://{{request.get_host}}/p/{{user.get_username}}/<span id="pub_feat_set_name">{{object.nam_feature_set}}</span></a></span></p>
@@ -90,7 +81,7 @@
 
 
 
-		
+
 
   </script>
 
