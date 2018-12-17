@@ -126,23 +126,22 @@ class AssortativeOutputOutput (GraphBasedFeature):
         return dic_result
         
 class Clustering (GraphBasedFEature):
-    def comput_feature (self, graph):  
-      def comput_feature (self, graph):       
+    def compute_feature (self, graph):      
         for vertice_id in graph.get_vertice_ids():
             visit = {}     
-            fila = {}
+            fila = []
             adj = {}
             visit.add(vertice_id)
             fila.add(vertice_id)
-            dist = 0
-            
-        for vertice_id in fila:
-            
-            fila.remove(vertice_id)
-            adj = graph.get_vertices_saida(vertice_id)
-            for vertice in adj: 
-                if (visit[vertice]):
-                    dist = dist+1
-                    visit.remove(vertice)
-                    fila.add(vertice)
+            dist = 0   
+            count = 0
+            while(len(fila)>0 or dist<=3):
+               u = fila.pop(0)
+               adj = graph.get_vertices_saida(u)
+               for v in adj: 
+                   if (not v in visit):
+                       dist = dist+1
+                       visit.add(v)
+                       fila.add(v)
+                       count = count+1
         return dist            
