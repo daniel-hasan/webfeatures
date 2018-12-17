@@ -114,8 +114,8 @@ function insertNewFeatureItem(objFeatureItem){
  */
 function getFeatureList(domFeatureList,strLanguageCode){
 
-	$.ajax({
-	  url: format_language_code_url("{% url "list_all_features" "__language_code__" %}",strLanguageCode),
+	$.ajax({ 
+	  url: format_language_code_url("{% url "list_all_features" "__language_code__" "__source_id__" %}",strLanguageCode),
 	  dataType: 'json',
 	  type: "POST",
 	  success: function(response) {

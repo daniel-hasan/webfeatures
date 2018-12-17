@@ -178,6 +178,7 @@ class FeatureSetEditAJAX(View):
                     objFeatureSetEdit.dsc_feature_set = arrFeatureSetEdit["dsc_feature_set"]
                     objFeatureSetEdit.bol_is_public = arrFeatureSetEdit["bol_is_public"]
                     objFeatureSetEdit.language = Language.objects.get(id=arrFeatureSetEdit["language"])
+ 		objFeatureSetEdit.source = Sources.objects.get(id=)
                     objFeatureSetEdit.save()
                     arrFeatureSetEdit["nam_feature_set"] = objFeatureSetEdit.nam_feature_set;
 

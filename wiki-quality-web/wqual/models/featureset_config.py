@@ -73,9 +73,9 @@ class FeatureFactoryManager(models.Manager):
 
     @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
     '''
-    def get_all_features_from_language(self,obj_language):
+    def get_all_features_from_language(self,obj_language,source_id=1):
         arr_features = []
-        for featFactory in self.all():
+        for featFactory in self.filter():
 
             #instantiate feature factory class
             FeatureFactoryClass = get_class_by_name(featFactory.nam_module+"."+featFactory.nam_factory_class)
