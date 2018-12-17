@@ -20,15 +20,15 @@ from utils.basic_entities import FormatEnum, CheckTime
 class NotTheOwner(Exception):
     def __init__(self):
         super().__init__(self, "Object is not the owner: Permission denied or cache's empty")
-    
+
 class DocumentCache(object):
-    
+
     def __init__(self,obj):
         self.cache = {}
         self.owner = {}
-    
+
     def hasCacheItem(self, itemName):
-        return itemName in self.cache 
+        return itemName in self.cache
 
     def getCacheItem(self, itemName, objRequest=None):
         if itemName not in self.cache:
@@ -40,12 +40,12 @@ class DocumentCache(object):
     def setCacheItem(self, itemName, intValue, objRequest):
         if not self.hasCacheItem(itemName):
             self.setOwnership(itemName, objRequest)
-        
+
         if self.owner[itemName] != objRequest:
             raise NotTheOwner()
         self.cache[itemName] = intValue
         return self.cache[itemName]
-    
+
     def setOwnership(self, itemName, objRequest):
         self.owner[itemName] = objRequest
 
@@ -55,68 +55,68 @@ class Document(object):
         self.str_doc_name = str_doc_name
         self.str_text = str_text
         self.obj_cache = DocumentCache(self)
-        
+
 class FeatureDocumentsWriter(object):
     @abstractmethod
     def write_document(self,document, arr_feats_used, arr_feats_result):
         raise NotImplementedError("Voce deve criar uma subclasse e a mesma deve sobrepor este método")
-    
+
     @abstractmethod
     def write_header(self, arr_features_used):
         '''raise NotImplementedError'''
         pass
-    
+
 class FeatureDocumentsReader(object):
     '''
-            Classe abstrata para a leitura dos textos 
-            de um conjunto de documentos. Implemente este 
+            Classe abstrata para a leitura dos textos
+            de um conjunto de documentos. Implemente este
             leitor nos demais modulos para a leitura dos documentos.
-            @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br> 
+            @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
     '''
     @abstractmethod
     def get_documents(self):
         '''
-            Método abstrato que retorna os documentos a serem lidos. 
+            Método abstrato que retorna os documentos a serem lidos.
             Este método
             deverá ser implementado nas subclasses.
             A clausula yield pode ser útil para implementar este método. Ver exemplo em DocSetReaderDummy.
-            
-            @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br> 
+
+            @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
         '''
         pass
-        
+
 
 class DocSetFileReader(FeatureDocumentsReader):
     def __init__(self,file):
         self.file = file
-    
+
     '''
-        Erro de função não encontrada 
+        Erro de função não encontrada
     '''
-    
+
     def get_documents(self):
         int_count = 0
         for str_file in listdir(self.file):
-            str_file_path = join(self.file, str_file) 
+            str_file_path = join(self.file, str_file)
             if isfile(str_file_path) and not isdir(str_file_path):
                 with open(str_file) as file:
                     str_data = file.read()
                     yield Document(int_count, str_file,str_data)
                     int_count = int_count+1
-                    
-                    
+
+
 
 class DocSetReaderDummy(FeatureDocumentsReader):
     def get_documents(self):
         yield Document(1,"doc1","Ola meu nome é hasan")
         yield Document(2,"doc2","ipi ipi ura")
         yield Document(3,"doc3","lalala")
-        
+
 #class FeatureClassToExtract(object):
 #    def __init__(self,feature_class,arr_feature_arguments):
 #        self.feature_class = feature_class
 #        self.arr_feature_arguments = arr_feature_arguments
-    
+
 #    def instantiate_feature(self):
 #        module = __import__( "feature" )
 #        Klass = getattr(module,self.feature_class)
@@ -127,8 +127,8 @@ class ParserTags(HTMLParser):
         HTMLParser.__init__(self)
         self.document = document
         self.arrParserFeats = arrParserFeats
-        
-        
+
+
         self.firstTimeData = True
         self.firstTimeStartTag = True
         self.firstTimeEndTag = True
@@ -141,7 +141,7 @@ class ParserTags(HTMLParser):
             self.firstTimeData = False
         else:
             for feat in self.arrFeatsData:
-                feat.data(self.document, str_data) 
+                feat.data(self.document, str_data)
 
     def handle_starttag(self, tag, attrs):
         if(self.firstTimeStartTag):
@@ -149,8 +149,8 @@ class ParserTags(HTMLParser):
             self.firstTimeStartTag = False
         else:
             for feat in self.arrFeatsStartTag:
-                feat.startTag(self.document, tag, attrs) 
-        
+                feat.startTag(self.document, tag, attrs)
+
     def handle_endtag(self, tag):
         if(self.firstTimeEndTag):
             self.arrFeatsEndTag = [feat for feat in self.arrParserFeats if feat.endTag(self.document, tag)]
@@ -169,65 +169,65 @@ class FeatureCalculatorManager(object):
             arr_features_to_extract são implementações da classe Feature calculator
             devem ser tranformados em um array de features para chamar, para cada documento,
             o método computeFeatureSet.
-            @author: 
+            @author:
         '''
             #cria um array arr_features (array de FeatureCalculator)
             # com as features do array arr_features_to_extract
 
             # Rodar todos os docuemntos para todas as features que não
             # necessitam de algum metodo de preprocessamento de todo o conjunto de documento
-        
+
         docWriter.write_header(arr_features_to_extract)
-        
+
         for doc in datReader.get_documents():
             arr_features_result = self.computeFeatureSet(doc, arr_features_to_extract,format)
             #Para cada um processamento do documentSet necessário,
             # rodar todas as features que necessitam dele.
             docWriter.write_document(doc,arr_features_to_extract,arr_features_result)
-            
-            
+
+
         pass
-    
+
     def reduce_array(self,arrToReduce,arrIdx):
             arrIdx.sort(reverse=True)
             for idx in arrIdx:
                 del arrToReduce[idx]
-                   
+
     def computeFeatureSet(self,docText,arr_features,format):
         '''
         Analisa o texto e calcula todas as features do array.
-        Primeiro é calculada as features do formato HTML, depois, textplain. 
-                 
-        [fazer depois a parte de preprocessamento] Para cada formato:  Agrupa o conjunto de fetures no tipo 
-        de preprocessamento do texto. Faz o preprocessamento roda as features para 
-        este determinado preprocessamento. 
-        
+        Primeiro é calculada as features do formato HTML, depois, textplain.
+
+        [fazer depois a parte de preprocessamento] Para cada formato:  Agrupa o conjunto de fetures no tipo
+        de preprocessamento do texto. Faz o preprocessamento roda as features para
+        este determinado preprocessamento.
+
         Rode primeiramente todas as TextBasedFeature usando
         o texto completo e, logo apos, para cada palavra, rode todas as WordCountFeatures
-        
-           
+
+
         Saída: arranjo para cada posicao de arrFeature, a resposta da feture correspondente
-        
-        @author:  
-        ''' 
-        
-        
+
+        @author:
+        '''
+
+
         str_text = docText.str_text
         arr_feat_result = []
-        
+
         for feat in arr_features:
             arr_feat_result.append(None)
         str_text_for_char = str_text
         timeToProc = CheckTime()
         if format is FormatEnum.HTML:
-            
+
             arrTagFeats = [feat for feat in arr_features if isinstance(feat, TagBasedFeature)]
-            
+
             parser = ParserTags(arrTagFeats, docText)
             parser.feed(str_text)
-            
-            #timeToProc.printDelta("HTML parser tags")         
-            
+
+            #timeToProc.printDelta("HTML parser tags")
+
             '''considera apenas o que estiver dentro de <body> </body> (se esses elementos existirem)'''
             str_text_lower = str_text.lower()
             int_pos_body = str_text_lower.find("<body>")
@@ -237,23 +237,23 @@ class FeatureCalculatorManager(object):
             '''str_text = parser.str_plain_text'''
             str_text_for_char = re.sub("<[^>]+>", "", str_text)
             str_text = re.sub("<[^>]+>", " ", str_text)
-             
+
             '''elimina as html entities'''
             str_text = html.unescape(str_text)
             str_text_for_char = html.unescape(str_text_for_char)
             #timeToProc.printDelta("String parsing")
-        
+
         #armazo as word based features e sentence based feature
         word_buffer = ""
         sentence_buffer = ""
         paragraph_buffer = ""
-        
+
         #separa os tipos de features par a dar o check
         arrCharFeats = [feat for feat in arr_features if isinstance(feat, CharBasedFeature)]
         arrWordFeats = [feat for feat in arr_features if isinstance(feat, WordBasedFeature)]
         arrSentFeats = [feat for feat in arr_features if isinstance(feat, SentenceBasedFeature)]
         arrParFeats = [feat for feat in arr_features if isinstance(feat, ParagraphBasedFeature)]
-        
+
 
         #timeToProc.printDelta("proc char feats")
         #print("Arr features size: "+str(len(arr_features))+" Char: "+str(len(arrCharFeats)))
@@ -268,7 +268,7 @@ class FeatureCalculatorManager(object):
                 #    xx = xx+1
                 #if isinstance(feat, CharBasedFeature):
             #timeToProc.printDelta("Feature "+feat.name)
-            
+
         #timeToProc.printDelta("Check char")
         firstTimeWord = True
         arrCheckWordIdxToRemove = []
@@ -287,13 +287,13 @@ class FeatureCalculatorManager(object):
         #        arrParagraphsPoints.append(i)
         #timeToProc.printDelta("Check word,sentence and paragraph points")
         #print("numchar: "+str(len(str_text))+" Num words: "+str(len(arrWordsPoints))+" NumSents: "+str(len(arrSentencePoints))+"Num Pars: "+str(len(arrParagraphsPoints)))
-        
-        
+
+
         for str_char in str_text:
             word_proc = word_buffer.strip()
             if(len(word_proc) > 0 and str_char in FeatureCalculator.word_divisors):
                 for i,feat in enumerate(arrWordFeats):
-                    
+
                     if(firstTimeWord):
                         bolChecked = feat.checkWord(docText, word_proc)
                         if(not bolChecked):
@@ -302,17 +302,17 @@ class FeatureCalculatorManager(object):
                         feat.checkWord(docText, word_proc)
                     if(str_char != " "):
                         feat.checkWord(docText, str_char)
-                        
+
                     word_buffer = ""
                 if(firstTimeWord):
                     firstTimeWord = False
                     #lenWordFeats = len(arrWordFeats)
                     self.reduce_array(arrWordFeats, arrCheckWordIdxToRemove)
                     #print("Words reduced From: "+str(lenWordFeats)+ " to "+str(len(arrWordFeats)))
-                    
+
             else:
                 word_buffer = word_buffer + str_char
-            
+
             sentence_buffer = sentence_buffer + str_char
             if(str_char in FeatureCalculator.sentence_divisors):
                     for i,feat in enumerate(arrSentFeats):
@@ -323,7 +323,7 @@ class FeatureCalculatorManager(object):
                         else:
                             feat.checkSentence(docText,sentence_buffer)
                     sentence_buffer = ""
-                    
+
                     if(firstTimeSentence):
                         firstTimeSentence = False
                         #lenSentFeats = len(arrSentFeats)
@@ -331,35 +331,35 @@ class FeatureCalculatorManager(object):
                         #print("sentences reduced From: "+str(lenSentFeats)+ " to "+str(len(arrSentFeats)))
 
 
-            
-            
+
+
             if(paragraph_buffer != "" and str_char in FeatureCalculator.paragraph_divisor):
                     for feat in arrParFeats:
                         feat.checkParagraph(docText,paragraph_buffer)
                     paragraph_buffer = ""
             else:
-                    paragraph_buffer = paragraph_buffer + str_char                    
-                    
+                    paragraph_buffer = paragraph_buffer + str_char
+
         #timeToProc.printDelta("Check word, paragraph and sentence")
-        #timeToProc.printDelta("Other checks")    
+        #timeToProc.printDelta("Other checks")
         #se necessario, le a ultima palavra/frase/paragrafo do buffer
-        
+
         paragraph_buffer = paragraph_buffer.strip()
         word_buffer = word_buffer.strip()
         sentence_buffer = sentence_buffer.strip(" ")
-        
+
         for feat in arr_features:
             if(len(word_buffer) > 0 and isinstance(feat, WordBasedFeature)):
                 feat.checkWord(docText, word_buffer)
-                
+
             if(len(sentence_buffer) > 0 and isinstance(feat, SentenceBasedFeature)):
                 feat.checkSentence(docText, sentence_buffer)
-            
+
             if(len(paragraph_buffer) > 0 and isinstance(feat, ParagraphBasedFeature)):
                 feat.checkParagraph(docText, paragraph_buffer)
         #timeToProc.printDelta("Last  checking")
         #para todoas as WordBasedFeatue ou SentenceBased feature, rodar o compute_feature
-        
+
         aux = 0
         for feat in arr_features:
             arr_feat_result[aux] = feat.compute_feature(docText)
@@ -377,21 +377,21 @@ class FeatureVisibilityEnum(Enum):
     '''
     public = "Visibilidade total"
     local = "Visibilidade nas interfaces (web e de caracteres, por ex) apenas se for localhost"
-    private = "Não serão visualizadas nas interfaces (web e de caracteres) apenas rodando na linha de comando"    
-    
+    private = "Não serão visualizadas nas interfaces (web e de caracteres) apenas rodando na linha de comando"
+
 class FeatureCalculator(object):
     '''
-        Classe abstrata das features. Os demais módulos deverão acessar as 
-        features apenas por meio desta classe. 
+        Classe abstrata das features. Os demais módulos deverão acessar as
+        features apenas por meio desta classe.
         @author:  Daniel Hasan Dalip <hasan@decom.cefetmg.br>
     '''
     featureManager = FeatureCalculatorManager()
     word_divisors = set([" ",",",".","!","?",";","%","&","*","(",")","-","@","#","+","/","=","[","]","}","{","\n","|","\"","'"])
     sentence_divisors = set([".","!","?"])
     paragraph_divisor = set(["\n", os.linesep])
-    
+
     def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document):
-        
+
         self.name = name
         self.description = description
         self.reference = reference
@@ -399,38 +399,38 @@ class FeatureCalculator(object):
         self.text_format = text_format
         self.feature_time_per_document = feature_time_per_document
         self.arr_configurable_param = []
-        
+
     def addConfigurableParam(self,objParam):
         self.arr_configurable_param.append(objParam)
-        
+
     def get_params_str(self):
         arrParams = []
         for param in self.arr_configurable_param:
             if(param.att_name in self.__dict__):
                 arrParams.append(param.name+":"+self.__dict__[param.att_name])
-        
+
         return "; ".join(arrParams)
     @abstractmethod
     def compute_feature(self,document):
         raise NotImplementedError
-    
+
     @abstractmethod
     def finish_document(self,document):
         raise NotImplementedError
-     
+
 class TextBasedFeature(FeatureCalculator):
     '''
-    São subclasses desta classe abstrata as features que NÃO conseguem 
+    São subclasses desta classe abstrata as features que NÃO conseguem
     analisar o texto por palavra para efetuar o calculo desta feature.
     @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
     '''
-    
+
 class ParagraphBasedFeature(FeatureCalculator):
-    
+
     @abstractmethod
     def checkParagraph(self,document,paragraph):
-        raise NotImplementedError  
-    
+        raise NotImplementedError
+
 class SentenceBasedFeature(FeatureCalculator):
 
     @abstractmethod
@@ -439,47 +439,47 @@ class SentenceBasedFeature(FeatureCalculator):
 
 class WordBasedFeature(FeatureCalculator):
     '''
-    São subclasses desta classe abstrata as features que conseguem 
+    São subclasses desta classe abstrata as features que conseguem
     analisar o texto por palavra para efetuar o calculo desta feature.
-    
+
     @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
     '''
-    
+
     @abstractmethod
     def checkWord(self,document,word):
         raise NotImplementedError
-            
+
 
 class TagBasedFeature(FeatureCalculator):
-    
+
     def startTag(self,tag, attrs):
         return False
-    
+
     def endTag(self,tag, attrs):
         return False
-    
+
     def data(self,document,str_data):
         return False
-    
+
 class CharBasedFeature(FeatureCalculator):
-    
+
     @abstractmethod
     def checkChar(self,document,char):
         raise NotImplementedError
 class ParamTypeEnum(Enum):
     '''
         Tipo do valor de um parametro de uma feature.
-        @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>    
+        @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
     '''
     int = "int"
     float = "float"
     string = "string"
     choices = "choices"
-    
+
 class ConfigurableParam(object):
     '''
         Classe que armazena os parametros de uma feature que são configuráveis pelo usuário.
-        @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>    
+        @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
     '''
     def __init__(self,att_name,name,description,default_value,param_type,arr_choices=[]):
         self.name = name
@@ -491,8 +491,5 @@ class ConfigurableParam(object):
 
 class GraphBasedFeature(FeatureCalculator):
         @abstractmethod
-        def compute_feature(graph):
+        def compute_feature(self,graph):
                 pass
-
-
-
