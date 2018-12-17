@@ -137,14 +137,12 @@ class Clustering (GraphBasedFEature):
             dist = 0
             
         for vertice_id in fila:
-           fila.remove(vertice_id)
-           adj = graph.get_vertices_saida(vertice_id)
-           for vertice in adj: 
-               if (visit[vertice]):
-                   dist = dist+1
-                   visit.remove(vertice)
-                   fila.add(vertice)
-    
-        return dist
-
             
+            fila.remove(vertice_id)
+            adj = graph.get_vertices_saida(vertice_id)
+            for vertice in adj: 
+                if (visit[vertice]):
+                    dist = dist+1
+                    visit.remove(vertice)
+                    fila.add(vertice)
+        return dist            
