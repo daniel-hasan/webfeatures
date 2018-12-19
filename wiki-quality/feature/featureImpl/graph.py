@@ -5,13 +5,13 @@ class Indegree(GraphBasedFeature):
                 for vertice_id in graph.get_vertice_ids():
                         dic_result[vertice_id] = len(graph.get_vertices_entrada(vertice_id))
                 return dic_result
-            
+
 class Outdegree(GraphBasedFeature):
     def compute_feature(self,grafo):
         dicresult = {}
         for index in range(0,len(grafo.getvertices())):
             dicresult[index] = len(grafo.get_vertices_saida(index))
-        return dicresult 
+        return dicresult
 
 class pageRank(GraphBasedFeature):
     rank = {}
@@ -34,7 +34,7 @@ class pageRank(GraphBasedFeature):
         if(abs(s)<0.1):
             self.rank=ranka
         else:
-            self.atualizar(grafo,ranka)   
+            self.atualizar(grafo,ranka)
 
 class Reciprocity(GraphBasedFeature):
     def compute_feature(self,grafo):
@@ -47,9 +47,9 @@ class Reciprocity(GraphBasedFeature):
                     cont+=1
                 else:
                     pass
-            dicresult[index] = cont 
+            dicresult[index] = cont
         return dicresult
-    
+
 class AssortativeInputInput (GraphBasedFeature):
     def compute_feature(self,graph):
         dic_result = {}
@@ -60,13 +60,13 @@ class AssortativeInputInput (GraphBasedFeature):
             listaVizinhos = graph.get_vertices_saida(vertice_id)
             for vertice_id_saida in listaVizinhos:
                 soma += len(graph.get_vertices_entrada(vertice_id_saida))
-            
+
             if(len(listaVizinhos) == 0):
                 dic_result[vertice_id] = 0
-            else: 
-                media = soma/len(listaVizinhos)            
+            else:
+                media = soma/len(listaVizinhos)
                 dic_result[vertice_id] = dic_result[vertice_id]/media
-        
+
         return dic_result
 
 class AssortativeInputOutput (GraphBasedFeature):
@@ -82,8 +82,8 @@ class AssortativeInputOutput (GraphBasedFeature):
 
             if(len(listaVizinhos) == 0):
                 dic_result[vertice_id] = 0
-            else: 
-                media = soma/len(listaVizinhos)            
+            else:
+                media = soma/len(listaVizinhos)
                 dic_result[vertice_id] = dic_result[vertice_id]/media
         return dic_result
 
@@ -97,13 +97,13 @@ class AssortativeOutputInput (GraphBasedFeature):
             listaVizinhos = graph.get_vertices_saida(vertice_id)
             for vertice_id_saida in listaVizinhos:
                 soma = soma+len(graph.get_vertices_entrada(vertice_id_saida))
-            
+
             if (len(listaVizinhos) == 0):
                 dic_result[vertice_id] = 0;
             else:
                 media = soma/len(listaVizinhos)
                 dic_result[vertice_id] = dic_result[vertice_id]/media
-                
+
         return dic_result
 
 class AssortativeOutputOutput (GraphBasedFeature):
@@ -122,26 +122,27 @@ class AssortativeOutputOutput (GraphBasedFeature):
             else:
                 media = soma/len(listaVizinhos)
                 dic_result[vertice_id] = dic_result[vertice_id]/media
-                
+
         return dic_result
-        
+
 class Clustering (GraphBasedFEature):
-    def compute_feature (self, graph):      
+    def compute_feature (self, graph):
         for vertice_id in graph.get_vertice_ids():
-            visit = {}     
+            visit = {}
             fila = []
             adj = {}
             visit.add(vertice_id)
             fila.add(vertice_id)
-            dist = 0   
+            dist = 0
             count = 0
             while(len(fila)>0 or dist<=3):
-               u = fila.pop(0)
-               adj = graph.get_vertices_saida(u)
-               for v in adj: 
-                   if (not v in visit):
-                       dist = dist+1
-                       visit.add(v)
-                       fila.add(v)
-                       count = count+1
+                u = fila.pop(0)
+                adj = graph.get_vertices_saida(u)
+                for v in adj:
+                    if (not v in visit):
+                        dist = dist+1
+                        visit.add(v)
+                        fila.add(v)
+                        count = count+1
+
         return dist            
