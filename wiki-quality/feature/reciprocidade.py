@@ -9,7 +9,7 @@ Created on 2 de Out de 2018
         Metodos:
             compute_feature: Retorna a quantidade de vertice que tambem tem uma ligacao de volta com o vertice origem
 """
-from GraphBasedFeature import *
+from feature.GraphBasedFeature import *
 
 class reciprocidade(GraphBasedFeature):
     def compute_feature(self,grafo):

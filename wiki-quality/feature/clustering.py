@@ -10,7 +10,7 @@ Created on 2 de Out de 2018
             compute_feature: Corrigir!!!
 """
 
-from GraphBasedFeature import *
+from feature.GraphBasedFeature import *
 
 class Clusterizacao(GraphBasedFeature):
     def __init__(name,description,reference,visibility,text_format,feature_time_per_document,distanciaMax):

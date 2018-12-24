@@ -1,4 +1,4 @@
-from GraphBasedFeature import *
+from feature.GraphBasedFeature import *
 class AssortatividadeEntradaSaida(GraphBasedFeature):
     """
         Para cada vertice v, o grauEntrada(v) dividido

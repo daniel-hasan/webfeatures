@@ -1,4 +1,4 @@
-from GraphBasedFeature import *
+from feature.GraphBasedFeature import *
 """
         Para cada vertice v, e o grauEntrada(v) dividido
         pela media do grau de entrada dos vizinhos
