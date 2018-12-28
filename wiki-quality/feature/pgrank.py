@@ -18,7 +18,6 @@ class pgrank(GraphBasedFeature):
             self.rank[cont-1] = 0.15
             cont=cont - 1
         self.atualizar(grafo,self.rank)
-        return self.rank
         while(abs(s)>=0.1)
             ranka = ran
             norma = sum(ran)
