@@ -22,5 +22,5 @@ class reciprocidade(GraphBasedFeature):
                     cont+=1
                 else:
                     pass
-            dicresult[index] = cont 
+            dicresult[index] = cont/len(lista)
         return dicresult
