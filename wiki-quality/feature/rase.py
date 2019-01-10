@@ -1,9 +1,14 @@
+'''
+@author: Larisse Stefany Pires Amorim <larisseamorim.mg@gmail.com>
+'''
+"""
+    Classe AssortatividadeSaidaEntrada:
+    Classe para produzir o Assortatividade de Saída Entrada de um vertice:
+        Metodos:
+            compute_feature: Retorna a Assortatividade de saida entrada de cada vértice
+"""
+
 from feature.GraphBasedFeature import *
-"""
-        Para cada vertice v, e o grauSaida(v) dividido
-        pela media do grau de entrada dos vizinhos
-            rase = rgs/avgGrauEntrada
-"""
 class AssortatividadeSaidaEntrada (GraphBasedFeature):
     def compute_feature(self,graph):
         dic_result = {}
@@ -14,7 +19,9 @@ class AssortatividadeSaidaEntrada (GraphBasedFeature):
             listaVizinhos = graph.get_vertices_saida(vertice_id)
             for vertice_id_saida in listaVizinhos:
                 soma = soma+len(graph.get_vertices_entrada(vertice_id_saida))
-
-            media = soma/len(listaVizinhos)
-            dic_result[vertice_id] = dic_result[vertice_id]/media
+            if (soma != 0):
+                media = soma/len(listaVizinhos)
+                dic_result[vertice_id] = dic_result[vertice_id]/media
+            else:
+                dic_result[vertice_id] = 0
         return dic_result

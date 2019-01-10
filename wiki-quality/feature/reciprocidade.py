@@ -3,7 +3,7 @@ Created on 2 de Out de 2018
 
 @author: Rubio Torres Castro Viana <rubiotorres15@gmail.com>
 '''
-""" 
+"""
     Classe Reciprocidade:
     Classe para produzir o coeficiente de reciprocidade de um vertice:
         Metodos:
@@ -22,5 +22,8 @@ class reciprocidade(GraphBasedFeature):
                     cont+=1
                 else:
                     pass
-            dicresult[index] = cont/len(lista)
+            if (len(lista) != 0):
+                dicresult[index] = cont/len(lista)
+            else:
+                dicresult[index] = 0
         return dicresult
