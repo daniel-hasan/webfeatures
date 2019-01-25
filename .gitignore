@@ -7,3 +7,4 @@
 *.py~
 *.*~
 wiki-quality-web/uploaded_datasets/*
+/.metadata/
