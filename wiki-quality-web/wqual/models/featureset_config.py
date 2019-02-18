@@ -75,7 +75,7 @@ class FeatureFactoryManager(models.Manager):
     '''
     def get_all_features_from_language(self,obj_language,source_id=1):
         arr_features = []
-        for featFactory in self.filter():
+        for featFactory in self.filter(source_id=1):
 
             #instantiate feature factory class
             FeatureFactoryClass = get_class_by_name(featFactory.nam_module+"."+featFactory.nam_factory_class)
@@ -149,7 +149,7 @@ class FeatureSet(models.Model):
 
     nam_feature_set = models.CharField(verbose_name="Feature set name",max_length=20)
     dsc_feature_set = models.CharField(verbose_name="Description",max_length=255, blank=True, null=True)
-    bol_is_public = models.BooleanField(verbose_name="",default=False)
+    bol_is_public = models.BooleanField(verbose_name=" Share the feature set. Sharing link",default=False)
 
     language = models.ForeignKey(Language, models.PROTECT)
     user = models.ForeignKey(User, models.PROTECT)

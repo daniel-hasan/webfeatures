@@ -6,6 +6,7 @@ Views relacionadas a configuração das features
 '''
 import json
 
+from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
 from django.db.utils import IntegrityError
@@ -59,7 +60,6 @@ class FeatureSetInsert(LoginRequiredMixin, CreateView):
     Lista todos os conjunto de features criados.
     '''
     fields=["nam_feature_set","dsc_feature_set", "language","bol_is_public","source"]
-    labels = {"nam_feature_set": "Feature set name"}
 #    initial = { 'language': Language.objects.get(name=LanguageEnum.en.name) }
 
     model = FeatureSet
@@ -123,7 +123,13 @@ class FeatureSetInsertAJAX(View):
 
         return JsonResponse({"arrCreateFeatureSet" : arrCreateFeatureSet,
                              "arrErr": arrErr })
-
+class FeatureSetForm(forms.ModelForm):
+    class Meta:
+        model = FeatureSet
+        fields=["nam_feature_set","dsc_feature_set", "language","bol_is_public","source"]
+        widgets = {
+            'source': forms.RadioSelect()
+        }
 class FeatureSetEdit(LoginRequiredMixin, UpdateView):
     '''
     Created on 14 de ago de 2017
@@ -131,13 +137,14 @@ class FeatureSetEdit(LoginRequiredMixin, UpdateView):
     @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
     Lista todos os conjunto de features criados.
     '''
-    fields=["nam_feature_set","dsc_feature_set", "language","bol_is_public","source"]
+
     form_validator = FormValidation()
     model = FeatureSet
-
+    form_class = FeatureSetForm
     template_name = "content/feature_set_update_insert.html"
 
     def form_valid(self, form):
+
         bol_valid = FeatureSetEdit.form_validator.form_valid(self, form)
         return super(UpdateView, self).form_valid(form) if bol_valid else super(UpdateView, self).form_invalid(form)
 
@@ -152,6 +159,7 @@ class FeatureSetEdit(LoginRequiredMixin, UpdateView):
         return reverse('feature_set_list')
 
     def get_context_data(self, **kwargs):
+
         context = super(FeatureSetEdit, self).get_context_data(**kwargs)
         context['source_list'] = Source.objects.all()
         return context
@@ -178,7 +186,7 @@ class FeatureSetEditAJAX(View):
                     objFeatureSetEdit.dsc_feature_set = arrFeatureSetEdit["dsc_feature_set"]
                     objFeatureSetEdit.bol_is_public = arrFeatureSetEdit["bol_is_public"]
                     objFeatureSetEdit.language = Language.objects.get(id=arrFeatureSetEdit["language"])
- 		objFeatureSetEdit.source = Sources.objects.get(id=)
+                    objFeatureSetEdit.source = Sources.objects.get(id=arrFeatureSetEdit["source_id"])
                     objFeatureSetEdit.save()
                     arrFeatureSetEdit["nam_feature_set"] = objFeatureSetEdit.nam_feature_set;
 
