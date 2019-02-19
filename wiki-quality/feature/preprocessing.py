@@ -20,7 +20,7 @@ class StopWordRemoval(PreprocessingMethod):
     def run(self,text,language):
         str_stopword = set(stopwords.words(language))
         list_tokened_words = word_tokenize(text)
-        list_filtered_text = [word for word in word_tokens if not w in stop_words]
+        list_filtered_text = [word for word in word_tokens if not word in stop_words]
         return str(" ".join(list_filtered_text))
   
 class PartOfSpeechParser(PreprocessingMethod):
