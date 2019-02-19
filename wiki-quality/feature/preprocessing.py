@@ -1,4 +1,8 @@
 # -*- coding: utf-8 -*-
+import nltk
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+
 class TextPreprocessing(object):
     def __init__(self,arr_preproc_methods):
         self.arr_preproc_methods = arr_preproc_methods
@@ -9,12 +13,15 @@ class TextPreprocessing(object):
         return strText
     
 class PreprocessingMethod(object):
-    def run(self,text):
+    def run(self,text,language):
         pass
     
 class StopWordRemoval(PreprocessingMethod):
-    def run(self,text):
-        pass
+    def run(self,text,language):
+        str_stopword = set(stopwords.words(language))
+        list_tokened_words = word_tokenize(text)
+        list_filtered_text = [word for word in word_tokens if not w in stop_words]
+        return str(" ".join(list_filtered_text))
   
 class PartOfSpeechParser(PreprocessingMethod):
     def run(self,text):
