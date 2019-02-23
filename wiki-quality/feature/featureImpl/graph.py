@@ -84,23 +84,37 @@ class AssortativeOutputInput(GraphBasedFeature):
         return dic_result
 
 class pageRank(GraphBasedFeature):
-    rank = {}
     def compute_feature(self,grafo):
+        rank={}
+        s=100
+        d=0.85
         cont = len(grafo.getvertices())
-        while cont > 0:
-            self.rank[cont-1] = 0.15
+        #Inicializacao
+        while (cont > 0):
+            rank[cont-1] = 1-d #Inicializa com 1-d
             cont=cont - 1
-        self.atualizar(grafo,self.rank)
-        while(abs(s)>= 0.1):
-            ranka = ran
-            norma = sum(ran)
-            for index in range(0,len(ran)):
-                cont=0
+        while(abs(s)>0.1):
+            ranka={}
+            #Calculo do page rank
+            for index in range(0,len(rank)):
+                soma=0
                 for entrada in grafo.get_vertices_entrada(index):
-                    cont+=ran[entrada]/len(grafo.get_vertices_saida(entrada))
-                ranka[index]=((1-0.85) + 0.85 * cont)/norma
-            s=sum(ran)-sum(ranka)
-        self.rank=ranka
+                    soma+=rank[entrada]/len(grafo.get_vertices_saida(entrada))
+                ranka[index]= (1-d) + (d * soma)
+            #normalizacao 
+            norma = sum(ranka.values())
+            #print (ranka.items())
+            for cont,val_rank in ranka.items():
+                #print("pos "+str(cont)+" valrank: "+str(val_rank))
+                ranka[cont] = val_rank/norma
+            #print (ranka)
+            #calculo da convergencia
+            s=sum(rank.values())-sum(ranka.values())
+            #atualizacao do valor do page rank
+            for i,val_rank in ranka.items():
+                rank[i] = val_rank
+        return rank
+        
 
 class Reciprocity(GraphBasedFeature):
     def compute_feature(self,grafo):
