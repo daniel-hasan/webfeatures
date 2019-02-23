@@ -127,5 +127,8 @@ class Reciprocity(GraphBasedFeature):
                     cont+=1
                 else:
                     pass
-            dicresult[index] = cont
+            if (len(lista) != 0):
+                dicresult[index] = cont/len(lista)
+            else:
+                dicresult[index] = 0
         return dicresult
