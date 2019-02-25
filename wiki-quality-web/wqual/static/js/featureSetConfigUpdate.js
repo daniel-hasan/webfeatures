@@ -55,7 +55,9 @@ $( function() {
 	     let textoCombo = combo.options[combo.selectedIndex].text;
 	     let lingua = textoCombo.substring(1, 3);
 	     let list = $("#featureList");
-	     getFeatureList( list[0] ,lingua);
+			 let sourceId = $('[name="source"]:checked').val();
+			 alert(sourceId);
+	     getFeatureList( list[0] ,lingua, sourceId);
 
 	});
 
@@ -192,7 +194,7 @@ $( function() {
         this.wrapper.remove();
         this.element.show();
       },
-	
+
     });
 
     $( "#id_language" ).combobox();

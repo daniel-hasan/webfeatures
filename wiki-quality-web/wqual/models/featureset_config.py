@@ -75,7 +75,8 @@ class FeatureFactoryManager(models.Manager):
     '''
     def get_all_features_from_language(self,obj_language,source_id=1):
         arr_features = []
-        for featFactory in self.filter(source_id=1):
+
+        for featFactory in self.filter(source_id=source_id):
 
             #instantiate feature factory class
             FeatureFactoryClass = get_class_by_name(featFactory.nam_module+"."+featFactory.nam_factory_class)

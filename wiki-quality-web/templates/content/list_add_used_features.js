@@ -3,8 +3,10 @@
  * @author Daniel Hasan Dalip.
  * @since  09/02/2018
  */
- function format_language_code_url(strTemplateURL,strLanguageCode){
- 	return strTemplateURL.replace("__language_code__",strLanguageCode);
+ function format_language_code_url(strTemplateURL,strLanguageCode,sourceId){
+ 	strTemplateURL = strTemplateURL.replace("__language_code__",strLanguageCode);
+  strTemplateURL = strTemplateURL.replace("__source_id__", sourceId);
+  return strTemplateURL;
  }
 
  /**
@@ -112,10 +114,9 @@ function insertNewFeatureItem(objFeatureItem){
  * @author Daniel Hasan Dalip.
  * @since  09/02/2018
  */
-function getFeatureList(domFeatureList,strLanguageCode){
-
-	$.ajax({ 
-	  url: format_language_code_url("{% url "list_all_features" "__language_code__" "__source_id__" %}",strLanguageCode),
+function getFeatureList(domFeatureList,strLanguageCode,sourceId){
+	$.ajax({
+	  url: format_language_code_url("{% url "list_all_features" "__language_code__" "__source_id__"%}",strLanguageCode, sourceId),
 	  dataType: 'json',
 	  type: "POST",
 	  success: function(response) {

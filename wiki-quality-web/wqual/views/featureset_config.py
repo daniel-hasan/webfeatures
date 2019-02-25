@@ -306,7 +306,7 @@ class ListFeaturesView(LoginRequiredMixin, View):
             #idFeature = idFeature+1
         return dict_feat_per_id
 
-    def post(self, request,nam_language):
+    def post(self, request,source_id,nam_language):
         dict_feat_per_id = self.get_features(nam_language)
         arr_features = []
         for namFeature,objFeature in dict_feat_per_id.items():
