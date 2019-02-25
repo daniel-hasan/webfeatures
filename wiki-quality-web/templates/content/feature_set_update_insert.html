@@ -47,20 +47,18 @@
 							<span>Share the feature set. </span>
 							<span id="sharing_link" class="{%if not object.id %}invisible{%endif%}">Sharing link:
 								<a id="anc" href="{% url "public_extract_features" user.get_username object.nam_feature_set %}">http://{{request.get_host}}/p/{{user.get_username}}/<span id="pub_feat_set_name">{{object.nam_feature_set}}</span></a></span>
-							{% else %}
-							<span>{{field.label}}:</span>
-							{% endif %}
-							{% else %}
-							<span>{{field.label}}:</span>
-							<div>
-								{{ field }}
+								{% else %}
+								<span>{{field.label}}:</span>
+								{% endif %}
+								{% else %}
+								<span>{{field.label}}:</span>
+								<div>
+									{{ field }}
+								</div>
+								{% endif %}
 							</div>
-							{% endif %}
-						</div>
-						{% endfor %}
+							{% endfor %}
 
-						<p>&nbsp;
-							Share the feature set. <span id="sharing_link" class="{%if not object.id %}invisible{%endif%}">Sharing link: <a id="anc" href="{% url "public_extract_features" user.get_username object.nam_feature_set %}">http://{{request.get_host}}/p/{{user.get_username}}/<span id="pub_feat_set_name">{{object.nam_feature_set}}</span></a></span></p>
 							<img class="hideGif" id="gif" src=""/>
 							<p></p><p></p>
 							<button id="saveButton" class="ui-button ui-widget ui-corner-all">Save</button>
