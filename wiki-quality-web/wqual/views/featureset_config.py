@@ -291,7 +291,7 @@ class ListFeaturesView(LoginRequiredMixin, View):
     Lista todos os conjunto de features criados.
     '''
     @classmethod
-    def get_features(self,strLanguageCode,int_source):
+    def get_features(self,strLanguageCode,int_source=1):
         """
            Obtem features e processa elas já no formato a ser retornado para o ajax
         """
