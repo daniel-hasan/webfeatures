@@ -56,7 +56,6 @@ $( function() {
 	     let lingua = textoCombo.substring(1, 3);
 	     let list = $("#featureList");
 			 let sourceId = $('[name="source"]:checked').val();
-			 alert(sourceId);
 	     getFeatureList( list[0] ,lingua, sourceId);
 
 	});

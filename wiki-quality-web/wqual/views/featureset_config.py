@@ -291,12 +291,12 @@ class ListFeaturesView(LoginRequiredMixin, View):
     Lista todos os conjunto de features criados.
     '''
     @classmethod
-    def get_features(self,strLanguageCode):
+    def get_features(self,strLanguageCode,int_source):
         """
            Obtem features e processa elas já no formato a ser retornado para o ajax
         """
         #obtem as features
-        feat_obj_list = FeatureFactory.objects.get_all_features_from_language(Language.objects.get(name=strLanguageCode))
+        feat_obj_list = FeatureFactory.objects.get_all_features_from_language(Language.objects.get(name=strLanguageCode), int_source)
 
         #agrupa elas por um id criado, adicionando em feature_list este id
         dict_feat_per_id = {}
@@ -307,7 +307,7 @@ class ListFeaturesView(LoginRequiredMixin, View):
         return dict_feat_per_id
 
     def post(self, request,source_id,nam_language):
-        dict_feat_per_id = self.get_features(nam_language)
+        dict_feat_per_id = self.get_features(nam_language, source_id)
         arr_features = []
         for namFeature,objFeature in dict_feat_per_id.items():
             arr_features.append({"name":namFeature,
