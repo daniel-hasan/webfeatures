@@ -168,6 +168,7 @@ class FeatureSetEdit(LoginRequiredMixin, UpdateView):
 class FeatureSetEditAJAX(View):
     def post(self, request):
         arrFeatureSetEdit =  json.loads(request.POST["arrEditElementsFeatureSet"])[0]
+        print(arrFeatureSetEdit)
         arrErr = []
 
         if arrFeatureSetEdit["nam_feature_set"] is None:
@@ -179,14 +180,13 @@ class FeatureSetEditAJAX(View):
 
         if not arrErr:
             try:
-                arrFeatureSetEdit
                 objFeatureSetEdit = FeatureSet.objects.get(user=self.request.user, nam_feature_set=arrFeatureSetEdit["id_nam_feature_set"])
                 with transaction.atomic():
                     objFeatureSetEdit.nam_feature_set = arrFeatureSetEdit["nam_feature_set"]
                     objFeatureSetEdit.dsc_feature_set = arrFeatureSetEdit["dsc_feature_set"]
                     objFeatureSetEdit.bol_is_public = arrFeatureSetEdit["bol_is_public"]
                     objFeatureSetEdit.language = Language.objects.get(id=arrFeatureSetEdit["language"])
-                    objFeatureSetEdit.source = Sources.objects.get(id=arrFeatureSetEdit["source_id"])
+                    objFeatureSetEdit.source = Source.objects.get(id=arrFeatureSetEdit["source_id"])
                     objFeatureSetEdit.save()
                     arrFeatureSetEdit["nam_feature_set"] = objFeatureSetEdit.nam_feature_set;
 

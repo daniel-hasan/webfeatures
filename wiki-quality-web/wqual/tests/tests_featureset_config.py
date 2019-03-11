@@ -265,11 +265,13 @@ class TestUsedFeatures(TestCase):
             "dsc_feature_set" : "Description Feature Set",
             "language" : str(objEnglish.id),
             "bol_is_public" : "True",
+            "source_id":1,
             "user_id":self.my_admin.id}
 
 
 
         #strPostFeatNames = json.dumps(arrFeatNames)
+        print("URL: "+str_url)
         response = c.post(str_url, feat_set_data)
         #if(not bolTestForError):
         #    self.assertEqual(response.status_code, 302, "could not obtain a redirect status ")
