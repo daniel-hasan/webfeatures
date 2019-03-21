@@ -101,7 +101,7 @@ class pageRank(GraphBasedFeature):
                 for entrada in grafo.get_vertices_entrada(index):
                     soma+=rank[entrada]/len(grafo.get_vertices_saida(entrada))
                 ranka[index]= (1-d) + (d * soma)
-            #normalizacao 
+            #normalizacao
             norma = sum(ranka.values())
             #print (ranka.items())
             for cont,val_rank in ranka.items():
@@ -113,8 +113,7 @@ class pageRank(GraphBasedFeature):
             #atualizacao do valor do page rank
             for i,val_rank in ranka.items():
                 rank[i] = val_rank
-        return rank
-        
+        return rank        
 
 class Reciprocity(GraphBasedFeature):
     def compute_feature(self,grafo):
@@ -134,7 +133,7 @@ class Reciprocity(GraphBasedFeature):
         return dicresult
 class Clusterizacao(GraphBasedFeature):
     def compute_feature(self,grafo):
-        dicresult={}        
+        dicresult={}
         for index in range(0,len(grafo.getvertices())):
             number = 0
             degree = len(grafo.get_vertices_saida(index))
