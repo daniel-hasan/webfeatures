@@ -88,9 +88,9 @@ class Scheduler(object):
 							graph.adicionaAresta(src,dest)
 
 					vertices = graph.getvertices()
-			        for posFeat,feat in enumerate(arr_feats_used):
+					for posFeat,feat in enumerate(arr_feats_used):
 			            #para cada feature, calcula o resultado
-			            dictResultado = feat.compute_feature(graph)
+						dictResultado = feat.compute_feature(graph)
 
 						#armazena o resultado em doc_result
 						for posVertice,resultado in dictResultado.items():
