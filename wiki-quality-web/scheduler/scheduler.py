@@ -84,7 +84,7 @@ class Scheduler(object):
 					graph = grafolistaadjacencia()
 					with open(doc_read, "r") as file:
 						for linha in file:
-							src, dest = linha.split(“,”)
+							src, dest = linha.split(",")
 							graph.adicionaAresta(src,dest)
 
 					vertices = graph.getvertices()
