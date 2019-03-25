@@ -70,13 +70,13 @@ class Scheduler(object):
 						time.sleep(int_wait_seconds)
 						i = i+1
 
-			 			if dataset:
+ 			if dataset:
  				#print("Peguei o dateaset: " + dataset.nam_dataset)
  				bolIsSleeping = False
  				bolFoundDataset = True				
  				arr_feats_used = self.get_arr_features(dataset)
  				
-				if((dataset.feature_set.source_id) == 1):					
+                if((dataset.feature_set.source_id) == 1):					
  					doc_read = DatasetModelDocReader(dataset)
  					doc_write = DatasetModelDocWriter(dataset)
  					FeatureCalculator.featureManager.computeFeatureSetDocuments(datReader=doc_read,docWriter=doc_write,arr_features_to_extract=arr_feats_used,format=dataset.format.get_enum())
