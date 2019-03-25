@@ -3,7 +3,6 @@ Created on 15 de dez de 2017
 @author: Priscilla Raiane <priscilla.rm.carmo@gmail.com>
 '''
 
-
 from abc import abstractmethod
 from datetime import datetime
 import os
@@ -67,7 +66,6 @@ class Scheduler(object):
 					while(len(Dataset.objects.filter(status=objSubmited))==0 and i<int_max_iterations):
 						time.sleep(int_wait_seconds)
 						i = i+1
-				
 
 			if dataset:
 				#print("Peguei o dateaset: " + dataset.nam_dataset)
@@ -78,8 +76,7 @@ class Scheduler(object):
 				if(dataset.feature_set.source.id == 1):					
 					doc_read = DatasetModelDocReader(dataset)
 					doc_write = DatasetModelDocWriter(dataset)
-
-				FeatureCalculator.featureManager.computeFeatureSetDocuments(datReader=doc_read,docWriter=doc_write,arr_features_to_extract=arr_feats_used,format=dataset.format.get_enum())
+					FeatureCalculator.featureManager.computeFeatureSetDocuments(datReader=doc_read,docWriter=doc_write,arr_features_to_extract=arr_feats_used,format=dataset.format.get_enum())
 
 				else:
 					#função readerGraph
@@ -110,7 +107,6 @@ class Scheduler(object):
 				#função writerGraph
 				dataset.status = Status.objects.get_enum(StatusEnum.COMPLETE)
 				dataset.end_dat_processing = timezone.now()
-
 				
 				with transaction.atomic():
 					
