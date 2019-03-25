@@ -13,71 +13,70 @@
 <div class="ui-widget">
 	<div class="hideGif success">
 		<p><span class="ui-icon ui-icon-check"></span>
-		<strong>Success!</strong> Feature set description was saved!</p>
+			<strong>Success!</strong> Feature set description was saved!</p>
+		</div>
 	</div>
-</div>
 
-<div class="ui-widget">
-	<div class="hideGif error-container">
+	<div class="ui-widget">
+		<div class="hideGif error-container">
+		</div>
 	</div>
-</div>
 
-<div id="tabs">
-  <ul>
-    <li><a class="styletabs" href="#tabs-1">Description</a></li>
-    <li><a class="styletabs" id="FeaturesSets" href="#tabs-2">Features Set</a></li>
-  </ul>
-  <div id="tabs-1">
+	<div id="tabs">
+		<ul>
+			<li><a class="styletabs" href="#tabs-1">Description</a></li>
+			<li><a class="styletabs" id="FeaturesSets" href="#tabs-2">Features Set</a></li>
+		</ul>
+		<div id="tabs-1">
 
-  	<div class="col-md-6">
-  		{% if object.id %}
-  				<form id="updateFeatureForm" onsubmit="return false"  action="{% url "feature_set_edit" object.nam_feature_set %}" method="post">{% csrf_token %}
-  			{% else %}
-  				<form id="updateFeatureForm" onsubmit="return false" action="{% url "feature_set_insert" %}" method="post">{% csrf_token %}
-  		{% endif %}
-				{% for field in form %}
-					{{ field.errors }}
-					<div class="form-group">
-						{% ifequal field.label "Nam feature set" %}
-							<span>Feature set name:</span>
-						{% endifequal %}
+			<div class="col-md-6">
+				{% if object.id %}
+				<form id="updateFeatureForm" onsubmit="return false"  action="{% url "feature_set_edit" object.nam_feature_set %}" method="post">{% csrf_token %}
+					{% else %}
+					<form id="updateFeatureForm" onsubmit="return false" action="{% url "feature_set_insert" %}" method="post">{% csrf_token %}
+						{% endif %}
+						{% for field in form %}
+						{{ field.errors }}
 
-						{% ifequal field.label "Dsc feature set" %}
-							<span>Description:</span>
-						{% endifequal %}
+						<div class="form-group">
+							{% if field.field.widget.input_type == "checkbox" %}
+							<div>
+								{{ field }}
+							</div>
+							{% if field.autoid == "bol_is_public" %}
+							<span>Share the feature set. </span>
+							<span id="sharing_link" class="{%if not object.id %}invisible{%endif%}">Sharing link:
+								<a id="anc" href="{% url "public_extract_features" user.get_username object.nam_feature_set %}">http://{{request.get_host}}/p/{{user.get_username}}/<span id="pub_feat_set_name">{{object.nam_feature_set}}</span></a></span>
+								{% else %}
+								<span>{{field.label}}:</span>
+								{% endif %}
+								{% else %}
+								<span>{{field.label}}:</span>
+								<div>
+									{{ field }}
+								</div>
+								{% endif %}
+							</div>
+							{% endfor %}
 
-						{% ifequal field.label "Language" %}
-							<span>Language:</span>
-						{% endifequal %}
+							<img class="hideGif" id="gif" src=""/>
+							<p></p><p></p>
+							<button id="saveButton" class="ui-button ui-widget ui-corner-all">Save</button>
+							<input type="hidden" value="{{object.nam_feature_set}}" id="last_saved_name">
+						</form>
+						<input type="button" class="ui-button ui-widget ui-corner-all" onclick="cancelEditFeature()" value = "Cancel" />
+					</div>
+				</div>
 
-					<div>
-	                    	{{ field }}
-	                   </div>
-	                </div>
-	            {% endfor %}
+				<div id="alertSaveFeature">
+					<p id="palertSaveFeature"></p>
+				</div>
+				<div id="alertInvalidInput">
+					<p></p>
+				</div>
 
-			<p>&nbsp;
-			Share the feature set. <span id="sharing_link" class="{%if not object.id %}invisible{%endif%}">Sharing link: <a id="anc" href="{% url "public_extract_features" user.get_username object.nam_feature_set %}">http://{{request.get_host}}/p/{{user.get_username}}/<span id="pub_feat_set_name">{{object.nam_feature_set}}</span></a></span></p>
-	    		<img class="hideGif" id="gif" src=""/>
-					<p></p><p></p>
-	    		<button id="saveButton" class="ui-button ui-widget ui-corner-all">Save</button>
-				<input type="hidden" value="{{object.nam_feature_set}}" id="last_saved_name">
-		</form>
-				<input type="button" class="ui-button ui-widget ui-corner-all" onclick="cancelEditFeature()" value = "Cancel" />
-	</div>
-</div>
-
-  <div id="alertSaveFeature">
-  	<p id="palertSaveFeature"></p>
-  </div>
-	<div id="alertInvalidInput">
-  	<p></p>
-  </div>
-
-  <!-- form create/update via ajax -->
-  <script>
-
-
+				<!-- form create/update via ajax -->
+				<script>
 
 
 
@@ -90,40 +89,42 @@
 
 
 
-		
 
-  </script>
 
-  <div id="tabs-2">
-  	<button id="insert" class="ui-button ui-widget ui-corner-all">Add Feature</button>
-  	<br><br>
-  	<ul id='div'></ul>
 
-  		<script>
-  		//Insert gif loading
-  			var imagem = document.createElement('img');
-  			imagem.src = "{% static "imgs/ajax-loader.gif" %}";
-  			imagem.id = "imgLoader";
 
-  		// Insert image confirm
-  			var imagemConfirm = document.createElement('img');
-  			imagemConfirm.src = "{% static "imgs/ajax-confirm.png" %}";
-  			imagemConfirm.id = "imgConfirm";
+				</script>
 
-  		</script>
-  		{% if object.id %}
-  			<script src="{% url "usedFeatures.js" object.nam_feature_set %}"></script>
-  			{% else %}
-  			<script id="scriptInsertFeature" src=""></script>
-  		{% endif %}
-  		</div>
-</div>
+				<div id="tabs-2">
+					<button id="insert" class="ui-button ui-widget ui-corner-all">Add Feature</button>
+					<br><br>
+					<ul id='div'></ul>
 
-<div id="add-form" class="listAdd" title="Add Feature Set">
-	 <div id="featureList"></div>
-	 <script src="{% url "insert_list_used_features" %}"></script>
-	 <script src="{% url "feature_set_edit_js" %}"></script>
-	 <script src="{% static "js/csrf_token_ajax.js" %}"></script>
-</div>
+					<script>
+						//Insert gif loading
+						var imagem = document.createElement('img');
+						imagem.src = "{% static "imgs/ajax-loader.gif" %}";
+						imagem.id = "imgLoader";
 
-{% endblock %}
+						// Insert image confirm
+						var imagemConfirm = document.createElement('img');
+						imagemConfirm.src = "{% static "imgs/ajax-confirm.png" %}";
+						imagemConfirm.id = "imgConfirm";
+
+					</script>
+					{% if object.id %}
+					<script src="{% url "usedFeatures.js" object.nam_feature_set %}"></script>
+					{% else %}
+					<script id="scriptInsertFeature" src=""></script>
+					{% endif %}
+				</div>
+			</div>
+
+			<div id="add-form" class="listAdd" title="Add Feature Set">
+				<div id="featureList"></div>
+				<script src="{% url "insert_list_used_features" %}"></script>
+				<script src="{% url "feature_set_edit_js" %}"></script>
+				<script src="{% static "js/csrf_token_ajax.js" %}"></script>
+			</div>
+
+			{% endblock %}

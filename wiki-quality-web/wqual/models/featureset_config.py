@@ -38,6 +38,9 @@ class Source(models.Model):
     SOURCES = [{"id":1,"nam_source":"Textual"},
                 {"id":2,"nam_source":"Graph"},
                 {"id":3,"nam_source":"Revision"}]
+    def __str__(self):
+        return self.nam_source
+
 class Feature(models.Model):
     '''
     Created on 13 de ago de 2017
@@ -70,9 +73,10 @@ class FeatureFactoryManager(models.Manager):
 
     @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
     '''
-    def get_all_features_from_language(self,obj_language):
+    def get_all_features_from_language(self,obj_language,source_id=1):
         arr_features = []
-        for featFactory in self.all():
+
+        for featFactory in self.filter(source_id=source_id):
 
             #instantiate feature factory class
             FeatureFactoryClass = get_class_by_name(featFactory.nam_module+"."+featFactory.nam_factory_class)
@@ -144,9 +148,9 @@ class FeatureSet(models.Model):
     Conjunto de features configurado por um usuário
     '''
 
-    nam_feature_set = models.CharField(max_length=20)
-    dsc_feature_set = models.CharField(max_length=255, blank=True, null=True)
-    bol_is_public = models.BooleanField(default=False)
+    nam_feature_set = models.CharField(verbose_name="Feature set name",max_length=20)
+    dsc_feature_set = models.CharField(verbose_name="Description",max_length=255, blank=True, null=True)
+    bol_is_public = models.BooleanField(verbose_name=" Share the feature set. Sharing link",default=False)
 
     language = models.ForeignKey(Language, models.PROTECT)
     user = models.ForeignKey(User, models.PROTECT)

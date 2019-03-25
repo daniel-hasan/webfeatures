@@ -9,7 +9,7 @@ let validationFirstTime = true;
 let boolActivated = false;
 /******************************** Inicialização ****************************************/
 $( function() {
-		
+
 		$("#updateFeatureForm input").focus(function(){
 			boolChanged = true;
 		});
@@ -19,8 +19,8 @@ $( function() {
 					boolActivated = false;
 					return;
 				}
-				if (bolChanged) {
-					
+				if (boolChanged) {
+
 					if(evaluatesData()){
 						salveData();
 					} else {
@@ -67,7 +67,7 @@ $( function() {
 			          }
 			      }
 			 	});
-		
+
 		$("#id_language").attr("required",false);
 	});
 
@@ -122,8 +122,8 @@ function alertSaveFeatures(modificador, hreffinal){
 					$( "#alertInvalidInput" ).dialog( "open" );
 				}
 
-}	
-	
+}
+
 function changeShareURL(){
   			let strFeatureSetName = $("#id_nam_feature_set")[0].value;
 			  $("#pub_feat_set_name").html(strFeatureSetName);
@@ -216,7 +216,7 @@ function updateFeatureSet(arrElementsFeatureSet){
 
 
 /****************** Eventos ************************************/
-	
+
 $("#saveButton").click(function() {
   			if(!evaluatesData()){
   				href_button_clicked = '{% url "feature_set_list"%}';
@@ -229,12 +229,12 @@ $("#saveButton").click(function() {
   			}
 		});
 
-		
+
 $( "#configureFeatureSet" ).click(function() {
 
 			if (boolChanged) {
 				$(this).removeAttr( "href" );
-				alertSaveFeatures("configureFeatureSet", '{% url "feature_set_list"%}');	
+				alertSaveFeatures("configureFeatureSet", '{% url "feature_set_list"%}');
 	 		}
 });
 
@@ -244,4 +244,3 @@ $( "#analyseTexts" ).click(function() {
 				alertSaveFeatures("analyseTexts", '{% url "extract_features"%}');
 			}
 });
-		
