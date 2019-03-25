@@ -20,6 +20,10 @@ from wqual.models.uploaded_datasets import Document, Dataset, \
 	ProcessingDataset, Machine
 from wqual.models.uploaded_datasets import StatusEnum, Status
 
+'''
+Updated on 25 de mar de 2019
+@author: Isabela Costa <isabela.costasouza10@gmail.com>
+'''
 
 class Scheduler(object):
 	SCHEDULER_DATASET_LOCK = threading.Lock()
@@ -27,7 +31,6 @@ class Scheduler(object):
 		if(str_machine_name==None):
 			self.str_machine_name = socket.gethostname()
 		self.objMachine = Machine.objects.get_or_create(nam_machine=self.str_machine_name)[0]
-		
 		
 	@abstractmethod
 	def get_next(self):
@@ -72,42 +75,16 @@ class Scheduler(object):
 				bolIsSleeping = False
 				bolFoundDataset = True				
 				arr_feats_used = self.get_arr_features(dataset)
+									
+				doc_read = DatasetModelDocReader(dataset)
+				doc_write = DatasetModelDocWriter(dataset)
+
+				FeatureCalculator.featureManager.computeFeatureSetDocuments(datReader=doc_read,docWriter=doc_write,arr_features_to_extract=arr_feats_used,format=dataset.format.get_enum())
+					
 				
-				if((dataset.feature_set_id) == 1):					
-					doc_read = DatasetModelDocReader(dataset)
-					doc_write = DatasetModelDocWriter(dataset)
-					FeatureCalculator.featureManager.computeFeatureSetDocuments(datReader=doc_read,docWriter=doc_write,arr_features_to_extract=arr_feats_used,format=dataset.format.get_enum())
-
-				else:
-					#função readerGraph
-					doc_read = dataset.sub_dataset.file
-					graph = grafolistaadjacencia()
-					with open(doc_read, "r") as file:
-						for linha in file:
-							src, dest = linha.split(",")
-							graph.adicionaAresta(src,dest)
-
-					vertices = graph.getvertices()
-					for posFeat,feat in enumerate(arr_feats_used):
-			            #para cada feature, calcula o resultado
-						dictResultado = feat.compute_feature(graph)
-
-						#armazena o resultado em doc_result
-						for posVertice,resultado in dictResultado.items():
-							#obtem o documento (ou insere)
-							doc=DocumentDataset.objects.get_or_create(nam_file=vertices[posVertice],dataset=dataset)
-
-							#salva o resultado
-							doc_result = DocumentResult.objects.get_or_create(document=doc)
-							if(doc_result.dsc_result == None):
-								doc_result.dsc_result = {}
-							doc_result.dsc_result[posFeat] = resultado
-							doc_result.save()
-
-				#função writerGraph
-				dataset.status = Status.objects.get_enum(StatusEnum.COMPLETE)
+				dataset.status = Status.objects.get_enum(StatusEnum.COMPLETE)	
 				dataset.end_dat_processing = timezone.now()
-				
+
 				with transaction.atomic():
 					
 					ProcessingDataset.objects.filter(dataset=dataset,
@@ -121,6 +98,4 @@ class Scheduler(object):
 				timeDeltaProc = dataset.end_dat_processing-dataset.start_dat_processing
 				print(str(numth)+": Dataset '"+dataset.nam_dataset+"' processed in "+str(timeDeltaProc))
 					
-
 			i = i+1
-			
