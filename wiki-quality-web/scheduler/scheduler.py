@@ -73,7 +73,7 @@ class Scheduler(object):
 				bolFoundDataset = True				
 				arr_feats_used = self.get_arr_features(dataset)
 				
-				if(dataset.feature_set_id)== 1):					
+				if((dataset.feature_set_id) == 1):					
 					doc_read = DatasetModelDocReader(dataset)
 					doc_write = DatasetModelDocWriter(dataset)
 					FeatureCalculator.featureManager.computeFeatureSetDocuments(datReader=doc_read,docWriter=doc_write,arr_features_to_extract=arr_feats_used,format=dataset.format.get_enum())
