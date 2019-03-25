@@ -16,7 +16,6 @@ from wqual.models.featureset_config import Language, FeatureSet, FeatureFactory 
     UsedFeature
 from wqual.models.uploaded_datasets import Status
 from wqual.models.utils import Format
-from wqual.views.featureset_config import ListFeaturesView
 
 
 class FeatureFactoryDummy(FeatureFactory):
@@ -223,6 +222,8 @@ class TestUsedFeatures(TestCase):
 
 
     def test_view_feature_add(self):
+        from wqual.views.featureset_config import ListFeaturesView
+
         c = Client()
         c.login(username=self.my_admin.username, password=self.password)
 
