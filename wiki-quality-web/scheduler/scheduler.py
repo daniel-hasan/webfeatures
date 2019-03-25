@@ -99,9 +99,9 @@ class Scheduler(object):
 
 							#salva o resultado
 							doc_result = DocumentResult.objects.get_or_create(document=doc)
-				            if(doc_result.dsc_result == None):
-				                doc_result.dsc_result = {}
-				            doc_result.dsc_result[posFeat] = resultado
+							if(doc_result.dsc_result == None):
+								doc_result.dsc_result = {}
+							doc_result.dsc_result[posFeat] = resultado
 							doc_result.save()
 
 				#função writerGraph
