@@ -266,6 +266,7 @@ class TestUsedFeatures(TestCase):
             "language" : str(objEnglish.id),
             "bol_is_public" : "True",
             "source_id":1,
+            "source":1,
             "user_id":self.my_admin.id}
 
 
@@ -281,6 +282,7 @@ class TestUsedFeatures(TestCase):
 
         #testa inserção
         if(bolTestInsertion):
+            print("Feature sets: "+str(len(FeatureSet.objects.all())))
             arrFeatureSet = FeatureSet.objects.filter(**feat_set_data)
             self.assertEqual(len(arrFeatureSet), 1, "Could not found the featureset: "+str(feat_set_data))
 
@@ -321,6 +323,8 @@ class TestUsedFeatures(TestCase):
             "dsc_feature_set" : "Description Feature Set",
             "language" : str(objEnglish.id),
             "bol_is_public" : "True",
+            "source_id":1,
+            "source":1,
             "user_id":self.my_admin.id,
             "id_nam_feature_set":id_nam_feature_set}
 
