@@ -5,7 +5,7 @@
 	padding: .7em .7em;
 	font-size: 8pt;
 	text-align:justify;
-	background-color:#f6f6fd;	
+	background-color:#f6f6fd;
 }
 .ui-state-highlight{
 	padding: .7em .7em;"
@@ -42,9 +42,16 @@
 
 /*img{
   margin-top: -5px;
-  width: 100px; 
+  width: 100px;
   height: 31px;
 }*/
+
+ul li {
+    list-style-type: none;
+    text-align: left;
+    border-left: 1px black;
+    display: inline;
+}
 
 li{
   text-align: center;
@@ -344,33 +351,33 @@ fieldset[disabled] .dataset-file-name {
 		    AutorM(<feat-Dlinha-002>): <Aline><Pinto>
 		}
 		*/
-		
+
 		.ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active, a.ui-button:active, .ui-button:active, .ui-button.ui-state-active:hover {
 		    border: 1px solid #c5c5c5;
 		    background: white;
 		    color: black;
 		    font-weight: normal;
 		}
-		
+
 		.ui-state-active a, .ui-state-active a:link, .ui-state-active a:visited {
 		    color: #454545;
 		    text-decoration: none;
 		}
-			
+
 		.button-remove-feature, .isConfigurable{
 		    border: 1px solid #fff;
 		    background: #fff;
 		    font-weight: normal;
 		    color: #2b2b2b;
 		}
-		
+
 		.button-remove-feature:hover, .isConfigurable:hover {
 		    border: 1px solid #cccccc;
 		    background: #fff;
 		    font-weight: normal;
 		    color: #2b2b2b;
 		}
-		
+
 		#li {
 		    padding: 8px;
 		    width: 100%;
@@ -378,48 +385,48 @@ fieldset[disabled] .dataset-file-name {
 		    text-align: left;
 		    list-style-type: none;
 		}
-	
+
 		#div{
 			width: 60%;
 		}
-	
+
 		.button-remove-feature{
 			float: right;
 		}
-	
+
 		.isConfigurable{
 			margin-left: 5%;
 		}
-		
+
 		.labelForm{
 			font-weight: bold;
 			line-height: 2;
 		}
-		
+
 		.sizeinputs{
 			width: 100%;
 			height: auto;
 		}
-		
+
 		#imgLoader{
 			height: 20px;
     		width: 20px;
     		position: relative;
-    		top: 50%; 
+    		top: 50%;
     		left: 50%;
 		}
-		
+
 		#imgConfirm{
 			height: 20px;
     		width: 20px;
     		position: relative;
-    		top: 50%; 
+    		top: 50%;
     		left: 50%;
 		}
 		.listAdd div {
 			overflow: auto;
 			height:400px;
-		}	
+		}
 		.add-form p{
 			margin-left:5px;
 		}
@@ -444,7 +451,7 @@ fieldset[disabled] .dataset-file-name {
 		    pointer-events:none; //This makes it not clickable
 		    opacity:0.6;         //This grays it out to look disabled
 		}
-		
+
 		#saveButton{
 		    float: left;
 		}
@@ -609,7 +616,7 @@ footer .piim-lab{
 footer .piim-lab{
 	position:relative;
 	right:0px;
-	
+
 }
 footer img{
 	margin-right:30px;

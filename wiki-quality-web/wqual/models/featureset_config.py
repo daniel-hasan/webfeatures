@@ -24,6 +24,23 @@ from wqual.models.utils import EnumManager, EnumModel
 from wqual.models.utils import Format
 
 
+class Source(models.Model):
+    '''
+    Created on 2 de out de 2018
+
+    @author: Gabriel Silva Brandão <gabriel.silva.brandao7@gmail.com>
+    Indica o tipo de fonte de um FeatureSet, sendo que inicialmente temos os
+    tipos Textual e grafo.
+    '''
+    id = models.IntegerField(primary_key=True, unique=True)
+    nam_source = models.CharField( max_length=45)
+    DEFAULT_SOURCE_ID=1
+    SOURCES = [{"id":1,"nam_source":"Textual"},
+                {"id":2,"nam_source":"Graph"},
+                {"id":3,"nam_source":"Revision"}]
+    def __str__(self):
+        return self.nam_source
+
 class Feature(models.Model):
     '''
     Created on 13 de ago de 2017
@@ -56,9 +73,10 @@ class FeatureFactoryManager(models.Manager):
 
     @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
     '''
-    def get_all_features_from_language(self,obj_language):
+    def get_all_features_from_language(self,obj_language,source_id=1):
         arr_features = []
-        for featFactory in self.all():
+
+        for featFactory in self.filter(source_id=source_id):
 
             #instantiate feature factory class
             FeatureFactoryClass = get_class_by_name(featFactory.nam_module+"."+featFactory.nam_factory_class)
@@ -70,10 +88,11 @@ class FeatureFactoryManager(models.Manager):
                 objFeatureFactory = FeatureFactoryClass()
 
             #add all the features from factory
-            arrNames = [f.name for f in objFeatureFactory.createFeatures()] 
+            arrNames = [f.name for f in objFeatureFactory.createFeatures()]
             #print("Feature: "+featFactory.nam_factory_class+" array: "+str(arrNames))
             [arr_features.append(objFeature) for objFeature in objFeatureFactory.createFeatures()]
         return arr_features
+
 
 class FeatureFactory(models.Model):
     '''
@@ -83,9 +102,12 @@ class FeatureFactory(models.Model):
     FeatureFactory usados para obter as instancias de features.feature.FeatureCalculator a serem usados
     As classes inseridas devem ser subclasses de feature_factory.FeatureFactory
     '''
+
     nam_module = models.CharField( max_length=45)
     nam_factory_class = models.CharField( max_length=45)
     objects = FeatureFactoryManager()
+    source = models.ForeignKey("Source", default=Source.DEFAULT_SOURCE_ID, on_delete=models.PROTECT)
+
     def get_class(self):
         '''
         resgata a classe com um vocabulario dependente de linguagem a ser usa
@@ -98,6 +120,7 @@ class FeatureFactory(models.Model):
 
     class Meta:
         db_table = 'wqual_feature_factory'
+
 
 
 class Language(EnumModel):
@@ -124,12 +147,14 @@ class FeatureSet(models.Model):
     @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
     Conjunto de features configurado por um usuário
     '''
-    nam_feature_set = models.CharField(max_length=20)
-    dsc_feature_set = models.CharField(max_length=255, blank=True, null=True)
-    bol_is_public = models.BooleanField(default=False)
-    
-    language = models.ForeignKey(Language, models.PROTECT)  
+
+    nam_feature_set = models.CharField(verbose_name="Feature set name",max_length=20)
+    dsc_feature_set = models.CharField(verbose_name="Description",max_length=255, blank=True, null=True)
+    bol_is_public = models.BooleanField(verbose_name=" Share the feature set. Sharing link",default=False)
+
+    language = models.ForeignKey(Language, models.PROTECT)
     user = models.ForeignKey(User, models.PROTECT)
+    source = models.ForeignKey("Source", default=Source.DEFAULT_SOURCE_ID, on_delete=models.PROTECT)
 
 
     def __str__(self):
@@ -196,7 +221,7 @@ class UsedFeatureManager(models.Manager):
         elif(type(value)==float):
             paramType = UsedFeatureArgVal.FLOAT
         elif(value == None):
-            paramType = UsedFeatureArgVal.NONE_T                                
+            paramType = UsedFeatureArgVal.NONE_T
         elif(type(value)==bool):
             paramType = UsedFeatureArgVal.BOOLEAN
         elif type(value)==list or type(value)==dict:
@@ -273,9 +298,9 @@ class UsedFeatureManager(models.Manager):
                 if(arg.nam_argument == "name"):
                     mapFeaturesGroup[objUsed.feature_set_id].append(arg.val_argument)
         return mapFeaturesGroup
-    
-     
-         
+
+
+
 class UsedFeature(models.Model):
     '''
     Created on 13 de ago de 2017
@@ -291,9 +316,9 @@ class UsedFeature(models.Model):
     feature_visibility = models.ForeignKey(FeatureVisibility,models.PROTECT)
     text_format = models.ForeignKey(Format,models.PROTECT)
     objects = UsedFeatureManager()
-    
+
     def get_features_with_params(self):
-        
+
         arrConfigParamsFeat = []
         isConfigurable = False
         objFeature = self.get_feature_instance()
@@ -301,7 +326,7 @@ class UsedFeature(models.Model):
             if(argValParam['is_configurable']):
                 arrConfigParamsFeat.append(argValParam)
                 isConfigurable = True
-            
+
         #print("Parametros do "+objFeature.name+":"+str(arrConfigParamsFeat))
         return {"used_feature_id":self.id,
                  "name":objFeature.name,
@@ -312,7 +337,7 @@ class UsedFeature(models.Model):
                  "arr_param":arrConfigParamsFeat,
                  "str_arr_param":objFeature.get_params_str()
                   }
-                
+
     def get_feature_instance(self):
         FeatureClass = self.feature.get_feature_class()
         param = {
@@ -325,7 +350,7 @@ class UsedFeature(models.Model):
                 param[arg.nam_att_argument] = int(arg.val_argument)
                 #print("nome " + arg.nam_argument + "Valor " + arg.val_argument)
             elif arg.type_argument == UsedFeatureArgVal.FLOAT:
-                param[arg.nam_att_argument] = float(arg.val_argument)                
+                param[arg.nam_att_argument] = float(arg.val_argument)
             elif arg.type_argument == UsedFeatureArgVal.NONE_T:
                 param[arg.nam_att_argument] = None
             elif arg.type_argument == UsedFeatureArgVal.BOOLEAN:
