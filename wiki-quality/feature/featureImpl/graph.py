@@ -113,7 +113,7 @@ class pageRank(GraphBasedFeature):
             #atualizacao do valor do page rank
             for i,val_rank in ranka.items():
                 rank[i] = val_rank
-        return rank        
+        return rank
 
 class Reciprocity(GraphBasedFeature):
     def compute_feature(self,grafo):
@@ -131,6 +131,7 @@ class Reciprocity(GraphBasedFeature):
             else:
                 dicresult[index] = 0
         return dicresult
+
 class Clusterizacao(GraphBasedFeature):
     def compute_feature(self,grafo):
         dicresult={}

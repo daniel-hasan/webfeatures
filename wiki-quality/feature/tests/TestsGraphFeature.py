@@ -19,17 +19,17 @@ class TestGraphFeatures(unittest.TestCase):
                                                 FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS),
                                 AssortativeOutputOutput("Assortative Output Output", "Assortative Output/Output Metric", "reference", FeatureVisibilityEnum.public,
                                                 FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS),
-                                pageRank("pageRank", "pageRank Metric say how much popular is this article","reference", FeatureVisibilityEnum.public,
-                                        FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS),
-                                #Reciprocity("Reciprocity", "Reciprocity Metric of vertex", "reference", FeatureVisibilityEnum.public,
-                                #            FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS),
+                                #pageRank("pageRank", "pageRank Metric say how much popular is this article","reference", FeatureVisibilityEnum.public,
+                                #        FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS),
+                                Reciprocity("Reciprocity", "Reciprocity Metric of vertex", "reference", FeatureVisibilityEnum.public,
+                                            FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS),
                                 #Estes sao outros exemplos de instanciação, sao 3 tipos de coeficientes de clusterizacao que deverão ser testados
-                                #Clusterizacao("Clustering coefficient","Description","reference", FeatureVisibilityEnum.public,
-                                #        FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS,1),
-                                #Clusterizacao("Clustering coefficient","Description","reference", FeatureVisibilityEnum.public,
-                                #                                        FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS,2),
-                                #Clusterizacao("Clustering coefficient","Description","reference", FeatureVisibilityEnum.public,
-                                #                FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS,3),
+                                Clusterizacao("Clustering coefficient","Description","reference", FeatureVisibilityEnum.public,
+                                        FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS,"1"),
+                                Clusterizacao("Clustering coefficient","Description","reference", FeatureVisibilityEnum.public,
+                                                                        FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS,"2"),
+                                Clusterizacao("Clustering coefficient","Description","reference", FeatureVisibilityEnum.public,
+                                                FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS,"3"),
                                 ]
         #cria o grafo:
         grafo = grafolistaadjacencia()#essa classe irá mudar de nome - o Rubio irá mudar
@@ -57,12 +57,12 @@ class TestGraphFeatures(unittest.TestCase):
                                     {"A":1.2,"B":0.75,"C":3,"D":0,"E":1,"F":0.333}, #AssortativeInputOutput
                                     {"A":1.8,"B":1.5,"C":1,"D":0,"E":0.333,"F":0.5}, #AssortativeOutputInput
                                     {"A":1.8,"B":2.25,"C":1,"D":0,"E":1,"F":0.333}, #AssortativeOutputOutput
-                                    {"A":0.222,"B":0.056,"C":0.278,"D":0,"E":0.278,"F":0.056}, #pageRank Larisse
+                                    #{"A":0.162,"B":0.122,"C":0.220,"D":0.110,"E":0.263,"F":0.122}, #pageRank Larisse
                                     #{"A":0.286544,"B":0.213456,"C":0.191658,"D":0.308342}, #pageRank Rubio
-                                    #{"A":0.667,"B":0.333,"C":1,"D":0,"E":1,"F":1}, #reciprocity
-                                    #{"A":0,"B":0,"C":0,"D":0,"E":0,"F":0},#coeficiente de clusterizacao distancia = 1
-                                    #{"A":0,"B":0,"C":0,"D":0,"E":0,"F":0},#coeficiente de clusterizacao distancia = 2
-                                    #{"A":0,"B":0,"C":0,"D":0,"E":0,"F":0},#coeficiente de clusterizacao distancia = 3
+                                    {"A":0.667,"B":0.333,"C":1,"D":0,"E":1,"F":1}, #reciprocity
+                                    {"A":0,"B":0,"C":0,"D":0,"E":0,"F":0},#coeficiente de clusterizacao distancia = 1
+                                    {"A":0,"B":0,"C":0,"D":0,"E":0,"F":0},#coeficiente de clusterizacao distancia = 2
+                                    {"A":0,"B":0,"C":0,"D":0,"E":0,"F":0},#coeficiente de clusterizacao distancia = 3
                                   ]
         #navega nas features
         vertices = grafo.getvertices()
