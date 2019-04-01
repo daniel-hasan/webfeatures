@@ -70,7 +70,7 @@ class Scheduler(object):
 				
 
 			if dataset:
-				#print("Peguei o dateaset: " + dataset.nam_dataset)
+				print("Peguei o dateaset: " + dataset.nam_dataset)
 				bolIsSleeping = False
 				bolFoundDataset = True				
 				arr_feats_used = self.get_arr_features(dataset)
