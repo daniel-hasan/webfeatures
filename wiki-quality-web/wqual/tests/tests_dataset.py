@@ -24,11 +24,13 @@ from wqual.models.uploaded_datasets import Status, StatusEnum
 from wqual.models.utils import Format
 from feature.featureImpl.readability_features import ReadabilityBasedFeature
 
-
 CHECK_IF_FEAT_NOT_EXISTS = True
+
 
 def JSONToDict(strTxt):
         return json.loads(strTxt)
+
+
 def CSVToDict(strTxt):
     csv_list = csv.reader(strTxt.split("\n"))
     dictJSON = {"features_description":{},
@@ -49,15 +51,30 @@ def CSVToDict(strTxt):
                     dictJSON["data"][strFileName][str(i)] = colFeat
 
     return dictJSON
+
+
 class TestDataset(TestCase):
-    def defineFeatureSet(self,source_id):
-        feat_set = FeatureSet.objects.create(nam_feature_set="Featzinho",
+
+    def setUp(self):
+        from wqual.views.featureset_config import ListFeaturesView
+        
+        Format.objects.update_enums_in_db()
+        Language.objects.update_enums_in_db()
+        Status.objects.update_enums_in_db()
+
+        self.scheduler = OldestFirstScheduler()
+        self.objFormat = Format.objects.get(name=FormatEnum.HTML.name)
+        self.language = Language.objects.all()[0]
+        self.status = Status.objects.all()[0]
+
+        self.password = "meunome"
+        self.my_admin = User.objects.create_superuser('myuser', 'myemail@test.com', self.password)
+
+        self.feature_set = FeatureSet.objects.create(nam_feature_set="Featzinho",
                                                      dsc_feature_set="lalalal",
                                                      language=self.language,
-                                                     user=self.my_admin,
-                                                     source=Source.objects.get(id=source_id)
-                                                     )
-        dict_feat_per_id = ListFeaturesView.get_features(self.language.name,source_id=source_id)
+                                                     user=self.my_admin)
+        dict_feat_per_id = ListFeaturesView.get_features(self.language.name)
 
         #obtain the objects to insert by name
         arrNames = dict_feat_per_id.keys()
@@ -76,46 +93,27 @@ class TestDataset(TestCase):
             with NamedTemporaryFile("w",delete=False) as fp:
                 json.dump(arrFeats, fp)
 
-        #inser them
+        #insert them
         UsedFeature.objects.insert_features_object(self.feature_set,arrObjFeaturesToInsert)
-        
-        return feat_set
-    def setUp(self):
-        from wqual.views.featureset_config import ListFeaturesView
-        
-        Format.objects.update_enums_in_db()
-        Language.objects.update_enums_in_db()
-        Status.objects.update_enums_in_db()
-
-        self.scheduler = OldestFirstScheduler()
-        self.objFormat = Format.objects.get(name=FormatEnum.HTML.name)
-        self.language = Language.objects.all()[0]
-        self.status = Status.objects.all()[0]
-
-        self.password = "meunome"
-        self.my_admin = User.objects.create_superuser('myuser', 'myemail@test.com', self.password)
 
 
-
-        self.feature_set = self.defineFeatureSet(1)
-        self.feature_set_graph = self.defineFeatureSet(2)
-    #envia o dataset e testa o envio
-    def insert_dataset_test(self,client,arq,dataset_name,intPos,feature_set):
+    def insert_dataset_test(self,client,arq,dataset_name,intPos):
         #faaz requisicao
         str_url = reverse(dataset_name[0],kwargs=dataset_name[1])#
         strArqName = "arquivinho_"+str(intPos)+".zip"
         dataset = SimpleUploadedFile(strArqName, arq.read(), content_type="application/zip")
-        format_id = self.objFormat.id if feature_set.source_id == 1 else None
-        response = client.post(str_url, {"feature_set":feature_set.id,'format': format_id, 'file_dataset': dataset})
+        response = client.post(str_url, {"feature_set":self.feature_set.id,'format': self.objFormat.id, 'file_dataset': dataset})
 
         #testaa insercao
-        lstDataset = feature_set.dataset_set.filter(nam_dataset=strArqName)
+        lstDataset = self.feature_set.dataset_set.filter(nam_dataset=strArqName)
 
         self.assertEqual(len(lstDataset),1," Could not find the inserted dataset")
         self.assertEqual(response.status_code, 302, "Could not obtain redirect status")
         self.assertEqual(response.url, reverse(dataset_name[0],kwargs=dataset_name[1]), "Did not redirected to the right URL ")
 
         return lstDataset[0]
+
+
     def remove_dataset_test(self,dataset_name,client,objDataset):
         #remove o dataset
         dictDatasetParam = dataset_name[1].copy()
@@ -152,16 +150,22 @@ class TestDataset(TestCase):
                 resultadoAtual = funcToConvert(strFileTxt.decode("utf-8"))
             self.assertNotEqual(resultadoAtual,None,"Deveria existir um resultado atual")
             return resultadoAtual
+
+
     def grava_last_result(self,strArqLastResult,resultado):
         if(not IS_BITBUCKET):
             with open(strArqLastResult,"w") as f:
                 json.dump(resultado,f)
                 return True
         return False
+
+
     def dictDifsToStr(self,dicDifs):
         strFeatureNames = ",".join(dicDifs.keys())
 
         return "The features: "+strFeatureNames+" contain different results in the following documents: \n"+str(dicDifs)
+
+
     def compare_result(self,resultadoOld,resultadoAtual):
         mapFeatureOldPerFeatId = resultadoOld["features_description"]
         mapFeatureAtualPerName = {}
@@ -191,6 +195,8 @@ class TestDataset(TestCase):
                             dictDifs[strFeatName] = []
                         dictDifs[strFeatName].append((arqName,featVal,featDictAtual[featIdAtual]))
         self.assertEqual(len(dictDifs.keys()), 0, self.dictDifsToStr(dictDifs))
+
+
     def compare_old_result(self,strArqLastResult,resultadoAtual):
         with open(strArqLastResult) as f:
             resultadoOld = json.load(f)
@@ -200,23 +206,20 @@ class TestDataset(TestCase):
             #print(str(resultadoOld["data"]['10308286.html']))
             self.compare_result(resultadoOld, resultadoAtual)
 
-
-
         if(not IS_BITBUCKET):
             self.grava_last_result(strArqLastResult, resultadoAtual)
 
 
-    def request_resultados(self,client,formatResult,feature_set):
+    def request_resultados(self,client,formatResult):
         paramResult = {}
-        paramResult["dataset_id"] = feature_set.dataset_set.all()[0].id
+        paramResult["dataset_id"] = self.feature_set.dataset_set.all()[0].id
         paramResult["format"] = formatResult
-
-
 
         str_url = reverse("download_result",kwargs=paramResult)
         response = client.get(str_url)
         self.assertEqual(response.status_code, 200, "Could not obtain sucess status")
         return response
+
 
     def test_create_remove_dataset(self):
         SUBMITTED_STATUS = Status.objects.get(name=StatusEnum.SUBMITTED.name)
@@ -227,56 +230,48 @@ class TestDataset(TestCase):
         arqName = "wiki_small.zip" #if IS_BITBUCKET else "wiki_big.zip"
         #arqName = "wiki_big.zip"
 
-        arrDatasetURLNames = [("extract_features",{},{"wiki_small.zip":self.feature_set,"wiki_small_graph.zip":self.feature_set_graph}),
-                       ("public_extract_features",{"nam_feature_set":self.feature_set.nam_feature_set,"user":self.my_admin.username},{"wiki_small.zip":self.feature_set})
-                       ]
-                       
+        arrDatasetURLNames = [("extract_features",{}),
+                       ("public_extract_features",{"nam_feature_set":self.feature_set.nam_feature_set,"user":self.my_admin.username})]
         intPos = 0
         for dataset_name in arrDatasetURLNames:
             c = Client()
             c.login(username=self.my_admin.username, password=self.password)
 
             objDataset = None
-            for file_name,feature_set in dataset_name[2].items():
-                with open(strDir+arqName,"rb") as arq:
-                
-                    objDataset = self.insert_dataset_test(c, arq, dataset_name, intPos)
+            with open(strDir+arqName,"rb") as arq:
 
-                #
+                objDataset = self.insert_dataset_test(c, arq, dataset_name, intPos)
 
-
-                #
-
-                #roda o escalonador e testa
-                self.assertEqual(objDataset.status.name, SUBMITTED_STATUS.name, "Wrong status. It should be submitted.")
-                if(intPos == 0):
-                    self.scheduler.run(1, 3)
-                    objDataset.refresh_from_db()
-                    self.assertEqual(objDataset.status.name, COMPLETE_STATUS.name, "Wrong status. It should be completed.")
+            #roda o escalonador e testa
+            self.assertEqual(objDataset.status.name, SUBMITTED_STATUS.name, "Wrong status. It should be submitted.")
+            if(intPos == 0):
+                self.scheduler.run(1, 3)
+                objDataset.refresh_from_db()
+                self.assertEqual(objDataset.status.name, COMPLETE_STATUS.name, "Wrong status. It should be completed.")
 
 
-                    #obtem o resultado a partir de 
-                    strArqLastResult = strDirResult+arqName+"_result.json"
-                    responseJSON = self.request_resultados(c,"json")
+                #obtem o resultado
+                strArqLastResult = strDirResult+arqName+"_result.json"
+                responseJSON = self.request_resultados(c,"json")
 
-                    #Checa se o resultado atual é igual ao resultado já gravado (se o mesmo existir)            #
-                    resultadoAtual = self.get_resultado_atual(responseJSON,JSONToDict)
+                #Checa se o resultado atual é igual ao resultado já gravado (se o mesmo existir)            #
+                resultadoAtual = self.get_resultado_atual(responseJSON,JSONToDict)
 
-                    #grava como ultimo resultado - se o mesmo nao exitir
-                    if(not os.path.isfile(strArqLastResult)):
-                        self.grava_last_result(strArqLastResult,resultadoAtual)
-                        print("ARquivo resultado gravado: "+strArqLastResult)
-                    else:
-                        #se existir, verifica se o arquivo de resultado atual é igual ao gravado
-                        print("Verificando se é igual...")
-                        self.compare_old_result(strArqLastResult, resultadoAtual)
+                #grava como ultimo resultado - se o mesmo nao exitir
+                if(not os.path.isfile(strArqLastResult)):
+                    self.grava_last_result(strArqLastResult,resultadoAtual)
+                    print("ARquivo resultado gravado: "+strArqLastResult)
+                else:
+                    #se existir, verifica se o arquivo de resultado atual é igual ao gravado
+                    print("Verificando se é igual...")
+                    self.compare_old_result(strArqLastResult, resultadoAtual)
 
-                    #compara o xls com o json
-                    responseCSV = self.request_resultados(c,"csv")
-                    resultadoCSV = self.get_resultado_atual(responseCSV,CSVToDict)
-                    self.compare_result(resultadoCSV, resultadoAtual)
-                    self.compare_result(resultadoAtual, resultadoCSV)
+                #compara o xls com o json
+                responseCSV = self.request_resultados(c,"csv")
+                resultadoCSV = self.get_resultado_atual(responseCSV,CSVToDict)
+                self.compare_result(resultadoCSV, resultadoAtual)
+                self.compare_result(resultadoAtual, resultadoCSV)
 
-                #remove o dataset
-                self.remove_dataset_test(dataset_name, c, objDataset)
+            #remove o dataset
+            self.remove_dataset_test(dataset_name, c, objDataset)
             intPos = intPos+1
