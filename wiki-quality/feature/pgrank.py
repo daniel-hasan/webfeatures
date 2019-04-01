@@ -3,7 +3,7 @@ Created on 2 de Out de 2018
 
 @author: Rubio Torres Castro Viana <rubiotorres15@gmail.com>
 '''
-""" 
+"""
     Classe pgrank:
     Classe para produzir o page rank do vertice:
         Metodos:
@@ -28,9 +28,9 @@ class pgrank(GraphBasedFeature):
                 for entrada in grafo.get_vertices_entrada(index):
                     soma+=rank[entrada]/len(grafo.get_vertices_saida(entrada))
                 ranka[index]= (1-d) + (d * soma)
-            #normalizacao 
+            #normalizacao
             norma = sum(ranka.values())
-            #print (ranka.items())
+            print (ranka.items())
             for cont,val_rank in ranka.items():
                 #print("pos "+str(cont)+" valrank: "+str(val_rank))
                 ranka[cont] = val_rank/norma
@@ -41,4 +41,3 @@ class pgrank(GraphBasedFeature):
             for i,val_rank in ranka.items():
                 rank[i] = val_rank
         return rank
-        
