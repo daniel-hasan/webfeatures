@@ -9,7 +9,7 @@ Created on 2 de Out de 2018
         Metodos:
             compute_feature: retorna quantidade de vartices saida
 """
-from GraphBasedFeature import *
+from feature.GraphBasedFeature import *
 
 class GrauSaida(GraphBasedFeature):
     def compute_feature(self,grafo):
