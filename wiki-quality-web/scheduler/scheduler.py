@@ -62,7 +62,7 @@ class Scheduler(object):
 																	num_proc_extractor=os.getpid(),
 																	machine_extractor=self.objMachine).count()==0) and i<int_max_iterations:
 				dataset = self.get_next()
-				if(dataset != None):
+                if(dataset != None):
 					dataset.refresh_from_db()
 					dataset = Dataset.objects.get(id = dataset.id)
                 else:
