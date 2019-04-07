@@ -65,10 +65,10 @@ class Scheduler(object):
 				if(dataset != None):
 					dataset.refresh_from_db()
 					dataset = Dataset.objects.get(id = dataset.id)
-				else:
-					while(len(Dataset.objects.filter(status=objSubmited))==0 and i<int_max_iterations):
-						time.sleep(int_wait_seconds)
-                        i = i+1
+                else:
+                    while(len(Dataset.objects.filter(status=objSubmited))==0 and i<int_max_iterations):
+                    time.sleep(int_wait_seconds)
+                    i = i+1
 
             if dataset:
  				#print("Peguei o dateaset: " + dataset.nam_dataset)
