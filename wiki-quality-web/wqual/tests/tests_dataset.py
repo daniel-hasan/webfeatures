@@ -26,7 +26,6 @@ from feature.featureImpl.readability_features import ReadabilityBasedFeature
 
 CHECK_IF_FEAT_NOT_EXISTS = True
 
-
 def JSONToDict(strTxt):
         return json.loads(strTxt)
 
@@ -95,7 +94,7 @@ class TestDataset(TestCase):
 
         #insert them
         UsedFeature.objects.insert_features_object(self.feature_set,arrObjFeaturesToInsert)
-
+        
 
     def insert_dataset_test(self,client,arq,dataset_name,intPos):
         #faaz requisicao
