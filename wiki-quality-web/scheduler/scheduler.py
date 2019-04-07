@@ -68,9 +68,9 @@ class Scheduler(object):
 				else:
 					while(len(Dataset.objects.filter(status=objSubmited))==0 and i<int_max_iterations):
 						time.sleep(int_wait_seconds)
-						i = i+1
+                        i = i+1
 
- 			if dataset:
+            if dataset:
  				#print("Peguei o dateaset: " + dataset.nam_dataset)
  				bolIsSleeping = False
  				bolFoundDataset = True				
