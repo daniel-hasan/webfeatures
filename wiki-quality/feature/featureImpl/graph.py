@@ -146,7 +146,7 @@ class Clusterizacao(GraphBasedFeature):
                     else:
                         pass
             if(degree != 0):
-                dicresult[index] =number/degree*(degree-1)
+                dicresult[index] =2*number/degree*(degree-1)
             else:
                 dicresult[index] = 0
         return dicresult
