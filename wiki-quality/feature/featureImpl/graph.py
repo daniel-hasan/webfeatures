@@ -142,11 +142,11 @@ class Clusterizacao(GraphBasedFeature):
             for dados in lista:
                 for li in grafo.get_vertices_saida(dados):
                     if(li in lista):
-                        number+=1
+                        number +=1
                     else:
                         pass
-            if(degree != 0):
-                dicresult[index] =2*number/degree*(degree-1)
+            if(degree > 1):
+                dicresult[index] =2*number/(degree*(degree-1))
             else:
                 dicresult[index] = 0
         return dicresult

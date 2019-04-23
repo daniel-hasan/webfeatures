@@ -57,12 +57,11 @@ class TestGraphFeatures(unittest.TestCase):
                                     {"A":1.2,"B":0.75,"C":3,"D":0,"E":1,"F":0.333}, #AssortativeInputOutput
                                     {"A":1.8,"B":1.5,"C":1,"D":0,"E":0.333,"F":0.5}, #AssortativeOutputInput
                                     {"A":1.8,"B":2.25,"C":1,"D":0,"E":1,"F":0.333}, #AssortativeOutputOutput
-                                    {"A":0.208,"B":0.125,"C":0.236, "D":0.125,"E":0.180,"F":0.125}, #pageRank Larisse
-                                    #{"A":0.286544,"B":0.213456,"C":0.191658,"D":0.308342}, #pageRank Rubio
+                                    {"A":0.2,"B":0.1,"C":0.2, "D":0.1,"E":0.2,"F":0.1}, #pageRank Larisse
                                     {"A":0.667,"B":0.333,"C":1,"D":0,"E":1,"F":1}, #reciprocity
-                                    {"A":0.333,"B":0,"C":0,"D":0,"E":0,"F":0},#coeficiente de clusterizacao distancia = 1
-                                    #{"A":0,"B":0,"C":0,"D":0,"E":0,"F":0},#coeficiente de clusterizacao distancia = 2
-                                    #{"A":0,"B":0,"C":0,"D":0,"E":0,"F":0},#coeficiente de clusterizacao distancia = 3
+                                    {"A":0.333,"B":0.333,"C":0.0,"D":0.0,"E":0.0,"F":0.0},#coeficiente de clusterizacao distancia = 1
+                                    #{"A":0.0,"B":0.0,"C":0.0,"D":0.0,"E":0.0,"F":0.5},#coeficiente de clusterizacao distancia = 2
+                                    #{"A":0.0,"B":0.0,"C":0.0,"D":0.0,"E":0.0,"F":0.0},#coeficiente de clusterizacao distancia = 3
                                   ]
         #navega nas features
         vertices = grafo.getvertices()
@@ -73,7 +72,7 @@ class TestGraphFeatures(unittest.TestCase):
             for posVertice,resultado in dictResultado.items():
                 self.assertAlmostEqual(arrResultadoPorVertice[i][vertices[posVertice]], #resultado esperado da feature na posicao i, vertcie na posicao posGrafo
                                         resultado,#resultado obtido
-                                        3,# numero de casas decimais que devem ser iguais nesse resultado
+                                        1,# numero de casas decimais que devem ser iguais nesse resultado
                                         "A feature "+feat.name+" produziu um resultado errado para o vértice "+vertices[posVertice]+". Resultado obtido: "+str(arrResultadoPorVertice[i][vertices[posVertice]])+" resultado esperado: "+str(resultado)
                                         )
             print(feat.name+" [OK]")
