@@ -24,7 +24,7 @@ class TestGraphFeatures(unittest.TestCase):
                                 Reciprocity("Reciprocity", "Reciprocity Metric of vertex", "reference", FeatureVisibilityEnum.public,
                                             FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS),
                                 #Estes sao outros exemplos de instanciação, sao 3 tipos de coeficientes de clusterizacao que deverão ser testados
-                                Clusterizacao("Clustering coefficient","Description","reference", FeatureVisibilityEnum.public,
+                                Clusterizacao("Clustering Coefficient","Description","reference", FeatureVisibilityEnum.public,
                                         FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS),
                                 #Clusterizacao("Clustering coefficient","Description","reference", FeatureVisibilityEnum.public,
                                 #                                        FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS,"2"),
@@ -43,12 +43,6 @@ class TestGraphFeatures(unittest.TestCase):
         grafo.adicionaAresta("C","E")
         grafo.adicionaAresta("E","C")
         grafo.adicionaAresta("F","A")
-
-        #grafo.adicionaAresta("A","D")
-        #grafo.adicionaAresta("B","A")
-        #grafo.adicionaAresta("B","C")
-        #grafo.adicionaAresta("D","B")
-        #grafo.adicionaAresta("D","A")
 
         #resultados
         arrResultadoPorVertice = [  {"A":2,"B":1,"C":3,"D":1,"E":1,"F":1},#indegree
