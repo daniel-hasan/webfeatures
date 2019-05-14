@@ -13,7 +13,7 @@ def forwards_func(apps, schema_editor):
     db_alias = schema_editor.connection.alias
     
     FeatureFactory.objects.using(db_alias).bulk_create([
-        FeatureFactory(nam_module=namModuleFeatureFactory,nam_factory_class="GraphFeatureFactory"),
+        FeatureFactory(nam_module=namModuleFeatureFactory,nam_factory_class="GraphFeatureFactory",source_id=2),
     ])
 
 def reverse_func(apps, schema_editor):

@@ -46,6 +46,7 @@ class FeatureFactoryDummyLangDep(FeatureFactory):
 class TestUsedFeatures(TestCase):
     STR_FEAT_NAME1 = "__PrepCount OI__"
     STR_FEAT_NAME2 = "__LargeFeat OI__"
+    AVAILABLE_SOURCES = [1,2]
 
     def setUp(self):
 
@@ -66,10 +67,11 @@ class TestUsedFeatures(TestCase):
                                                      dsc_feature_set="lalalal",
                                                      language=self.language,
                                                      user=self.my_admin)
-        FeatureFactoryBD.objects.create(nam_module="wqual.tests.tests_featureset_config",
-                                      nam_factory_class="FeatureFactoryDummy")
-        FeatureFactoryBD.objects.create(nam_module="wqual.tests.tests_featureset_config",
-                                      nam_factory_class="FeatureFactoryDummyLangDep")
+
+        self.feature_factories=[FeatureFactoryBD.objects.create(nam_module="wqual.tests.tests_featureset_config",
+                                      nam_factory_class="FeatureFactoryDummy"),
+                                    FeatureFactoryBD.objects.create(nam_module="wqual.tests.tests_featureset_config",
+                                                                  nam_factory_class="FeatureFactoryDummyLangDep")]
 
 
     def assertFeatureEqual(self,objFeatureBD,objFeatureObjPython):
@@ -123,76 +125,91 @@ class TestUsedFeatures(TestCase):
         set_configurable_params =set([confParam.att_name for confParam in objFeatureObjPython.arr_configurable_param])
         self.assertSetEqual(set_configurable_params_bd, set_configurable_params, "The set of configurable params in BD and in the object are diferent in the feature '"+objFeatureObjPython.name+"'")
         #print("Set in BD:"+str(set_configurable_params_bd)+" set in obj: "+str(set_configurable_params))
+    def change_source_id(self,source_id):
+        self.feature_set.source_id =source_id
+        self.feature_set.save()
+        for featureFactory in self.feature_factories:
+            featureFactory.source_id = source_id
+            featureFactory.save()
 
     def test_feature_list(self):
-        objEnglish = Language.objects.get(name="en")
-        arrFeatures = FeatureFactoryBD.objects.get_all_features_from_language(objEnglish)
+        for source_id in TestUsedFeatures.AVAILABLE_SOURCES:
+            self.change_source_id(source_id)
+            objEnglish = Language.objects.get(name="en")
+            arrFeatures = FeatureFactoryBD.objects.get_all_features_from_language(objEnglish,source_id)
 
-        #get features names
-        arrFeatureNames = [objFeature.name for objFeature in arrFeatures]
-        arrFeatureNames.sort()
 
-        #sort
-        arrExpected = ["Largest Phrase Count","Largest Phrase Count "+objEnglish.name,"Preposition Count","Preposition Count "+objEnglish.name]
-        for str_expected_feature_name in arrExpected:
-            bolEncontrou = False
-            for feature in arrFeatures:
-                if(str_expected_feature_name == feature.name):
-                    bolEncontrou = True
-            self.assertTrue(bolEncontrou, "Could not found the feature: "+str_expected_feature_name)
+            #get features names
+            arrFeatureNames = [objFeature.name for objFeature in arrFeatures]
+            arrFeatureNames.sort()
+            #print("FEATURES AQUIIII: "+str(arrFeatureNames))
+            #sort
+            arrExpected = ["Largest Phrase Count","Largest Phrase Count "+objEnglish.name,"Preposition Count","Preposition Count "+objEnglish.name]
+            for str_expected_feature_name in arrExpected:
+                bolEncontrou = False
+                for feature in arrFeatures:
+                    if(str_expected_feature_name == feature.name):
+                        bolEncontrou = True
+                self.assertTrue(bolEncontrou, "Could not found the feature: "+str_expected_feature_name)
 
 
     def test_feature_add(self):
-        wordCount = WordCountFeature("Preposition Count","Count the number of prepositions in the text","ref",FeatureVisibilityEnum.public,FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,setWordsToCount=["de","do","du"])
-        featLargeSentenceCount = LargeSentenceCountFeature("Largest Phrase Count","Count the number of phrases larger than a specified threshold","ref",FeatureVisibilityEnum.public,FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,10)
-        featLargeSentenceCount.addConfigurableParam(ConfigurableParam("int_size","Sentence Size",
-                                                                      "The sentence need to have (at least) this length (in words) in order to be considered a large phrase",
-                                                                22,ParamTypeEnum.int))
+        for source_id in TestUsedFeatures.AVAILABLE_SOURCES:
 
-        #featLargeSentenceCount.addConfigurableParam(ConfigurableParam("str_name","Name",
-        #                                                              "The sentence need to have (at least) this length (in words) in order to be considered a large phrase",
-        #                                                        "oioi",ParamTypeEnum.string))
+            self.change_source_id(source_id)
 
-        arrObjectFeatures = [wordCount,featLargeSentenceCount]
-        UsedFeature.objects.insert_features_object(self.feature_set, arrObjectFeatures)
+            wordCount = WordCountFeature("Preposition Count","Count the number of prepositions in the text","ref",FeatureVisibilityEnum.public,FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,setWordsToCount=["de","do","du"])
+            featLargeSentenceCount = LargeSentenceCountFeature("Largest Phrase Count","Count the number of phrases larger than a specified threshold","ref",FeatureVisibilityEnum.public,FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,10)
+            featLargeSentenceCount.addConfigurableParam(ConfigurableParam("int_size","Sentence Size",
+                                                                          "The sentence need to have (at least) this length (in words) in order to be considered a large phrase",
+                                                                    22,ParamTypeEnum.int))
 
-        #pega todos os used features
-        arrUsedFeatures = UsedFeature.objects.filter(feature_set=self.feature_set.pk)
-        self.assertEqual(len(arrUsedFeatures), 2, "Deveria ter 2 features e tem "+str(len(arrUsedFeatures)))
-        for objFeatureUsed in arrUsedFeatures:
-            str_nameFeature = objFeatureUsed.usedfeatureargval_set.get(nam_att_argument="name").val_argument
+            #featLargeSentenceCount.addConfigurableParam(ConfigurableParam("str_name","Name",
+            #                                                              "The sentence need to have (at least) this length (in words) in order to be considered a large phrase",
+            #                                                        "oioi",ParamTypeEnum.string))
 
-            msg="The feature should be Preposition Count or Largest Phrase Count but it was "+str_nameFeature
-            self.assertTrue(str_nameFeature == "Preposition Count" or str_nameFeature == "Largest Phrase Count", msg)
-            if(str_nameFeature == "Preposition Count"):
-                self.assertFeatureEqual(objFeatureUsed,wordCount)
-            elif(str_nameFeature == "Largest Phrase Count"):
-                self.assertFeatureEqual(objFeatureUsed,featLargeSentenceCount)
+            arrObjectFeatures = [wordCount,featLargeSentenceCount]
+            UsedFeature.objects.insert_features_object(self.feature_set, arrObjectFeatures)
 
+            #pega todos os used features
+            arrUsedFeatures = UsedFeature.objects.filter(feature_set=self.feature_set.pk)
+            self.assertEqual(len(arrUsedFeatures), 2, "Deveria ter 2 features e tem "+str(len(arrUsedFeatures)))
+            for objFeatureUsed in arrUsedFeatures:
+                str_nameFeature = objFeatureUsed.usedfeatureargval_set.get(nam_att_argument="name").val_argument
 
+                msg="The feature should be Preposition Count or Largest Phrase Count but it was "+str_nameFeature
+                self.assertTrue(str_nameFeature == "Preposition Count" or str_nameFeature == "Largest Phrase Count", msg)
+                if(str_nameFeature == "Preposition Count"):
+                    self.assertFeatureEqual(objFeatureUsed,wordCount)
+                elif(str_nameFeature == "Largest Phrase Count"):
+                    self.assertFeatureEqual(objFeatureUsed,featLargeSentenceCount)
+
+            self.feature_set.usedfeature_set.all().delete()
 
     def test_view_feature_list(self,language_code="en"):
-        c = Client()
-        c.login(username=self.my_admin.username, password=self.password)
+        for source_id in TestUsedFeatures.AVAILABLE_SOURCES:
+            self.change_source_id(source_id)
+            c = Client()
+            c.login(username=self.my_admin.username, password=self.password)
 
-        #list all the features correctly
-        str_url = reverse("list_all_features",kwargs={"nam_language":language_code,"source_id":1})
-        response = c.post(str_url, {})
-        self.assertEqual(response.status_code, 200, "could not obtain a status 200")
+            #list all the features correctly
+            str_url = reverse("list_all_features",kwargs={"nam_language":language_code,"source_id":source_id})
+            response = c.post(str_url, {})
+            self.assertEqual(response.status_code, 200, "could not obtain a status 200")
 
-        #check if found the feature names
-        arrFeatNames = ["Largest Phrase Count","Largest Phrase Count "+language_code,"Preposition Count","Preposition Count "+language_code]
+            #check if found the feature names
+            arrFeatNames = ["Largest Phrase Count","Largest Phrase Count "+language_code,"Preposition Count","Preposition Count "+language_code]
 
-        arrFeatures = response.json()['arrFeatures']
+            arrFeatures = response.json()['arrFeatures']
 
-        for str_expected_feature_name in arrFeatNames:
-            bolEncontrou = False
-            for feature in arrFeatures:
-                if(str_expected_feature_name == feature['name']):
-                    bolEncontrou = True
-            self.assertTrue(bolEncontrou, "Could not found the feature: "+str_expected_feature_name)
+            for str_expected_feature_name in arrFeatNames:
+                bolEncontrou = False
+                for feature in arrFeatures:
+                    if(str_expected_feature_name == feature['name']):
+                        bolEncontrou = True
+                self.assertTrue(bolEncontrou, "Could not found the feature: "+str_expected_feature_name)
 
-        return arrFeatures
+            return arrFeatures
     def assert_feature_add(self,client,str_url,arrFeatNames,arr_num_of_config_args):
 
         strPostFeatNames = json.dumps(arrFeatNames)
@@ -223,38 +240,44 @@ class TestUsedFeatures(TestCase):
 
     def test_view_feature_add(self):
         from wqual.views.featureset_config import ListFeaturesView
+        for source_id in TestUsedFeatures.AVAILABLE_SOURCES:
+            self.change_source_id(source_id)
+            c = Client()
+            c.login(username=self.my_admin.username, password=self.password)
 
-        c = Client()
-        c.login(username=self.my_admin.username, password=self.password)
+            #list all the features correctly
+            str_url = reverse("insert_used_features",kwargs={"nam_feature_set":self.feature_set.nam_feature_set})
+            objLanguage = self.feature_set.language
 
-        #list all the features correctly
-        str_url = reverse("insert_used_features",kwargs={"nam_feature_set":self.feature_set.nam_feature_set})
-        objLanguage = self.feature_set.language
+            #test inserting 2 features
+            arrFeatNames = ["Largest Phrase Count "+objLanguage.name,"Preposition Count"]
+            self.assert_feature_add(c,str_url,arrFeatNames,[1,0])
 
-        #test inserting 2 features
-        arrFeatNames = ["Largest Phrase Count "+objLanguage.name,"Preposition Count"]
-        self.assert_feature_add(c,str_url,arrFeatNames,[1,0])
+            #test inserting all the features
+            FeatureSet.objects.filter(nam_feature_set="Featzinho2").delete()
+            objFeatureSet = FeatureSet.objects.create(nam_feature_set="Featzinho2",
+                                                         dsc_feature_set="lalalal",
+                                                         language=self.language,
+                                                         user=self.my_admin,
+                                                         source_id=source_id)
+            #get all the features
+            dict_feat_per_id = ListFeaturesView.get_features(self.language.name,source_id)
 
-        #test inserting all the features
-        objFeatureSet = FeatureSet.objects.create(nam_feature_set="Featzinho2",
-                                                     dsc_feature_set="lalalal",
-                                                     language=self.language,
-                                                     user=self.my_admin)
-        #get all the features
-        dict_feat_per_id = ListFeaturesView.get_features(self.language.name)
-        #prepare the array of features
-        arrParamPerFeature = []
-        arrFeatNames=[]
-        for name,objFeature in dict_feat_per_id.items():
-            arrFeatNames.append(name)
-            arrParamPerFeature.append(len(objFeature.arr_configurable_param))
-        #print("Number of feats: "+str(len(arrFeatNames)))
-        #print("Feat names: "+str(arrFeatNames))
+            #prepare the array of features
+            arrParamPerFeature = []
+            arrFeatNames=[]
+            for name,objFeature in dict_feat_per_id.items():
+                arrFeatNames.append(name)
+                arrParamPerFeature.append(len(objFeature.arr_configurable_param))
+                #print(name+": "+str(len(objFeature.arr_configurable_param)))
+            #print("Number of feats: "+str(len(arrFeatNames)))
+            #print("Feat names: "+str(arrFeatNames))
 
 
-        str_url = reverse("insert_used_features",kwargs={"nam_feature_set":objFeatureSet.nam_feature_set})
-        self.assert_feature_add(c,str_url,arrFeatNames,arrParamPerFeature)
-
+            str_url = reverse("insert_used_features",kwargs={"nam_feature_set":objFeatureSet.nam_feature_set})
+            #print("URL To Insert: "+str_url)
+            self.assert_feature_add(c,str_url,arrFeatNames,arrParamPerFeature)
+            self.feature_set.usedfeature_set.all().delete()
 
     def assertUpdateOrInsert(self,str_url,bolTestForError,strFeatName="Feat Name =)",bolTestInsertion=True):
         c = Client()
@@ -273,7 +296,7 @@ class TestUsedFeatures(TestCase):
 
 
         #strPostFeatNames = json.dumps(arrFeatNames)
-        print("URL: "+str_url)
+        #print("URL: "+str_url)
         response = c.post(str_url, feat_set_data)
         #if(not bolTestForError):
         #    self.assertEqual(response.status_code, 302, "could not obtain a redirect status ")
@@ -283,7 +306,7 @@ class TestUsedFeatures(TestCase):
 
         #testa inserção
         if(bolTestInsertion):
-            print("Feature sets: "+str(len(FeatureSet.objects.all())))
+            #print("Feature sets: "+str(len(FeatureSet.objects.all())))
             arrFeatureSet = FeatureSet.objects.filter(**feat_set_data)
             self.assertEqual(len(arrFeatureSet), 1, "Could not found the featureset: "+str(feat_set_data))
 
@@ -295,23 +318,26 @@ class TestUsedFeatures(TestCase):
         self.assertUpdateOrInsert(str_url,True)
 
     def test_view_featureset_update(self):
-        arrURLs = ["feature_set_edit_features"]#,"feature_set_edit"]
-        for urlToTest in arrURLs:
+        for source_id in TestUsedFeatures.AVAILABLE_SOURCES:
+            self.change_source_id(source_id)
+            arrURLs = ["feature_set_edit_features"]#,"feature_set_edit"]
+            for urlToTest in arrURLs:
 
-            str_url = reverse(urlToTest,kwargs={"nam_feature_set":self.feature_set.nam_feature_set})
-            FeatureSet.objects.get(user=self.feature_set.user,nam_feature_set=self.feature_set.nam_feature_set)
+                str_url = reverse(urlToTest,kwargs={"nam_feature_set":self.feature_set.nam_feature_set})
+                FeatureSet.objects.get(user=self.feature_set.user,nam_feature_set=self.feature_set.nam_feature_set)
 
-            self.assertUpdateOrInsert(str_url, strFeatName="aaaa",bolTestForError=False)
-            str_url_aaa = reverse(urlToTest,kwargs={"nam_feature_set":"aaaa"})
-            self.assertUpdateOrInsert(str_url_aaa, strFeatName=self.feature_set.nam_feature_set,bolTestForError=False)
+                self.assertUpdateOrInsert(str_url, strFeatName="aaaa",bolTestForError=False)
+                str_url_aaa = reverse(urlToTest,kwargs={"nam_feature_set":"aaaa"})
+                self.assertUpdateOrInsert(str_url_aaa, strFeatName=self.feature_set.nam_feature_set,bolTestForError=False)
 
-            #atualiza para um jah existente (dando erro)
-            objFeatizinho = FeatureSet.objects.create(nam_feature_set="Featzinhoxx",
-                                                     dsc_feature_set="lalalal",
-                                                     language=self.language,
-                                                     user=self.my_admin)
-            self.assertUpdateOrInsert(str_url, strFeatName=objFeatizinho.nam_feature_set,bolTestForError=True,bolTestInsertion=False)
-
+                #atualiza para um jah existente (dando erro)
+                objFeatizinho = FeatureSet.objects.create(nam_feature_set="Featzinhoxx",
+                                                         dsc_feature_set="lalalal",
+                                                         language=self.language,
+                                                         user=self.my_admin)
+                self.assertUpdateOrInsert(str_url, strFeatName=objFeatizinho.nam_feature_set,bolTestForError=True,bolTestInsertion=False)
+                objFeatizinho.delete()
+                self.feature_set.usedfeature_set.all().delete()
 
 
     def assertUpdateInsertAjax(self,str_url,id_nam_feature_set="",bolTestForError=False,strFeatName="Feat Name =) Ajax"):

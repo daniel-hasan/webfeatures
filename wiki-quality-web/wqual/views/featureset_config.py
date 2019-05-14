@@ -168,7 +168,7 @@ class FeatureSetEdit(LoginRequiredMixin, UpdateView):
 class FeatureSetEditAJAX(View):
     def post(self, request):
         arrFeatureSetEdit =  json.loads(request.POST["arrEditElementsFeatureSet"])[0]
-        print(arrFeatureSetEdit)
+        #print(arrFeatureSetEdit)
         arrErr = []
 
         if arrFeatureSetEdit["nam_feature_set"] is None:
@@ -334,8 +334,8 @@ class InsertUsedFeaturesView(LoginRequiredMixin, View):
         #print(str(arrStrFeatureNames))
 
         #get all the possible features
-        dict_feat_per_id = ListFeaturesView.get_features(objFeatureSet.language.name)
-
+        dict_feat_per_id = ListFeaturesView.get_features(objFeatureSet.language.name,objFeatureSet.source_id)
+        #print("ALL FEATURES: "+str(dict_feat_per_id.keys()))
         #obtain the objects to insert by name
         arrObjFeaturesToInsert = [dict_feat_per_id[nam_feature] for nam_feature in arrStrFeatureNames if nam_feature in dict_feat_per_id]
 

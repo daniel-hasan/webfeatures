@@ -20,7 +20,7 @@ class TestGraphFeatures(unittest.TestCase):
                                 AssortativeOutputOutput("Assortative Output Output", "Assortative Output/Output Metric", "reference", FeatureVisibilityEnum.public,
                                                 FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS),
                                 pageRank("pageRank", "pageRank Metric say how much popular is this article","reference", FeatureVisibilityEnum.public,
-                                        FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS),
+                                        FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS,0.95,0.01),
                                 Reciprocity("Reciprocity", "Reciprocity Metric of vertex", "reference", FeatureVisibilityEnum.public,
                                             FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS),
                                 #Estes sao outros exemplos de instanciação, sao 3 tipos de coeficientes de clusterizacao que deverão ser testados
