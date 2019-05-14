@@ -14,6 +14,7 @@ from feature.featureImpl.readability_features import ARIFeature, \
     SmogGradingFeature
 from feature.featureImpl.structure_features import *
 from feature.featureImpl.style_features import *
+from feature.featureImpl.graph import *
 from feature.features import  FeatureVisibilityEnum
 from utils.basic_entities import FormatEnum, FeatureTimePerDocumentEnum
 
@@ -388,10 +389,13 @@ class GraphFeatureFactory(FeatureFactory):
 
                                         ]
                 pr = pageRank("pageRank", "pageRank Metric say how much popular is this article","reference", FeatureVisibilityEnum.public,
-                        FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS),
-                pr.featLargeParagraphCount.addConfigurableParam(ConfigurableParam("dumping_factor","Dumping Factor",
-                                                                              "Dumping Factor.",
+                        FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS,0.85,0.01)
+                pr.addConfigurableParam(ConfigurableParam("damping_factor","Damping Factor",
+                                                                              "Damping Factor.",
                                                                               0.85,ParamTypeEnum.float))
+                pr.addConfigurableParam(ConfigurableParam("convergence","Convergence",
+                                                                                              "Convergence.",
+                                                                                              0.01,ParamTypeEnum.float))
                 arrFeaturesImplementadas.append(pr)
 
                 return arrFeaturesImplementadas

@@ -84,10 +84,15 @@ class AssortativeOutputInput(GraphBasedFeature):
         return dic_result
 
 class pageRank(GraphBasedFeature):
+    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document,
+                    damping_factor=0.85,convergence=0.01):
+        super().__init__(name,description,reference,visibility,text_format,feature_time_per_document)
+        self.damping_factor = damping_factor
+        self.convergence =convergence
     def compute_feature(self,grafo):
         rank={}
-        s=100
-        d=0.85
+        s=self.convergence
+        d=self.damping_factor
         cont = len(grafo.getvertices())
         #Inicializacao
         while (cont > 0):
