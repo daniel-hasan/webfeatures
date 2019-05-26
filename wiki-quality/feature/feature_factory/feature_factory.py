@@ -14,6 +14,7 @@ from feature.featureImpl.readability_features import ARIFeature, \
     SmogGradingFeature
 from feature.featureImpl.structure_features import *
 from feature.featureImpl.style_features import *
+from feature.featureImpl.graph import *
 from feature.features import  FeatureVisibilityEnum
 from utils.basic_entities import FormatEnum, FeatureTimePerDocumentEnum
 
@@ -384,14 +385,29 @@ class GraphFeatureFactory(FeatureFactory):
                                                         FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS),
                                         AssortativeOutputOutput("Assortative Output Output", "Assortative Output/Output Metric", "reference", FeatureVisibilityEnum.public,
                                                         FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS),
+                                        PageRank("PageRank", "PageRank Metric say how much popular is this article","reference", FeatureVisibilityEnum.public,
+                                                FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS,0.95,0.01),
+                                        ClusteringCoefficient("Clustering Coefficient","In graph theory, a clustering coefficient is a measure of the degree to which nodes in a graph tend to cluster together.","reference", FeatureVisibilityEnum.public,
+                                                FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS,1)
+                                                ]
 
-
-                                        ]
-                pr = pageRank("pageRank", "pageRank Metric say how much popular is this article","reference", FeatureVisibilityEnum.public,
-                        FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS),
-                pr.featLargeParagraphCount.addConfigurableParam(ConfigurableParam("dumping_factor","Dumping Factor",
-                                                                              "Dumping Factor.",
+                pr = PageRank("PageRank", "PageRank Metric say how much popular is this article","reference", FeatureVisibilityEnum.public,
+                        FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS,0.85,0.01)
+                pr.addConfigurableParam(ConfigurableParam("damping_factor","Damping Factor",
+                                                                              "Damping Factor.",
                                                                               0.85,ParamTypeEnum.float))
-                arrFeaturesImplementadas.append(pr)
+                pr.addConfigurableParam(ConfigurableParam("convergence","Convergence",
+                                                                            "Convergence.",
+                                                                                0.01,ParamTypeEnum.float))
 
-                return arrFeaturesImplementadas
+                #a parte do clustering não foi feita pelo Hasan.
+                cc= ClusteringCoefficient("Clustering Coefficient","In graph theory, a clustering coefficient is a measure of the degree to which nodes in a graph tend to cluster together.","reference", FeatureVisibilityEnum.public,
+                        FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS,1)
+                cc.addConfigurableParam(ConfigurableParam("distance", "Distance",
+                                                                            "Distance.",
+                                                                                1.0, ParamTypeEnum.float)
+
+                arrFeaturesImplementadas.append(pr)
+                arrFeaturesImplementadas.append(cc)
+
+                return arrFeaturesImplementadas 

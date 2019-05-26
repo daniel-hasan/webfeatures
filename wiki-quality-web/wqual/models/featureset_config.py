@@ -77,7 +77,7 @@ class FeatureFactoryManager(models.Manager):
         arr_features = []
 
         for featFactory in self.filter(source_id=source_id):
-
+            #print("Feat name: "+featFactory.nam_factory_class+" SOURCE ID: "+str(featFactory.source_id))
             #instantiate feature factory class
             FeatureFactoryClass = get_class_by_name(featFactory.nam_module+"."+featFactory.nam_factory_class)
 

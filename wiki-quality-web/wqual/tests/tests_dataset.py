@@ -24,11 +24,12 @@ from wqual.models.uploaded_datasets import Status, StatusEnum
 from wqual.models.utils import Format
 from feature.featureImpl.readability_features import ReadabilityBasedFeature
 
-
 CHECK_IF_FEAT_NOT_EXISTS = True
 
 def JSONToDict(strTxt):
         return json.loads(strTxt)
+
+
 def CSVToDict(strTxt):
     csv_list = csv.reader(strTxt.split("\n"))
     dictJSON = {"features_description":{},
@@ -49,6 +50,8 @@ def CSVToDict(strTxt):
                     dictJSON["data"][strFileName][str(i)] = colFeat
 
     return dictJSON
+
+
 class TestDataset(TestCase):
 
     def setUp(self):
@@ -65,8 +68,6 @@ class TestDataset(TestCase):
 
         self.password = "meunome"
         self.my_admin = User.objects.create_superuser('myuser', 'myemail@test.com', self.password)
-
-
 
         self.feature_set = FeatureSet.objects.create(nam_feature_set="Featzinho",
                                                      dsc_feature_set="lalalal",
@@ -91,8 +92,10 @@ class TestDataset(TestCase):
             with NamedTemporaryFile("w",delete=False) as fp:
                 json.dump(arrFeats, fp)
 
-        #inser them
+        #insert them
         UsedFeature.objects.insert_features_object(self.feature_set,arrObjFeaturesToInsert)
+        
+
     def insert_dataset_test(self,client,arq,dataset_name,intPos):
         #faaz requisicao
         str_url = reverse(dataset_name[0],kwargs=dataset_name[1])#
@@ -108,6 +111,8 @@ class TestDataset(TestCase):
         self.assertEqual(response.url, reverse(dataset_name[0],kwargs=dataset_name[1]), "Did not redirected to the right URL ")
 
         return lstDataset[0]
+
+
     def remove_dataset_test(self,dataset_name,client,objDataset):
         #remove o dataset
         dictDatasetParam = dataset_name[1].copy()
@@ -144,16 +149,22 @@ class TestDataset(TestCase):
                 resultadoAtual = funcToConvert(strFileTxt.decode("utf-8"))
             self.assertNotEqual(resultadoAtual,None,"Deveria existir um resultado atual")
             return resultadoAtual
+
+
     def grava_last_result(self,strArqLastResult,resultado):
         if(not IS_BITBUCKET):
             with open(strArqLastResult,"w") as f:
                 json.dump(resultado,f)
                 return True
         return False
+
+
     def dictDifsToStr(self,dicDifs):
         strFeatureNames = ",".join(dicDifs.keys())
 
         return "The features: "+strFeatureNames+" contain different results in the following documents: \n"+str(dicDifs)
+
+
     def compare_result(self,resultadoOld,resultadoAtual):
         mapFeatureOldPerFeatId = resultadoOld["features_description"]
         mapFeatureAtualPerName = {}
@@ -183,6 +194,8 @@ class TestDataset(TestCase):
                             dictDifs[strFeatName] = []
                         dictDifs[strFeatName].append((arqName,featVal,featDictAtual[featIdAtual]))
         self.assertEqual(len(dictDifs.keys()), 0, self.dictDifsToStr(dictDifs))
+
+
     def compare_old_result(self,strArqLastResult,resultadoAtual):
         with open(strArqLastResult) as f:
             resultadoOld = json.load(f)
@@ -191,8 +204,6 @@ class TestDataset(TestCase):
             #print("----------- Resultado old: -----------------")
             #print(str(resultadoOld["data"]['10308286.html']))
             self.compare_result(resultadoOld, resultadoAtual)
-
-
 
         if(not IS_BITBUCKET):
             self.grava_last_result(strArqLastResult, resultadoAtual)
@@ -203,12 +214,11 @@ class TestDataset(TestCase):
         paramResult["dataset_id"] = self.feature_set.dataset_set.all()[0].id
         paramResult["format"] = formatResult
 
-
-
         str_url = reverse("download_result",kwargs=paramResult)
         response = client.get(str_url)
         self.assertEqual(response.status_code, 200, "Could not obtain sucess status")
         return response
+
 
     def test_create_remove_dataset(self):
         SUBMITTED_STATUS = Status.objects.get(name=StatusEnum.SUBMITTED.name)
@@ -230,11 +240,6 @@ class TestDataset(TestCase):
             with open(strDir+arqName,"rb") as arq:
 
                 objDataset = self.insert_dataset_test(c, arq, dataset_name, intPos)
-
-                #
-
-
-                #
 
             #roda o escalonador e testa
             self.assertEqual(objDataset.status.name, SUBMITTED_STATUS.name, "Wrong status. It should be submitted.")

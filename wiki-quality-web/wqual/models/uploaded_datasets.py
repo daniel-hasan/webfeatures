@@ -145,7 +145,12 @@ class Dataset(models.Model):
         
             
 def content_file_name(instance, filename):
-    name, ext = filename.split('.')
+    parts = filename.split('.')
+    name = parts[0]
+    for i in range(len(parts)):
+        if(i < len(parts)-1 and i > 0):
+            name = name + "." + parts[i]
+    ext = parts[len(parts)-1]
     
     file_path = '{dir_name}{nam_file}_{dataset_id}.{ext}'.format(
          dir_name="uploaded_datasets/", nam_file = "dataset", dataset_id = instance.dataset.id, ext="zip") 
