@@ -19,17 +19,17 @@ class TestGraphFeatures(unittest.TestCase):
                                                 FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS),
                                 AssortativeOutputOutput("Assortative Output Output", "Assortative Output/Output Metric", "reference", FeatureVisibilityEnum.public,
                                                 FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS),
-                                pageRank("pageRank", "pageRank Metric say how much popular is this article","reference", FeatureVisibilityEnum.public,
+                                PageRank("PageRank", "PageRank Metric say how much popular is this article","reference", FeatureVisibilityEnum.public,
                                         FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS,0.95,0.01),
                                 Reciprocity("Reciprocity", "Reciprocity Metric of vertex", "reference", FeatureVisibilityEnum.public,
                                             FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS),
                                 #Estes sao outros exemplos de instanciação, sao 3 tipos de coeficientes de clusterizacao que deverão ser testados
-                                Clusterizacao("Clustering Coefficient","Description","reference", FeatureVisibilityEnum.public,
-                                        FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS),
-                                #Clusterizacao("Clustering coefficient","Description","reference", FeatureVisibilityEnum.public,
-                                #                                        FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS,"2"),
-                                #Clusterizacao("Clustering coefficient","Description","reference", FeatureVisibilityEnum.public,
-                                #                FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS,"3"),
+                                ClusteringCoefficient("Clustering Coefficient","Clustering Coefficient is a measure of the degree to which nodes in a graph tend to cluster together.","reference", FeatureVisibilityEnum.public,
+                                        FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS, 1.0),
+                                #ClusteringCoefficient("Clustering Coefficient","Clustering Coefficient is a measure of the degree to which nodes in a graph tend to cluster together.","reference", FeatureVisibilityEnum.public,
+                                #        FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS, 2.0),
+                                #ClusteringCoefficient("Clustering coefficient","Clustering Coefficient is a measure of the degree to which nodes in a graph tend to cluster together.","reference", FeatureVisibilityEnum.public,
+                                #                FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS,3.0),
                                 ]
         #cria o grafo:
         grafo = grafolistaadjacencia()#essa classe irá mudar de nome - o Rubio irá mudar
@@ -51,7 +51,7 @@ class TestGraphFeatures(unittest.TestCase):
                                     {"A":1.2,"B":0.75,"C":3,"D":0,"E":1,"F":0.333}, #AssortativeInputOutput
                                     {"A":1.8,"B":1.5,"C":1,"D":0,"E":0.333,"F":0.5}, #AssortativeOutputInput
                                     {"A":1.8,"B":2.25,"C":1,"D":0,"E":1,"F":0.333}, #AssortativeOutputOutput
-                                    {"A":0.2,"B":0.1,"C":0.2, "D":0.1,"E":0.2,"F":0.1}, #pageRank Larisse
+                                    {"A":0.05,"B":0.1,"C":0.05, "D":0.1,"E":0.05,"F":0.1}, #PageRank Larisse
                                     {"A":0.667,"B":0.333,"C":1,"D":0,"E":1,"F":1}, #reciprocity
                                     {"A":0.333,"B":0.333,"C":0.0,"D":0.0,"E":0.0,"F":0.0},#coeficiente de clusterizacao distancia = 1
                                     #{"A":0.0,"B":0.0,"C":0.0,"D":0.0,"E":0.0,"F":0.5},#coeficiente de clusterizacao distancia = 2
