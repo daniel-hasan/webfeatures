@@ -1,2 +1,7 @@
 eclipse.preferences.version=1
+encoding//wiki-quality/feature/featureImpl/structure_features.py=utf-8
+encoding//wiki-quality/feature/featureImpl/style_features.py=utf-8
+encoding//wiki-quality/feature/feature_factory/feature_factory.py=utf-8
+encoding//wiki-quality/feature/features.py=utf-8
 encoding//wiki-quality/feature/preprocessing.py=utf-8
+encoding//wiki-quality/utils/basic_entities.py=utf-8

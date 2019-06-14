@@ -1,6 +1,0 @@
-_ID_RESP_ID_1	NNP	_id_resp_id_1	B-noun.other	B-E:ORGANIZATION:CORPORATION
-Linq	NNP	linq	I-noun.other	I-E:ORGANIZATION:CORPORATION
-Query	NNP	query	I-noun.other	I-E:ORGANIZATION:CORPORATION
-Giving	NNP	giving	I-noun.other	I-E:ORGANIZATION:CORPORATION
-Error	NNP	error	I-noun.other	I-E:ORGANIZATION:CORPORATION
-

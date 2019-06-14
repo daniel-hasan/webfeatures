@@ -419,11 +419,8 @@ class FeatureCalculator(object):
         raise NotImplementedError
 
 class TextBasedFeature(FeatureCalculator):
-    '''
-    São subclasses desta classe abstrata as features que NÃO conseguem
-    analisar o texto por palavra para efetuar o calculo desta feature.
-    @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
-    '''
+    
+    pass
 
 class ParagraphBasedFeature(FeatureCalculator):
 
@@ -438,12 +435,6 @@ class SentenceBasedFeature(FeatureCalculator):
         raise NotImplementedError
 
 class WordBasedFeature(FeatureCalculator):
-    '''
-    São subclasses desta classe abstrata as features que conseguem
-    analisar o texto por palavra para efetuar o calculo desta feature.
-
-    @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
-    '''
 
     @abstractmethod
     def checkWord(self,document,word):

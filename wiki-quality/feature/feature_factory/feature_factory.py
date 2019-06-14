@@ -7,13 +7,14 @@ Created on 8 de ago de  2017
 from abc import abstractmethod
 from django.contrib.sessions.backends import file
 
-from feature import ConfigurableParam, ParamTypeEnum
+from feature.features import ConfigurableParam, ParamTypeEnum
 from feature.featureImpl.readability_features import ARIFeature, \
     ColemanLiauFeature, FleschReadingEaseFeature, FleschKincaidFeature, \
     GunningFogIndexFeature, LasbarhetsindexFeature, \
     SmogGradingFeature
 from feature.featureImpl.structure_features import *
 from feature.featureImpl.style_features import *
+from feature.featureImpl.semantic_features import *
 from feature.features import  FeatureVisibilityEnum
 from utils.basic_entities import FormatEnum, FeatureTimePerDocumentEnum
 
@@ -369,3 +370,111 @@ class ReadabilityFeatureFactory(FeatureFactory):
         arrFeatures.append(featSmogGrading)
         
         return arrFeatures
+    
+class POSTaggerFeatureFactory(FeatureFactory):
+    
+    IS_LANGUAGE_DEPENDENT = True
+    def __init__(self,objLanguage):
+        super(FeatureFactory,self).__init__()
+        self.objLanguage = objLanguage
+        self.BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        self.BASE_DIR = os.path.abspath(os.path.join(self.BASE_DIR,os.pardir))
+    
+    
+    def createFeatures(self):
+        
+
+        arrFeatures = [ ]
+        featPOSTaggerFeature = PartOfSpeechTaggerFeature("POS Tagger", "Part of speech tagger",
+                        "Based on nltk's tagger library",
+                        FeatureVisibilityEnum.public, 
+                        FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,language=self.objLanguage.name)
+        
+            
+        arrFeatures.append(featPOSTaggerFeature)
+        
+        return arrFeatures
+
+class POSTaggerTrainerFeatureFactory(FeatureFactory):
+    def __init__(self):
+        super(FeatureFactory,self).__init__()
+        self.BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        self.BASE_DIR = os.path.abspath(os.path.join(self.BASE_DIR,os.pardir))
+    
+    
+    def createFeatures(self):
+        
+        basedir = self.BASE_DIR + "/nltk-trainer-master/"
+        arrFeatures = [ ]
+        
+        featPOSTaggerTrainer = POSTaggerTrainer("POS Tagger Trainer: train a tagger of part of speech",
+                        "Based on nltk-trainer-master in https://github.com/japerk/nltk-trainer",
+                        FeatureVisibilityEnum.public, 
+                        FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,basedir)
+        
+    def __init__(self):
+        super(FeatureFactory,self).__init__()
+        self.BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        self.BASE_DIR = os.path.abspath(os.path.join(self.BASE_DIR,os.pardir))
+    
+    
+    def createFeatures(self):
+        
+        basedir = self.BASE_DIR + "/nltk-trainer-master"
+        arrFeatures = [ ]
+        
+        featPOSTaggerTrainer = POSTaggerTrainer("POS Tagger Trainer: train a tagger of part of speech",
+                        "Based on nltk-trainer-master in https://github.com/japerk/nltk-trainer",
+                        FeatureVisibilityEnum.public, 
+                        FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,basedir)
+        
+        featPOSTaggerTrainer.addConfigurableParam(ConfigurableParam("language","Language",
+                                                                      "The language of training.",
+                                                                      10,ParamTypeEnum.choices))
+        
+        featPOSTaggerTrainer.addConfigurableParam(ConfigurableParam("model","Model",
+                                                                      "The predefined model to train.",
+                                                                      10,ParamTypeEnum.choices))
+        
+        arrFeatures.append(featPOSTaggerTrainer)
+              
+        return arrFeatures
+    
+
+class POSClassifierTrainerFeatureFactory(FeatureFactory):
+    def __init__(self):
+        super(FeatureFactory,self).__init__()
+        self.BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        self.BASE_DIR = os.path.abspath(os.path.join(self.BASE_DIR,os.pardir))
+    
+    
+    def createFeatures(self):
+        
+        basedir = self.BASE_DIR + "/nltk-trainer-master/"
+        arrFeatures = [ ]
+        
+        featPOSClassifierTrainer = POSClassifierTrainerFeature("POS Tagger Trainer: train a classifier of part of speech",
+                        "Based on nltk-trainer-master in https://github.com/japerk/nltk-trainer",
+                        FeatureVisibilityEnum.public, 
+                        FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,basedir)
+        
+        featPOSClassifierTrainer.addConfigurableParam(ConfigurableParam("language","Language",
+                                                                      "The language of training.",
+                                                                      10,ParamTypeEnum.choices))
+        
+        featPOSClassifierTrainer.addConfigurableParam(ConfigurableParam("corpus","Corpus",
+                                                                      "The predefined corpus used to train.",
+                                                                      10,ParamTypeEnum.choices))
+        
+        featPOSClassifierTrainer.addConfigurableParam(ConfigurableParam("mode","Mode",
+                                                                      "The mode (per paragraph, file or sentence) used to train.",
+                                                                      10,ParamTypeEnum.choices))
+        
+        featPOSClassifierTrainer.addConfigurableParam(ConfigurableParam("classifier","Classifier",
+                                                                      "The classifier to train corpus.",
+                                                                      10,ParamTypeEnum.choices))
+        
+        arrFeatures.append(featPOSClassifierTrainer)
+              
+        return arrFeatures
+

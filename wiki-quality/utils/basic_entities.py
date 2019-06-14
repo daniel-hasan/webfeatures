@@ -244,5 +244,3 @@ class LanguageEnum(Enum):
     kv = "Komi"
     ku = "Kurdish"
     ky = "Kirghiz, Kyrgyz"
-  
-    
