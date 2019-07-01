@@ -3,7 +3,6 @@ import os
 import nltk.data
 from enum import Enum
 from feature.features import TextBasedFeature
-from statistics import mode
 
 class POSTaggerTrainerFeature(TextBasedFeature):
     

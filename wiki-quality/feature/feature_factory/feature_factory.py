@@ -390,10 +390,14 @@ class POSTaggerFeatureFactory(FeatureFactory):
                         FeatureVisibilityEnum.public, 
                         FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,language=self.objLanguage.name)
         
-            
-        arrFeatures.append(featPOSTaggerFeature)
+        featBagOfPOS = BagOfPOSFeature("Bag of POS", "Bag of part of speech in text", "",
+                                FeatureVisibilityEnum.public, FormatEnum.textplain, FeatureTimePerDocumentEnum.MILLISECONDS, 			  					language=self.objLanguage.name)
         
+	arrFeatures.append(featPOSTaggerFeature)
+        arrFeatures.append(featBagOfPOS)
+
         return arrFeatures
+
 
 class POSTaggerTrainerFeatureFactory(FeatureFactory):
     def __init__(self):
@@ -428,19 +432,16 @@ class POSTaggerTrainerFeatureFactory(FeatureFactory):
                         FeatureVisibilityEnum.public, 
                         FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,basedir)
         
-        featPOSTaggerTrainer.addConfigurableParam(ConfigurableParam("language","Language",
-                                                                      "The language of training.",
-                                                                      10,ParamTypeEnum.choices))
-        
         featPOSTaggerTrainer.addConfigurableParam(ConfigurableParam("model","Model",
                                                                       "The predefined model to train.",
-                                                                      10,ParamTypeEnum.choices))
+                                                                      None,ParamTypeEnum.choices=[("Mac Morpho Português","mac_morpho_aubt.pickle"),
+								("ConLL2000 English","conll2000_aubt.pickle")]))
         
         arrFeatures.append(featPOSTaggerTrainer)
               
         return arrFeatures
-    
-
+  
+'''
 class POSClassifierTrainerFeatureFactory(FeatureFactory):
     def __init__(self):
         super(FeatureFactory,self).__init__()
@@ -460,21 +461,21 @@ class POSClassifierTrainerFeatureFactory(FeatureFactory):
         
         featPOSClassifierTrainer.addConfigurableParam(ConfigurableParam("language","Language",
                                                                       "The language of training.",
-                                                                      10,ParamTypeEnum.choices))
+                                                                      None,ParamTypeEnum.choices=[]))
         
         featPOSClassifierTrainer.addConfigurableParam(ConfigurableParam("corpus","Corpus",
                                                                       "The predefined corpus used to train.",
-                                                                      10,ParamTypeEnum.choices))
+                                                                      None,ParamTypeEnum.choices=[]))
         
         featPOSClassifierTrainer.addConfigurableParam(ConfigurableParam("mode","Mode",
                                                                       "The mode (per paragraph, file or sentence) used to train.",
-                                                                      10,ParamTypeEnum.choices))
+                                                                      None,ParamTypeEnum.choices=[]))
         
         featPOSClassifierTrainer.addConfigurableParam(ConfigurableParam("classifier","Classifier",
                                                                       "The classifier to train corpus.",
-                                                                      10,ParamTypeEnum.choices))
+                                                                      None,ParamTypeEnum.choices=[]))
         
         arrFeatures.append(featPOSClassifierTrainer)
               
         return arrFeatures
-
+'''
