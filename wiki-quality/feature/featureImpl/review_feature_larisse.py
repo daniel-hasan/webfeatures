@@ -14,7 +14,7 @@ class ReviewCount(ReviewBasedFeature):
 
 '''Conta o numero de revisões feita por usuarios anonimos'''
 class AnonymousReviewCount(ConfigurableParam):
-    def __init__(self,att_name,name,description,default_value,param_type,arr_choices=[]):
+    def __init__(self,int_rev_id,rev_timestamp,rev_size):
         self.name_reviewer = int("inf")
         self.num_reviews = 0
 
