@@ -15,11 +15,11 @@ class ReviewCount(ReviewBasedFeature):
 '''Conta o numero de revisões feita por usuarios anonimos'''
 class AnonymousReviewCount(ConfigurableParam):
     def __init__(self,att_name,name,description,default_value,param_type,arr_choices=[]):
-        self.name_reviewer = string("inf")
+        self.name_reviewer = int("inf")
         self.num_reviews = 0
 
     def checkReview(self, review):
-        if(sef.name_reviewer == "null"):
+        if(sef.name_reviewer != review.int_rev_id):
             self.num_reviews +=1
 
     @abstractmethod
@@ -27,13 +27,13 @@ class AnonymousReviewCount(ConfigurableParam):
         return self.num_reviews
 
 ''' Conta o numero de revisões feitas por usuarios registrados '''
-class RegisteredReviewCount(ConfigurableParam):
-    def __init__(self,att_name,name,description,default_value,param_type,arr_choices=[]):
-        self.name_reviewer = string("inf")
-        self.num_reviews = 0;
+class RegisteredReviewCount(Review):
+    def __init__(self,int_rev_id,rev_timestamp,rev_size):
+        self.name_reviewer = int("inf")
+        self.num_reviews = 0
 
     def checkReview(self, review):
-        if(self.name_reviewer != "null"):
+        if(self.name_reviewer == review.int_rev_id):
             self.num_reviews +=1
 
     @abstractmethod
