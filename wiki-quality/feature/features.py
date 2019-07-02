@@ -49,10 +49,11 @@ class DocumentCache(object):
     def setOwnership(self, itemName, objRequest):
         self.owner[itemName] = objRequest
 class Review(object):
-    def __init__(self,int_rev_id,rev_timestamp,rev_size):
+    def __init__(self,int_rev_id,rev_timestamp,rev_size,reviewer_name):
         self.int_rev_id = int_rev_id
         self.rev_timestamp = rev_timestamp
         self.rev_size = rev_size
+        self.reviewer_name = reviewer_name
 
 class Document(object):
     def __init__(self,int_doc_id,str_doc_name,str_text):
