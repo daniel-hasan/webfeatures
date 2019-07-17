@@ -12,6 +12,7 @@ import os
 from os.path import join, isfile, isdir
 from posix import listdir
 import re
+import datetime
 
 from utils.basic_entities import FormatEnum, CheckTime
 
@@ -54,6 +55,11 @@ class Review(object):
         self.rev_timestamp = rev_timestamp
         self.rev_size = rev_size
         self.reviewer_name = reviewer_name
+
+    @property
+    def timestamp_to_datetime(self):
+        return datetime.datetime.fromtimestamp(self.rev_timestamp)
+    
 
 class Document(object):
     def __init__(self,int_doc_id,str_doc_name,str_text):
@@ -499,9 +505,10 @@ class GraphBasedFeature(FeatureCalculator):
         @abstractmethod
         def compute_feature(self,graph):
                 pass
+
 class ReviewBasedFeature(FeatureCalculator):
         def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document,curr_date):
-            super().__init__(self,name,description,reference,visibility,text_format,feature_time_per_document)
+            super().__init__(name,description,reference,visibility,text_format,feature_time_per_document)
             self.curr_date = datetime.datetime.fromtimestamp(curr_date)
 
         @abstractmethod
