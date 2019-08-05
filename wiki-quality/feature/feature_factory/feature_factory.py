@@ -405,9 +405,9 @@ class GraphFeatureFactory(FeatureFactory):
                         FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS,1)
                 cc.addConfigurableParam(ConfigurableParam("distance", "Distance",
                                                                             "Distance.",
-                                                                                1.0, ParamTypeEnum.float)
+                                                                                1.0, ParamTypeEnum.float))
 
                 arrFeaturesImplementadas.append(pr)
                 arrFeaturesImplementadas.append(cc)
 
-                return arrFeaturesImplementadas 
+                return arrFeaturesImplementadas
