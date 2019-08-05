@@ -50,16 +50,17 @@ class DocumentCache(object):
     def setOwnership(self, itemName, objRequest):
         self.owner[itemName] = objRequest
 class Review(object):
-    def __init__(self,int_rev_id,rev_timestamp,rev_size,reviewer_name):
+    def __init__(self,int_rev_id,rev_timestamp,rev_size,str_reviewer_name,int_rev_user_id):
         self.int_rev_id = int_rev_id
         self.rev_timestamp = rev_timestamp
         self.rev_size = rev_size
-        self.reviewer_name = reviewer_name
+        self.str_reviewer_name = str_reviewer_name
+        self.int_rev_user_id = int_rev_user_id
 
     @property
     def timestamp_to_datetime(self):
         return datetime.datetime.fromtimestamp(self.rev_timestamp)
-    
+
 
 class Document(object):
     def __init__(self,int_doc_id,str_doc_name,str_text):

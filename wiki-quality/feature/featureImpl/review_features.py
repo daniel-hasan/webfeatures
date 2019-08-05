@@ -25,7 +25,7 @@ class ThreeMonthProportionReview(ReviewBasedFeature):
         super().__init__(name,description,reference,visibility,text_format,feature_time_per_document,curr_date)
         self.trreview = 0
         self.total_review = 0
-
+    #colocar o 90 como um parametro da classe
     def checkReview(self,review):
         self.total_review += 1
         if((self.curr_date-datetime.datetime.fromtimestamp(review.rev_timestamp)).days < 90):
@@ -44,6 +44,7 @@ class ReviewModSize(ReviewBasedFeature):
         super().__init__(name,description,reference,visibility,text_format,feature_time_per_document,curr_date)
         self.sizeref = 0
 
+#fazer parecido com o ThreeMonthProportionReview
     def checkReview(self,reference):
         self.sizeref = reference.rev_size
 
@@ -87,6 +88,10 @@ class ReviewOccasion(ReviewBasedFeature):
             self.num_reviews = 0
 
         return self.num_reviews
-
+                num_users = self.dict_rev_per_user.keys()
+                for user,qtd_rev in self.dict_rev_per_user.items():
+                    if(qtd_rev<4):
+                        int_ocasional += 1
+                return int_ocasional/num_users
     def finish_document(self, review):
         self.num_reviews = 0
