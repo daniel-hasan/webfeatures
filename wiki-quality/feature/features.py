@@ -66,6 +66,10 @@ class FeatureDocumentsWriter(object):
         '''raise NotImplementedError'''
         pass
 
+    @abstractmethod
+    def finishAllDocuments(self):
+		pass
+
 class FeatureDocumentsReader(object):
     '''
             Classe abstrata para a leitura dos textos
@@ -418,8 +422,9 @@ class FeatureCalculator(object):
     def finish_document(self,document):
         raise NotImplementedError
 
+
 class TextBasedFeature(FeatureCalculator):
-    
+
     pass
 
 class ParagraphBasedFeature(FeatureCalculator):
