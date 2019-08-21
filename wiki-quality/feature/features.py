@@ -197,7 +197,7 @@ class FeatureCalculatorManager(object):
             for idx in arrIdx:
                 del arrToReduce[idx]
 
-    def computeFeatureSet(self,docText,arr_features,format):
+    def computeFeatureSet(self,docWriter,docText,arr_features,format):
         '''
         Analisa o texto e calcula todas as features do array.
         Primeiro é calculada as features do formato HTML, depois, textplain.
@@ -372,6 +372,8 @@ class FeatureCalculatorManager(object):
         for feat in arr_features:
             feat.finish_document(docText)
         #timeToProc.printDelta("Finish document")
+
+        docWriter.finishAllDocuments()
         return arr_feat_result
 
 class FeatureVisibilityEnum(Enum):
