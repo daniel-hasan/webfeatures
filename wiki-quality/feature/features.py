@@ -68,7 +68,7 @@ class FeatureDocumentsWriter(object):
 
     @abstractmethod
     def finishAllDocuments(self):
-		pass
+        pass
 
 class FeatureDocumentsReader(object):
     '''
