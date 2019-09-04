@@ -26,7 +26,7 @@ class DatasetDocWriter(FeatureDocumentsWriter):
         self.data = {"header":{},"data":{}}
 
     def write_header(self,arr_features):
-	    arr_feat = enumerate(arr_features)
+        arr_feat = enumerate(arr_features)
         for i,objFeature in arr_feat:
             self.data["header"][i]= {"name":objFeature.name, "params":objFeature.get_params_str()}
 
@@ -42,11 +42,11 @@ class DatasetDocWriter(FeatureDocumentsWriter):
         with open(datasetfile,"w") as file:
             json.dump(self.data,file)
 
-        def write_header(self,arr_features):
-    	    arr_feat = enumerate(arr_features)
-            for i,objFeature in arr_feat:
-                self.data["header"][i]= {"name":objFeature.name,
-                                    "params":objFeature.get_params_str()}
+    def write_header(self,arr_features):
+        arr_feat = enumerate(arr_features)
+        for i,objFeature in arr_feat:
+            self.data["header"][i]= {"name":objFeature.name,
+                        "params":objFeature.get_params_str()}
 
     def write_document(self,document, arr_feats_used, arr_feats_result):
         self.document = document

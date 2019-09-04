@@ -102,6 +102,7 @@ class CharTestFeature(CharBasedFeature):
 
     def finish_document(self, document):
         self.arr_str_char = []
+        
 class WordTestFeature(WordBasedFeature):
     '''
     Classe para usar no teste que verifica se o WordBasedFeature está funcionando.
