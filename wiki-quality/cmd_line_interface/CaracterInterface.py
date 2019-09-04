@@ -17,27 +17,48 @@ class DatasetDocReader(FeatureDocumentsReader):
 
 
 class DatasetDocWriter(FeatureDocumentsWriter):
-        def __init__(self, datasetfile):
-            self.datasetfile = datasetfile
-            self.data = {"header":{},"data":{}}
+    def __init__(self, datasetfile):
+        self.datasetfile = datasetfile
+        self.data = {"header":{},"data":{}}
+
+    def __init__(self, datasetfile):
+        self.datasetfile = datasetfile
+        self.data = {"header":{},"data":{}}
+
+    def write_header(self,arr_features):
+	    arr_feat = enumerate(arr_features)
+        for i,objFeature in arr_feat:
+            self.data["header"][i]= {"name":objFeature.name, "params":objFeature.get_params_str()}
+
+    def write_document(self,document, arr_feats_used, arr_feats_result):
+        self.document = document
+        self.arr_feats_used = arr_feats_used
+        self.arr_feats_result = arr_feats_result
+
+        data["data"][self.document.int_doc_id] = self.arr_feats_result
+
+    def finishAllDocuments(self):
+
+        with open(datasetfile,"w") as file:
+            json.dump(self.data,file)
 
         def write_header(self,arr_features):
-			arr_feat = enumerate(arr_features)
+    	    arr_feat = enumerate(arr_features)
             for i,objFeature in arr_feat:
                 self.data["header"][i]= {"name":objFeature.name,
                                     "params":objFeature.get_params_str()}
 
-        def write_document(self,document, arr_feats_used, arr_feats_result):
-            self.document = document
-            self.arr_feats_used = arr_feats_used
-            self.arr_feats_result = arr_feats_result
+    def write_document(self,document, arr_feats_used, arr_feats_result):
+        self.document = document
+        self.arr_feats_used = arr_feats_used
+        self.arr_feats_result = arr_feats_result
 
-            data["data"][self.document.int_doc_id] = self.arr_feats_result
+        data["data"][self.document.int_doc_id] = self.arr_feats_result
 
-        def finishAllDocuments(self):
+    def finishAllDocuments(self):
 
-            with open(datasetfile,"w") as file:
-                json.dump(self.data,file)
+        with open(datasetfile,"w") as file:
+            json.dump(self.data,file)
 
 
 class CaracterInterface:

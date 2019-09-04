@@ -11,29 +11,29 @@ from utils.basic_entities import LanguageEnum, FormatEnum, CheckTime
 
 
 class TestWordsFeatureFactory(unittest.TestCase):
-    
+
     def test(self):
-        
+
         BASE_DIR = os.path.abspath(__file__)
         BASE_DIR = os.path.abspath(os.path.join(BASE_DIR,os.pardir))
         dir_file = BASE_DIR + "/docTests/partofspeech.txt"
-        
+
         with open(dir_file) as file:
             str_text = file.read()
-        
-        doc = Document(1,"doc1",str_text)        
+
+        doc = Document(1,"doc1",str_text)
         part_of_speech = ["articles","auxiliaryVerbs","coordinatingConjunctions","correlativeConjunctions",
                           "indefinitePronouns","interrogativePronouns","prepositions","pronouns",
                           "relativePronouns","subordinatingConjunctions","toBeVerbs"]
-        
+
         objFeatFactory = WordsFeatureFactory(LanguageEnum.en)
-        
+
         for classe in part_of_speech:
             arr_features = [objFeatFactory.createFeatureObject(classe)]
             objFeatureCalculator = FeatureCalculatorManager()
             arr_feature_result = objFeatureCalculator.computeFeatureSet(doc, arr_features, FormatEnum.text_plain)
             self.assertEqual(2, arr_feature_result[0], classe + " não foi computado corretamente\n")
-    
+
     def tests_all_features(self):
         print("===========================================================")
         BASE_DIR = os.path.abspath(__file__)
@@ -43,11 +43,11 @@ class TestWordsFeatureFactory(unittest.TestCase):
         #peogu o texto
         with open(dir_file) as file:
             str_text = file.read()
-        doc = Document(1,"doc1",str_text)      
+        doc = Document(1,"doc1",str_text)
         timeToProc.printDelta("Leitura do arquivo")
         #gerar todas ass features
         objEnglish = LanguageEnum.en
-        
+
         arrFeatures = []
         for SubClass in FeatureFactory.__subclasses__():
             objFeatFact = None
@@ -55,15 +55,15 @@ class TestWordsFeatureFactory(unittest.TestCase):
                 objFeatFact = SubClass(objEnglish)
             else:
                 objFeatFact = SubClass()
-            
+
             [arrFeatures.append(feat) for feat in objFeatFact.createFeatures()]
         timeToProc.printDelta("Pega as features")
-        #roda o manager    
+        #roda o manager
         objFeatureCalculator = FeatureCalculatorManager()
         arr_feature_result = objFeatureCalculator.computeFeatureSet(doc, arrFeatures, FormatEnum.HTML)
-        
-                
-                
+
+
+
 
 if __name__ == "__main__":
     unittest.main()
