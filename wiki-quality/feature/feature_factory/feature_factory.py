@@ -25,7 +25,7 @@ class FeatureFactory(object):
     @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
     '''
     IS_LANGUAGE_DEPENDENT = False
-
+    DEVELOPMENT = False
     @abstractmethod
     def createFeatures(self):
         '''
@@ -372,7 +372,7 @@ class ReadabilityFeatureFactory(FeatureFactory):
         return arrFeatures
 
 class POSTaggerFeatureFactory(FeatureFactory):
-
+    DEVELOPMENT = True
     IS_LANGUAGE_DEPENDENT = True
     def __init__(self,objLanguage):
         super(FeatureFactory,self).__init__()
@@ -397,6 +397,7 @@ class POSTaggerFeatureFactory(FeatureFactory):
 
 
 class POSTaggerTrainerFeatureFactory(FeatureFactory):
+    DEVELOPMENT = True
     def __init__(self):
         super(FeatureFactory,self).__init__()
         self.BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -429,8 +430,10 @@ class POSTaggerTrainerFeatureFactory(FeatureFactory):
                         FeatureVisibilityEnum.public,
                         FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,basedir)
 
-        featPOSTaggerTrainer.addConfigurableParam(ConfigurableParam("model","Model","The predefined model to train.",
-                                None,ParamTypeEnum.choices=[("Mac Morpho Português","mac_morpho_aubt.pickle"),
+        featPOSTaggerTrainer.addConfigurableParam(ConfigurableParam("model","Model",
+									"The predefined model to train.",None,
+									ParamTypeEnum.choices,
+								[("Mac Morpho Português","mac_morpho_aubt.pickle"),
 								("ConLL2000 English","conll2000_aubt.pickle")]))
 
         arrFeatures.append(featPOSTaggerTrainer)

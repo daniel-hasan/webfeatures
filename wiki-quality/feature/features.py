@@ -68,7 +68,7 @@ class FeatureDocumentsWriter(object):
 
     @abstractmethod
     def finishAllDocuments(self):
-	    pass
+        raise NotImplementedError
 
 class FeatureDocumentsReader(object):
     '''
