@@ -60,7 +60,7 @@ class CaracterInterface:
     def obtemObjetosFeatures(arrNomesFeatures):
         dictFeatures = {}
         arr_obj_featurres = []
-
+        #cria um dicionário com todas as features em que as chaves são os nomes delas
         for SubClass in FeatureFactory.__subclasses__():
             objFeatFact = None
             if(SubClass.IS_LANGUAGE_DEPENDENT):
@@ -70,9 +70,9 @@ class CaracterInterface:
 
             for feat in objFeatFact.createFeatures():
                 dictFeatures[feat.name] = feat
-                for feature in arrNomesFeatures:
-                    arr_obj_features.append(feature)
-                return arr_obj_features
+        for feature in arrNomesFeatures:
+            arr_obj_features.append(dictFeature[feature])
+        return arr_obj_features
 
     def imprimirFeatures():
         for SubClass in FeatureFactory.__subclasses__():
@@ -81,8 +81,8 @@ class CaracterInterface:
                 objFeatFact = SubClass(objEnglish)
             else:
                 objFeatFact = SubClass()
-                for feat in objFeatFact.createFeatures():
-                    print(feat.name)
+        for feat in objFeatFact.createFeatures():
+            print(feat.name)
 
 
 	###################################################################
