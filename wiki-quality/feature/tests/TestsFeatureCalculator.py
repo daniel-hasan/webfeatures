@@ -10,48 +10,6 @@ from feature.features import *
 from utils.basic_entities import FormatEnum, FeatureTimePerDocumentEnum
 from cmd_line_interface.CaracterInterface import *
 
-class TestCaracterInterface(unittest.TestCase):
-
-    arr_features = [WordTestFeature("ola feature", "Essa feature é divertitida",
-                                     "SILVA Ola. Contando Olas. Conferencia dos Hello World",
-                                     FeatureVisibilityEnum.public,
-                                     FormatEnum.text_plain,
-                                     FeatureTimePerDocumentEnum.MILLISECONDS),
-                    SentenceTestFeature("outra feature legal", "Essa feature é divertitida",
-                                     "SILVA Ola. Contando Olas. Conferencia dos Hello World",
-                                     FeatureVisibilityEnum.public,
-                                     FormatEnum.text_plain,
-                                     FeatureTimePerDocumentEnum.MILLISECONDS),
-
-                    ParagraphTestFeature("outra feature legal", "Essa feature é divertitida",
-                                     "SILVA Ola. Contando Olas. Conferencia dos Hello World",
-                                     FeatureVisibilityEnum.public,
-                                     FormatEnum.text_plain,
-                                     FeatureTimePerDocumentEnum.MILLISECONDS),
-
-                    WordTestFeature("tag feature", "Essa feature é divertitida",
-                                     "SILVA Ola. Contando Olas. Conferencia dos Hello World",
-                                     FeatureVisibilityEnum.public,
-                                     FormatEnum.HTML,
-                                     FeatureTimePerDocumentEnum.MILLISECONDS),
-
-                    TagTestFeature("tag legal feature", "Essa feature é divertitida",
-                                     "SILVA Ola. Contando Olas. Conferencia dos Hello World",
-                                     FeatureVisibilityEnum.public,
-                                     FormatEnum.HTML,
-                                     FeatureTimePerDocumentEnum.MILLISECONDS),
-                    CharTestFeature("char legal feature", "Essa feature é divertitida",
-                                     "SILVA Ola. Contando Olas. Conferencia dos Hello World",
-                                     FeatureVisibilityEnum.public,
-                                     FormatEnum.HTML,
-                                     FeatureTimePerDocumentEnum.MILLISECONDS)
-                    ]
-
-    dataset = "datasetZipFile.zip"
-    datasetfile = "resultDatasetFile.txt"
-    datReader = DatasetDocReader(dataset)
-    docWriter = DatasetDocWriter(datasetfile)
-    FeatureCalculatorManager.computeFeatureSetDocuments(self,datReader,docWriter,arr_features,FormatEnum.text_plain)
 
 class DocSetReaderForTest(FeatureDocumentsReader):
     '''
@@ -102,7 +60,7 @@ class CharTestFeature(CharBasedFeature):
 
     def finish_document(self, document):
         self.arr_str_char = []
-        
+
 class WordTestFeature(WordBasedFeature):
     '''
     Classe para usar no teste que verifica se o WordBasedFeature está funcionando.
@@ -272,12 +230,74 @@ class TestFeatureCalculator(unittest.TestCase):
         ["l","a","l","a","l","a",".","\n","M","e","u"," ","t","e","s","t","e"," ","t","e","m"," ",
          "t","r","e","s"," ","p","a","r","a","g","r","a","f","o","s",".","\n","E","s","s","e"," ",
          "é"," ","o"," ","ú","l","t","i","m","o"], "A leitura dos caracteres está incorreta")
-        print(str(map_result["doc5"][5]))
+        #print(str(map_result["doc5"][5]))
         self.assertListEqual(map_result["doc5"][5],
         ["O","l","a"," "," "," "," "," "," "," "," ",","," "," "," "," "," "," ","m","e","u"," ","n",
          "o","m","e"," ","é"," ","h","a","s","a","n","."], "A leitura dos caracteres está incorreta")
         self.assertListEqual(map_result["doc6"][5],
         ["M","e","u","t","e","s","t","e"," ","d","e"," ","p","a","l","a","v","r","a","s","."], "A leitura dos caracteres está incorreta")
+
+class TestCaracterInterface(unittest.TestCase):
+
+    def testGeral(self):
+
+        arr_features = [WordTestFeature("ola feature", "Essa feature é divertitida",
+                                         "SILVA Ola. Contando Olas. Conferencia dos Hello World",
+                                         FeatureVisibilityEnum.public,
+                                         FormatEnum.text_plain,
+                                         FeatureTimePerDocumentEnum.MILLISECONDS),
+                        SentenceTestFeature("outra feature legal", "Essa feature é divertitida",
+                                         "SILVA Ola. Contando Olas. Conferencia dos Hello World",
+                                         FeatureVisibilityEnum.public,
+                                         FormatEnum.text_plain,
+                                         FeatureTimePerDocumentEnum.MILLISECONDS),
+
+                        ParagraphTestFeature("outra feature legal", "Essa feature é divertitida",
+                                         "SILVA Ola. Contando Olas. Conferencia dos Hello World",
+                                         FeatureVisibilityEnum.public,
+                                         FormatEnum.text_plain,
+                                         FeatureTimePerDocumentEnum.MILLISECONDS),
+
+                        WordTestFeature("tag feature", "Essa feature é divertitida",
+                                         "SILVA Ola. Contando Olas. Conferencia dos Hello World",
+                                         FeatureVisibilityEnum.public,
+                                         FormatEnum.HTML,
+                                         FeatureTimePerDocumentEnum.MILLISECONDS),
+
+                        TagTestFeature("tag legal feature", "Essa feature é divertitida",
+                                         "SILVA Ola. Contando Olas. Conferencia dos Hello World",
+                                         FeatureVisibilityEnum.public,
+                                         FormatEnum.HTML,
+                                         FeatureTimePerDocumentEnum.MILLISECONDS),
+                        CharTestFeature("char legal feature", "Essa feature é divertitida",
+                                         "SILVA Ola. Contando Olas. Conferencia dos Hello World",
+                                         FeatureVisibilityEnum.public,
+                                         FormatEnum.HTML,
+                                         FeatureTimePerDocumentEnum.MILLISECONDS)
+                        ]
+
+        dataset = "feature/tests/datasetZipFile.zip"
+        datasetfile = "feature/tests/resultDatasetFile.txt"
+        datReader = DatasetDocReader(dataset)
+        docWriter = DatasetDocWriter(datasetfile)
+        FeatureCalculator.featureManager.computeFeatureSetDocuments(datReader,docWriter,arr_features,FormatEnum.text_plain)
+
+        with open(datasetfile,"r") as file:
+            result_textfile = str(json.loads(file.read()))
+
+        '''Exemplo para o teste unitario geral: gerar o resultado de todas as features em um arquivo cópia
+            Ao executar o feature calculator, comparar o conteúdo do arquivo de saída com o arquivo de cópia
+            Assim todas as modificações serão testadas'''
+
+        str_result = str({"data": {"datasetZipFile/0012.txt": [["b", "'", "Oi", ",", "eu", "sou", "a", "Beatriz", "e", "estou", "fazendo", "o", "primeiro", "teste\\n", "'"], ["b'Oi, eu sou a Beatriz e estou fazendo o primeiro teste\\n'"], ["b'Oi, eu sou a Beatriz e estou fazendo o primeiro teste\\n'"], ["b", "'", "Oi", ",", "eu", "sou", "a", "Beatriz", "e", "estou", "fazendo", "o", "primeiro", "teste\\n", "'"], [], ["b", "'", "O", "i", ",", " ", "e", "u", " ", "s", "o", "u", " ", "a", " ", "B", "e", "a", "t", "r", "i", "z", " ", "e", " ", "e", "s", "t", "o", "u", " ", "f", "a", "z", "e", "n", "d", "o", " ", "o", " ", "p", "r", "i", "m", "e", "i", "r", "o", " ", "t", "e", "s", "t", "e", "\\", "n", "'"]], "datasetZipFile/0013.txt": [["b", "'", "Oi", ",", "eu", "sou", "a", "Beatriz", "e", "estou", "fazendo", "o", "segundo", "teste\\n", "'"], ["b'Oi, eu sou a Beatriz e estou fazendo o segundo teste\\n'"], ["b'Oi, eu sou a Beatriz e estou fazendo o segundo teste\\n'"], ["b", "'", "Oi", ",", "eu", "sou", "a", "Beatriz", "e", "estou", "fazendo", "o", "segundo", "teste\\n", "'"], [], ["b", "'", "O", "i", ",", " ", "e", "u", " ", "s", "o", "u", " ", "a", " ", "B", "e", "a", "t", "r", "i", "z", " ", "e", " ", "e", "s", "t", "o", "u", " ", "f", "a", "z", "e", "n", "d", "o", " ", "o", " ", "s", "e", "g", "u", "n", "d", "o", " ", "t", "e", "s", "t", "e", "\\", "n", "'"]], "datasetZipFile/": [["b", "'", "'"], ["b''"], ["b''"], ["b", "'", "'"], [], ["b", "'", "'"]], "datasetZipFile/0014.txt": [["b", "'", "Oi", ",", "eu", "sou", "a", "Beatriz", "e", "estou", "fazendo", "o", "ultimo", "e", "qualquer", "teste\\n", "'"], ["b'Oi, eu sou a Beatriz e estou fazendo o ultimo e qualquer teste\\n'"], ["b'Oi, eu sou a Beatriz e estou fazendo o ultimo e qualquer teste\\n'"], ["b", "'", "Oi", ",", "eu", "sou", "a", "Beatriz", "e", "estou", "fazendo", "o", "ultimo", "e", "qualquer", "teste\\n", "'"], [], ["b", "'", "O", "i", ",", " ", "e", "u", " ", "s", "o", "u", " ", "a", " ", "B", "e", "a", "t", "r", "i", "z", " ", "e", " ", "e", "s", "t", "o", "u", " ", "f", "a", "z", "e", "n", "d", "o", " ", "o", " ", "u", "l", "t", "i", "m", "o", " ", "e", " ", "q", "u", "a", "l", "q", "u", "e", "r", " ", "t", "e", "s", "t", "e", "\\", "n", "'"]]}, "header": {"0": {"params": "", "name": "ola feature"}, "1": {"params": "", "name": "outra feature legal"}, "2": {"params": "", "name": "outra feature legal"}, "3": {"params": "", "name": "tag feature"}, "4": {"params": "", "name": "tag legal feature"}, "5": {"params": "", "name": "char legal feature"}}})
+
+        self.assertEqual(result_textfile,str_result,"O conteúdo dos textos não é igual")
+
+        charinterface = CaracterInterface()
+        charinterface.execute(dataset,datasetfile,arr_features,FormatEnum.text_plain)
+        with open(datasetfile,"r") as file:
+            result_textfile = str(json.loads(file.read()))
+        self.assertEqual(result_textfile,str_result,"O conteúdo dos textos não é igual")
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'TestFeatureCalculator.testName']

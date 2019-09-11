@@ -12,7 +12,7 @@ import os
 from os.path import join, isfile, isdir
 from posix import listdir
 import re
-from cmd_line_interface.CaracterInterface import *
+#from cmd_line_interface.CaracterInterface import *
 
 from utils.basic_entities import FormatEnum, CheckTime
 
@@ -60,15 +60,18 @@ class Document(object):
 class FeatureDocumentsWriter(object):
     @abstractmethod
     def write_document(self,document, arr_feats_used, arr_feats_result):
-        raise NotImplementedError("Voce deve criar uma subclasse e a mesma deve sobrepor este método")
+        #raise NotImplementedError("Voce deve criar uma subclasse e a mesma deve sobrepor este método")
+        pass
 
     @abstractmethod
     def write_header(self, arr_features_used):
-        raise NotImplementedError
+        #raise NotImplementedError
+        pass
 
     @abstractmethod
     def finishAllDocuments(self):
-        raise NotImplementedError
+        #raise NotImplementedError
+        pass
 
 class FeatureDocumentsReader(object):
     '''
@@ -79,14 +82,7 @@ class FeatureDocumentsReader(object):
     '''
     @abstractmethod
     def get_documents(self):
-        '''
-            Método abstrato que retorna os documentos a serem lidos.
-            Este método
-            deverá ser implementado nas subclasses.
-            A clausula yield pode ser útil para implementar este método. Ver exemplo em DocSetReaderDummy.
-
-            @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
-        '''
+        #raise NotImplementedError
         pass
 
 
