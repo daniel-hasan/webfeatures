@@ -12,7 +12,6 @@ import os
 from os.path import join, isfile, isdir
 from posix import listdir
 import re
-#from cmd_line_interface.CaracterInterface import *
 
 from utils.basic_entities import FormatEnum, CheckTime
 
