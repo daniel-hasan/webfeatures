@@ -48,12 +48,9 @@ class CaracterInterface:
         docWriter = DatasetDocWriter(result_datasetfile)
         FeatureCalculator.featureManager.computeFeatureSetDocuments(datReader,docWriter,arr_features_to_extract,format)
 
-    def str_json(arq_json):
+    def le_arquivo(arq_json):
         #ler do JSON e retorna vetor de strings
         features = json.loads(open(arq_json).read())
-
-
-        print(features)
 
         return features
 
@@ -64,25 +61,25 @@ class CaracterInterface:
         for SubClass in FeatureFactory.__subclasses__():
             objFeatFact = None
             if(SubClass.IS_LANGUAGE_DEPENDENT):
-                objFeatFact = SubClass(objEnglish)#Passar o idioma correo
+                objFeatFact = SubClass(objEnglish)#Passar o idioma correto
             else:
                 objFeatFact = SubClass()
 
             for feat in objFeatFact.createFeatures():
-                dictFeatures[feat.name] = feat
+                dictFeatures[feat.name] = feat          #para cada feature cria uma instancia no dicionario com o nome da feature
         for feature in arrNomesFeatures:
             arr_obj_features.append(dictFeature[feature])
         return arr_obj_features
 
     def imprimirFeatures():
-        for SubClass in FeatureFactory.__subclasses__():
+        for SubClass in FeatureFactory.__subclasses__(): #percorre todas as features
             objFeatFact = None
             if(SubClass.IS_LANGUAGE_DEPENDENT):
-                objFeatFact = SubClass(objEnglish)
+                objFeatFact = SubClass(objEnglish)# instancia as features de acordo com o idioma
             else:
                 objFeatFact = SubClass()
         for feat in objFeatFact.createFeatures():
-            print(feat.name)
+            print(feat.name)    #printa o nome de todas as features
 
 
 	###################################################################

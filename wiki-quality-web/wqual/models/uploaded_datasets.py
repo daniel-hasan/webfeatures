@@ -137,9 +137,9 @@ class Dataset(models.Model):
                 int_total_file_size += int_file_size[i][1]
                 i = i+1
 
-            yield DocumentFeature(objDocumento.id,objDocumento.nam_file,str(strFileTxt))'''
+            yield DocumentFeature(objDocumento.id,objDocumento.nam_file,str(strFileTxt))
 
-        def get_zip_to_doc_feature(self, file):
+    def get_zip_to_doc_feature(self, file):
     		int_total_file_size = 0
     		file_zip = CompressedFile.get_compressed_file(file)
     		int_file_size = list(file_zip.get_each_file_size())
@@ -157,6 +157,7 @@ class Dataset(models.Model):
         self.bol_ready_to_process = True
         self.num_total_size = int_total_file_size
         self.save()
+        '''
 
 
 def content_file_name(instance, filename):
