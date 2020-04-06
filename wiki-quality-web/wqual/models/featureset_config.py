@@ -18,7 +18,7 @@ from utils.basic_entities import LanguageEnum, FeatureTimePerDocumentEnum,\
     FormatEnum
 from wqual.models.utils import Format
 from wqual.models.utils import EnumManager, EnumModel
-from wqual_web_utils.feature_utils import get_class_by_name
+from utils.feature_utils import get_class_by_name
 from decimal import Decimal
 from wqual.models.utils import EnumManager, EnumModel
 from wqual.models.utils import Format
