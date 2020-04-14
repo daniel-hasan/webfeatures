@@ -49,12 +49,33 @@ class CaracterInterface:
         FeatureCalculator.featureManager.computeFeatureSetDocuments(datReader,docWriter,arr_features_to_extract,format)
 
     def le_arquivo(arq_json):
+        """
+        class X():
+            def __init__(self):
+                self.y = 1
+                self.a = 2
+
+        dicionario = {"y":3,
+                    "a":4}
+        feat = X()
+        for att,val in dicionario.items():
+
+            feat.__dict__[att]  = val
+
+        """
         #ler do JSON e retorna vetor de strings
         features = json.loads(open(arq_json).read())
 
-        return features
+        #obtem arr_Nomes_features type()
+        {"arr_features":["Readability","Feautre bonitinha","feature linda",
+                          {"name":"featurelinda",
+                        "param":{"word_count_max":10}}]}
 
-    def obtemObjetosFeatures(arrNomesFeatures):
+        return features#
+
+
+
+    def obtemObjetosFeatures(self,arrNomesFeatures):
         dictFeatures = {}
         arr_obj_featurres = []
         #cria um dicionário com todas as features em que as chaves são os nomes delas
@@ -70,8 +91,8 @@ class CaracterInterface:
         for feature in arrNomesFeatures:
             arr_obj_features.append(dictFeature[feature])
         return arr_obj_features
-
-    def imprimirFeatures():
+        
+    def imprimirFeatures(self):
         for SubClass in FeatureFactory.__subclasses__(): #percorre todas as features
             objFeatFact = None
             if(SubClass.IS_LANGUAGE_DEPENDENT):
@@ -80,7 +101,7 @@ class CaracterInterface:
                 objFeatFact = SubClass()
         for feat in objFeatFact.createFeatures():
             print(feat.name)    #printa o nome de todas as features
-
+        return arr
 
 	###################################################################
 	#IF mmain
