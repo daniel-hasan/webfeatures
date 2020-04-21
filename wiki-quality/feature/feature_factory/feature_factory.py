@@ -5,7 +5,6 @@ Created on 8 de ago de  2017
 @author: hasan
 '''
 from abc import abstractmethod
-from django.contrib.sessions.backends import file
 
 from feature.features import ConfigurableParam, ParamTypeEnum
 from feature.featureImpl.readability_features import ARIFeature, \
