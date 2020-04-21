@@ -48,7 +48,7 @@ class CaracterInterface:
         docWriter = DatasetDocWriter(result_datasetfile)
         FeatureCalculator.featureManager.computeFeatureSetDocuments(datReader,docWriter,arr_features_to_extract,format)
 
-    def le_arquivo(arq_json, class_set):
+    def le_arquivo(arq_json):
         #def dict_setter:
             #class_temp1 = class_set()
             #    #deve se criar um dicionario para comparação (dict dentro da classe)
