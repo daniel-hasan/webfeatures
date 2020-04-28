@@ -48,6 +48,23 @@ class CaracterInterface:
         docWriter = DatasetDocWriter(result_datasetfile)
         FeatureCalculator.featureManager.computeFeatureSetDocuments(datReader,docWriter,arr_features_to_extract,format)
 
+<<<<<<< HEAD
+    def le_arquivo(arq_json, class_set):
+        #def dict_setter:
+            #class_temp1 = class_set()
+            #    #deve se criar um dicionario para comparação (dict dentro da classe)
+            #for att,val in class_set.dict.items():
+            #class_temp1.__dict__[atr] = val
+            #return class_temp1
+
+            #test: ClassNumclass ClassNums():
+            #def __init__(self):
+            #        self.y = 1
+            #        self.x = 2
+            #        dicionario = {"y": 13,
+            #                "x": 14}
+
+=======
     def le_arquivo(arq_json):
         """
         class X():
@@ -63,6 +80,7 @@ class CaracterInterface:
             feat.__dict__[att]  = val
 
         """
+>>>>>>> ea3bd647fc4f5139e7415068e557184d69585be5
         #ler do JSON e retorna vetor de strings
         features = json.loads(open(arq_json).read())
 
