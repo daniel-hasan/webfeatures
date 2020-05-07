@@ -1,6 +1,6 @@
 import feature.features
 import os
-#import nltk.data
+import nltk.data
 from enum import Enum
 from feature.features import TextBasedFeature
 
@@ -26,7 +26,12 @@ class PartOfSpeechTaggerFeature(TextBasedFeature):
     def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document,language):
         super(TextBasedFeature,self).__init__(name,description,reference,visibility,text_format,feature_time_per_document)
         self.language = language
-        self.tagger = nltk.data.load(str("taggers/" + PartOfSpeechTaggerFeature.MODELS[self.language]))
+        try:
+
+            self.tagger = nltk.data.load(str("taggers/" + PartOfSpeechTaggerFeature.MODELS[self.language]))
+        except LookupError:
+            nltk.download(PartOfSpeechTaggerFeature.MODELS[self.language])
+            #self.tagger = nltk.data.load(str("taggers/" + PartOfSpeechTaggerFeature.MODELS[self.language]))
 
     def compute_feature(self,document):
         return self.tagger.tag(word_tokenize(document))

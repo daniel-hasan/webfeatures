@@ -5,7 +5,7 @@ Created on 8 de ago de  2017
 @author: hasan
 '''
 from abc import abstractmethod
-
+from feature.featureImpl.semantic_features import POSTaggerTrainerFeature, POSClassifierTrainerFeature
 from feature.features import ConfigurableParam, ParamTypeEnum
 from feature.featureImpl.readability_features import ARIFeature, \
     ColemanLiauFeature, FleschReadingEaseFeature, FleschKincaidFeature, \
@@ -394,7 +394,7 @@ class POSTaggerFeatureFactory(FeatureFactory):
 
         return arrFeatures
 
-
+"""
 class POSTaggerTrainerFeatureFactory(FeatureFactory):
     DEVELOPMENT = True
     def __init__(self):
@@ -424,7 +424,7 @@ class POSTaggerTrainerFeatureFactory(FeatureFactory):
         basedir = self.BASE_DIR + "/nltk-trainer-master"
         arrFeatures = [ ]
 
-        featPOSTaggerTrainer = POSTaggerTrainer("POS Tagger Trainer: train a tagger of part of speech",
+        featPOSTaggerTrainer = POSTaggerTrainerFeature("POS Tagger Trainer: train a tagger of part of speech",
                         "Based on nltk-trainer-master in https://github.com/japerk/nltk-trainer",
                         FeatureVisibilityEnum.public,
                         FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,basedir)
@@ -439,7 +439,6 @@ class POSTaggerTrainerFeatureFactory(FeatureFactory):
 
         return arrFeatures
 
-'''
 class POSClassifierTrainerFeatureFactory(FeatureFactory):
     def __init__(self):
         super(FeatureFactory,self).__init__()
@@ -476,4 +475,4 @@ class POSClassifierTrainerFeatureFactory(FeatureFactory):
         arrFeatures.append(featPOSClassifierTrainer)
 
         return arrFeatures
-'''
+"""
