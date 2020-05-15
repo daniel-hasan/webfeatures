@@ -1,6 +1,7 @@
 import feature.features
 import os
 import nltk.data
+import pickle
 from enum import Enum
 from feature.features import TextBasedFeature
 
@@ -21,17 +22,17 @@ class POSTaggerTrainerFeature(TextBasedFeature):
 
 class PartOfSpeechTaggerFeature(TextBasedFeature):
 
-    MODELS = {"pt":"mac_morpho_aubt.pickle","en":"conll2000_aubt.pickle","es":"cess_esp_aubt.pickle"}
+    MODELS = {"pt":"postag_models/pt_macmorpho_unigram.pickle","en":"postag_models/pt_macmorpho_unigram.pickle","es":"postag_models/pt_macmorpho_unigram.pickle"}
 
     def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document,language):
         super(TextBasedFeature,self).__init__(name,description,reference,visibility,text_format,feature_time_per_document)
-        self.language = language
-        try:
+        self.BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        self.BASE_DIR = os.path.abspath(os.path.join(self.BASE_DIR,os.pardir))
 
-            self.tagger = nltk.data.load(str("taggers/" + PartOfSpeechTaggerFeature.MODELS[self.language]))
-        except LookupError:
-            nltk.download(PartOfSpeechTaggerFeature.MODELS[self.language])
-            #self.tagger = nltk.data.load(str("taggers/" + PartOfSpeechTaggerFeature.MODELS[self.language]))
+        self.language = language
+        with open(f'{self.BASE_DIR}/{PartOfSpeechTaggerFeature.MODELS[self.language]}',"rb") as tag_file:
+            self.tagger = pickle.load(tag_file)
+
 
     def compute_feature(self,document):
         return self.tagger.tag(word_tokenize(document))
@@ -57,8 +58,8 @@ class POSClassifierTrainerFeature(TextBasedFeature):
         pass
 
 class BagOfPOSFeature(PartOfSpeechTaggerFeature):
-    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document):
-        super(PartOfSpeechTaggerFeature).__init__(name, description, reference, visibility, text_format, feature_time_per_document, language)
+    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document,language):
+        super().__init__(name, description, reference, visibility, text_format, feature_time_per_document, language)
 
     def compute_feature(self, document):
         feature = super(PartOfSpeechTaggerFeature).compute_feature(document)

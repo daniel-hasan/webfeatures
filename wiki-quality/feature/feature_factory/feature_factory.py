@@ -387,7 +387,8 @@ class POSTaggerFeatureFactory(FeatureFactory):
                                 FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,language=self.objLanguage.name)
 
         featBagOfPOS = BagOfPOSFeature("Bag of POS", "Bag of part of speech in text", "",
-                        FeatureVisibilityEnum.public, FormatEnum.textplain, FeatureTimePerDocumentEnum.MILLISECONDS, 			  					language=self.objLanguage.name)
+                        FeatureVisibilityEnum.public, FormatEnum.text_plain, FeatureTimePerDocumentEnum.MILLISECONDS,
+                        language=self.objLanguage.name)
 
         arrFeatures.append(featPOSTaggerFeature)
         arrFeatures.append(featBagOfPOS)
