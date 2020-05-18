@@ -2,6 +2,7 @@ import json
 from feature.features import FeatureDocumentsReader, FeatureDocumentsWriter, FeatureCalculator
 from feature.features import Document as DocumentFeature
 from utils.uncompress_data import CompressedFile
+from feature.feature_factory.feature_factory import FeatureFactory
 
 class DatasetDocReader(FeatureDocumentsReader):
 
@@ -49,20 +50,6 @@ class CaracterInterface:
         FeatureCalculator.featureManager.computeFeatureSetDocuments(datReader,docWriter,arr_features_to_extract,format)
 
     def le_arquivo(arq_json):
-        #def dict_setter:
-            #class_temp1 = class_set()
-            #    #deve se criar um dicionario para comparação (dict dentro da classe)
-            #for att,val in class_set.dict.items():
-            #class_temp1.__dict__[atr] = val
-            #return class_temp1
-
-            #test: ClassNumclass ClassNums():
-            #def __init__(self):
-            #        self.y = 1
-            #        self.x = 2
-            #        dicionario = {"y": 13,
-            #                "x": 14}
-
         #ler do JSON e retorna vetor de strings
         features = json.loads(open(arq_json).read())
 
@@ -80,7 +67,7 @@ class CaracterInterface:
                 objFeatFact = SubClass()
 
             for feat in objFeatFact.createFeatures():
-                dictFeatures[feat.name] = feat          #para cada feature cria uma instancia no dicionario com o nome da feature
+                dictFeature[feat.name] = feat          #para cada feature cria uma instancia no dicionario com o nome da feature
         for feature in arrNomesFeatures:
             arr_obj_features.append(dictFeature[feature])
         return arr_obj_features
@@ -97,7 +84,7 @@ class CaracterInterface:
 
 
 	###################################################################
-	#IF mmain
+	#IF main
 if __name__ == "__main__":
 	import sys
 	if(sys.argv[1] == "-L"):
