@@ -45,6 +45,12 @@ class DatasetDocWriter(FeatureDocumentsWriter):
 class CaracterInterface:
 
     def execute(self,zipfile,result_datasetfile,arr_features_to_extract,format):
+        """
+        zipfile: nome do zip com arquivos contendo texto para serem processados
+        result_datasetfile: nome do arquivo de saida
+        arr_features_to_extract: gerado por meio do le_arquivo
+        format: 
+        """
         datReader = DatasetDocReader(zipfile)
         docWriter = DatasetDocWriter(result_datasetfile)
         FeatureCalculator.featureManager.computeFeatureSetDocuments(datReader,docWriter,arr_features_to_extract,format)
@@ -108,5 +114,8 @@ if __name__ == "__main__":
         car = CaracterInterface()
         print(car.imprimirFeatures())
     else:
+        #<arquivozip> <json com as features> <arquivo de saida>
+
+        #executar o le arquivo
         arrNomesFeatures = func(sys.argv[1])
         #Dict=obtemObjetosFeatures(arrNomesFeatures)
