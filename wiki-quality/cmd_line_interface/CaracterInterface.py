@@ -49,7 +49,7 @@ class CaracterInterface:
         zipfile: nome do zip com arquivos contendo texto para serem processados
         result_datasetfile: nome do arquivo de saida
         arr_features_to_extract: gerado por meio do le_arquivo
-        format: 
+        format: FormatEnum.text_plain
         """
         datReader = DatasetDocReader(zipfile)
         docWriter = DatasetDocWriter(result_datasetfile)

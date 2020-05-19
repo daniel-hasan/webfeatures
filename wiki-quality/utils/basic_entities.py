@@ -3,7 +3,7 @@
 '''
 Created on 8 de ago de 2017
 Entidades basicas para serem usadas
-@author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>  
+@author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
 '''
 from datetime import datetime
 from enum import Enum, IntEnum
@@ -12,7 +12,7 @@ from enum import Enum, IntEnum
 class CheckTime(object):
     def __init__(self):
         self.time = datetime.now()
-        
+
     def finishTime(self):
         delta = datetime.now()-self.time
         self.time = datetime.now()
@@ -24,7 +24,7 @@ class FeatureTimePerDocumentEnum(Enum):
     '''
     Created on 8 de ago de 2017
     Tempo médio para extrair uma determinada feature no documento
-    @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>  
+    @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
     '''
     MICROSECONDS = "microseconds"
     MILLISECONDS = "milliseconds"
@@ -36,13 +36,13 @@ class FeatureTimePerDocumentEnum(Enum):
         '''
         Created on 17 de ago de 2017
         Verifica se o objeto corrente representa uma velocidade maior do que o objeto passado como argumento
-        @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>  
+        @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
         '''
         #ve o indice do enum corrente
         int_curr_idx = self._check_velocity_index()
         #ve o indice do enum passado como parametro
         int_arg_idx = timePerDocumentFeature._check_velocity_index()
-        return int_curr_idx>int_arg_idx 
+        return int_curr_idx>int_arg_idx
     def _check_velocity_index(self):
         ARR_ORDER_PER_VELOCITY = [FeatureTimePerDocumentEnum.MICROSECONDS,
                                   FeatureTimePerDocumentEnum.MILLISECONDS,
@@ -58,10 +58,10 @@ class FormatEnum(Enum):
     text_plain = "Text-Plain"
     HTML = "HTML"
     #mark_down = "Mark-Down" Nao impleentado ainda
-    
+
 class LanguageEnum(Enum):
 
-    
+
     gv = "Manx"
     gu = "Gujarati"
     gd = "Scottish Gaelic; Gaelic"
