@@ -16,6 +16,7 @@ class MyTest(unittest.TestCase):
         self.assertEqual(fun(4), 5)
         
 
+#teste
 class TestCaracterInterface(unittest.TestCase):
     def testObtemObjetosFeatures(self):
         
