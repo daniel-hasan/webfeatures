@@ -10,7 +10,7 @@ import html
 from html.parser import HTMLParser
 import os
 from os.path import join, isfile, isdir
-from posix import listdir
+from os import listdir
 import re
 import datetime
 

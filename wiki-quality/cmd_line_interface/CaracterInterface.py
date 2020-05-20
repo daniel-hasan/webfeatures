@@ -55,18 +55,18 @@ class CaracterInterface:
         docWriter = DatasetDocWriter(result_datasetfile)
         FeatureCalculator.featureManager.computeFeatureSetDocuments(datReader,docWriter,arr_features_to_extract,format)
 
-    def le_arquivo(arq_json):
+    def le_arquivo(self,arq_json):
         features = json.loads(open(arq_json).read())
         return features
 
 
 
-    def obtemObjetosFeatures(arrNomesFeatures):
+    def obtemObjetosFeatures(self,arrNomesFeatures):
             objEnglish = LanguageEnum.en
             dictFeatures = {}
             arr_obj_features = []
             #cria um dicionário com todas as features em que as chaves são os nomes delas
-            for SubClass in FeatureFactory._subclasses_():
+            for SubClass in FeatureFactory.__subclasses__():
                 objFeatFact = None
                 if(SubClass.IS_LANGUAGE_DEPENDENT):
                     objFeatFact = SubClass(objEnglish)#Passar o idioma correto
