@@ -20,6 +20,7 @@ class CheckTime(object):
     def printDelta(self,task):
         delta = self.finishTime()
         print(task+" done in "+str(delta.total_seconds()))
+        
 class FeatureTimePerDocumentEnum(Enum):
     '''
     Created on 8 de ago de 2017
@@ -53,7 +54,7 @@ class FeatureTimePerDocumentEnum(Enum):
             if(self == enum):
                 return int_i
         raise Exception("Não foi possível encontrar este enum num array ARR_ORDER_PER_VELOCITY")
-    
+
 class FormatEnum(Enum):
     text_plain = "Text-Plain"
     HTML = "HTML"
