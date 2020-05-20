@@ -1,6 +1,6 @@
 from feature.features import ReviewBasedFeature
 import datetime
-
+#TODO: Verificar pq está comentado e corrigir
 '''class AgeReviewRatio(ReviewBasedFeature):
     def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document,curr_date):
         super().__init__(self,name,description,reference,visibility,text_format,feature_time_per_document,curr_date)
@@ -19,13 +19,17 @@ import datetime
 
         return age/self.num_reviews if self.num_reviews >0 else 0
 '''
-
+#TODO: Nas classes que não tivererm, colocar no inicio de cada classe sua descrição
+#.....exemplo; ReviewCount
+#ao inves de ser ThreeMonthProportionReview ser: NDaysProportionReview
+#E fazer a proporção por dias, passados como paramtro
 class ThreeMonthProportionReview(ReviewBasedFeature):
     def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document,curr_date):
         super().__init__(name,description,reference,visibility,text_format,feature_time_per_document,curr_date)
+        #TODO: O nomde da variavel abaixo não está bom
         self.trreview = 0
         self.total_review = 0
-    #colocar o 90 como um parametro da classe
+    #TODO: Esses 90 são os 90 dias...Em vez dessa constante, deveria ser o numero de dias
     def checkReview(self,review):
         self.total_review += 1
         if((self.curr_date-datetime.datetime.fromtimestamp(review.rev_timestamp)).days < 90):
@@ -35,16 +39,18 @@ class ThreeMonthProportionReview(ReviewBasedFeature):
         return self.trreview/self.total_review
 
     def finish_document(self,last_review):
+
         self.trreview = 0
         self.last_review = 0
 
+#TODO: Melhorar o nome da classe
 class ReviewModSize(ReviewBasedFeature):
 
     def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document,curr_date):
         super().__init__(name,description,reference,visibility,text_format,feature_time_per_document,curr_date)
         self.sizeref = 0
 
-#fazer parecido com o ThreeMonthProportionReview
+    #fazer parecido com o ThreeMonthProportionReview
     def checkReview(self,reference):
         self.sizeref = reference.rev_size
 
@@ -95,3 +101,65 @@ class ReviewOccasion(ReviewBasedFeature):
                 return int_ocasional/num_users
     def finish_document(self, review):
         self.num_reviews = 0
+
+
+class ReviewCount(ReviewBasedFeature):
+    '''Conta o numero de revisões de um artigo'''
+    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document,curr_date):
+        super().__init__(name,description,reference,visibility,text_format,feature_time_per_document)
+        self.reviews = 0
+
+    def checkReview(self,review):
+        self.reviews +=1
+
+    @abstractmethod
+    def compute_feature(self):
+        return self.reviews
+
+class AnonymousReviewCount(Review):
+    '''Conta o numero de revisões feita por usuarios anonimos'''
+    def __init__(self,int_rev_id,rev_timestamp,rev_size):
+        super().__init__(name,description,reference,visibility,text_format,feature_time_per_document)
+        self.id_reviewer = int("inf")
+        self.id_reviews = 0
+
+    def checkReview(self, review):
+        #checar por uma regexp se o name_reviewer é igual a um ip ou filtrar pelo review.int_rev_user_id (se for none, anonimo)
+        if(type(sef.str_reviewer_name) != type(review.int_rev_id)):
+            self.num_reviews +=1
+
+    @abstractmethod
+    def compute_feature(self):
+        return self.num_reviews
+
+
+class RegisteredReviewCount(Review):
+    ''' Conta o numero de revisões feitas por usuarios registrados '''
+    def __init__(self,int_rev_id,rev_timestamp,rev_size):
+        super().__init__(name,description,reference,visibility,text_format,feature_time_per_document)
+        self.id_reviewer = int("inf")
+        self.num_reviews = 0
+
+    def checkReview(self, review):
+        if(type(self.id_reviewer) == type(review.int_rev_id)):
+            self.num_reviews +=1
+
+    @abstractmethod
+    def compute_feature(self):
+        return self.num_reviews
+
+'''Desvio padrão da média de revisões feitas por usuários'''
+class ReviewsPerUser(Review):
+    def __init__(self,int_rev_id,rev_timestamp,rev_size):
+        self.dict_rev_per_user = {};
+
+    def checkReview(self, review):
+        if(review.str_reviewer_name not in self.dict_rev_per_user):
+            self.dict_rev_per_user[review.str_reviewer_name] = 0
+        self.dict_rev_per_user[review.name_reviewer] += 1
+
+    def compute_feature(self):
+        devation = num_reviews_user**num_reviews_user
+        devation = devation/num_reviews_user
+        devation = math.sqrt(devation)
+        return devation
