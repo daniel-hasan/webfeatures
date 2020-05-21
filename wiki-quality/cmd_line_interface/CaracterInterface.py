@@ -94,7 +94,8 @@ class CaracterInterface:
 
 
     def imprimirFeatures(self):
-        arr = []
+        arr_feat_name = []
+        arr_feature_factories = []
         objEnglish = LanguageEnum.en
         for SubClass in FeatureFactory.__subclasses__(): #percorre todas as features
             objFeatFact = None
@@ -102,10 +103,16 @@ class CaracterInterface:
                 objFeatFact = SubClass(objEnglish)# instancia as features de acordo com o idioma
             else:
                 objFeatFact = SubClass()
-        for feat in objFeatFact.createFeatures():
-            arr.append(feat.name)
-            print(feat.name)    #printa o nome de todas as features
-        return arr
+            arr_feature_factories.append(objFeatFact)
+
+        for objFeatFact in arr_feature_factories:
+            for feat in objFeatFact.createFeatures():
+                arr_feat_name.append(feat.name) #adiciona o nome das features no vetor arr
+
+        arr_feat_name.sort()
+        for name in arr_feat_name:
+            print(name)    #printa o nome de todas as features
+        return arr_feat_name
 
 if __name__ == "__main__":
     import sys
