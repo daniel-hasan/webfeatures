@@ -12,6 +12,7 @@ import os
 from os.path import join, isfile, isdir
 from os import listdir
 import re
+import datetime
 
 from utils.basic_entities import FormatEnum, CheckTime
 
@@ -48,6 +49,18 @@ class DocumentCache(object):
 
     def setOwnership(self, itemName, objRequest):
         self.owner[itemName] = objRequest
+class Review(object):
+    def __init__(self,int_rev_id,rev_timestamp,rev_size,str_reviewer_name,int_rev_user_id):
+        self.int_rev_id = int_rev_id
+        self.rev_timestamp = rev_timestamp
+        self.rev_size = rev_size
+        self.str_reviewer_name = str_reviewer_name
+        self.int_rev_user_id = int_rev_user_id
+
+    @property
+    def timestamp_to_datetime(self):
+        return datetime.datetime.fromtimestamp(self.rev_timestamp)
+
 
 class Document(object):
     def __init__(self,int_doc_id,str_doc_name,str_text):
@@ -484,4 +497,13 @@ class ConfigurableParam(object):
 class GraphBasedFeature(FeatureCalculator):
         @abstractmethod
         def compute_feature(self,graph):
+                pass
+
+class ReviewBasedFeature(FeatureCalculator):
+        def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document,curr_date):
+            super().__init__(name,description,reference,visibility,text_format,feature_time_per_document)
+            self.curr_date = datetime.datetime.fromtimestamp(curr_date)
+
+        @abstractmethod
+        def checkReview(self,review):
                 pass

@@ -14,6 +14,7 @@ from feature.featureImpl.readability_features import ARIFeature, \
 from feature.featureImpl.structure_features import *
 from feature.featureImpl.style_features import *
 from feature.featureImpl.semantic_features import *
+#from feature.featureImpl.graph import *
 from feature.features import  FeatureVisibilityEnum
 from utils.basic_entities import FormatEnum, FeatureTimePerDocumentEnum
 
@@ -24,7 +25,7 @@ class FeatureFactory(object):
     @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
     '''
     IS_LANGUAGE_DEPENDENT = False
-    DEVELOPMENT = False
+
     @abstractmethod
     def createFeatures(self):
         '''
@@ -395,85 +396,46 @@ class POSTaggerFeatureFactory(FeatureFactory):
 
         return arrFeatures
 
-"""
-class POSTaggerTrainerFeatureFactory(FeatureFactory):
+'''
+class GraphFeatureFactory(FeatureFactory):
     DEVELOPMENT = True
-    def __init__(self):
-        super(FeatureFactory,self).__init__()
-        self.BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        self.BASE_DIR = os.path.abspath(os.path.join(self.BASE_DIR,os.pardir))
-
-
     def createFeatures(self):
+                arrFeaturesImplementadas = [Indegree("Indegree","Indegree Metric metric","reference", FeatureVisibilityEnum.public,
+                                                    FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS),
+                                        Outdegree("Outdegree","Outdegree Metric of vertex","reference", FeatureVisibilityEnum.public,
+                                                                            FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS),
+                                        AssortativeInputInput("Assortative Input Input", "Assortative Input/Input Metric", "reference",
+                                                    FeatureVisibilityEnum.public,FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS),
+                                        AssortativeInputOutput("Assortative Input Output", "Assortative Input/Output Metric", "reference", FeatureVisibilityEnum.public,
+                                                    FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS),
+                                        AssortativeOutputInput("Assortative Output Input", "Assortative Output/Input Metric", "reference", FeatureVisibilityEnum.public,
+                                                        FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS),
+                                        AssortativeOutputOutput("Assortative Output Output", "Assortative Output/Output Metric", "reference", FeatureVisibilityEnum.public,
+                                                        FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS),
+                                        PageRank("PageRank", "PageRank Metric say how much popular is this article","reference", FeatureVisibilityEnum.public,
+                                                FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS,0.95,0.01),
+                                        ClusteringCoefficient("Clustering Coefficient","In graph theory, a clustering coefficient is a measure of the degree to which nodes in a graph tend to cluster together.","reference", FeatureVisibilityEnum.public,
+                                                FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS,1)
+                                                ]
 
-        basedir = self.BASE_DIR + "/nltk-trainer-master/"
-        arrFeatures = [ ]
+                pr = PageRank("PageRank", "PageRank Metric say how much popular is this article","reference", FeatureVisibilityEnum.public,
+                        FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS,0.85,0.01)
+                pr.addConfigurableParam(ConfigurableParam("damping_factor","Damping Factor",
+                                                                              "Damping Factor.",
+                                                                              0.85,ParamTypeEnum.float))
+                pr.addConfigurableParam(ConfigurableParam("convergence","Convergence",
+                                                                            "Convergence.",
+                                                                                0.01,ParamTypeEnum.float))
 
-        featPOSTaggerTrainer = POSTaggerTrainer("POS Tagger Trainer: train a tagger of part of speech",
-                        "Based on nltk-trainer-master in https://github.com/japerk/nltk-trainer",
-                        FeatureVisibilityEnum.public,
-                        FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,basedir)
+                #a parte do clustering não foi feita pelo Hasan.
+                cc= ClusteringCoefficient("Clustering Coefficient","In graph theory, a clustering coefficient is a measure of the degree to which nodes in a graph tend to cluster together.","reference", FeatureVisibilityEnum.public,
+                        FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS,1)
+                cc.addConfigurableParam(ConfigurableParam("distance", "Distance",
+                                                                            "Distance.",
+                                                                                1.0, ParamTypeEnum.float))
 
-    def __init__(self):
-        super(FeatureFactory,self).__init__()
-        self.BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        self.BASE_DIR = os.path.abspath(os.path.join(self.BASE_DIR,os.pardir))
+                arrFeaturesImplementadas.append(pr)
+                arrFeaturesImplementadas.append(cc)
 
-
-    def createFeatures(self):
-
-        basedir = self.BASE_DIR + "/nltk-trainer-master"
-        arrFeatures = [ ]
-
-        featPOSTaggerTrainer = POSTaggerTrainerFeature("POS Tagger Trainer: train a tagger of part of speech",
-                        "Based on nltk-trainer-master in https://github.com/japerk/nltk-trainer",
-                        FeatureVisibilityEnum.public,
-                        FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,basedir)
-
-        featPOSTaggerTrainer.addConfigurableParam(ConfigurableParam("model","Model",
-									"The predefined model to train.",None,
-									ParamTypeEnum.choices,
-								[("Mac Morpho Português","mac_morpho_aubt.pickle"),
-								("ConLL2000 English","conll2000_aubt.pickle")]))
-
-        arrFeatures.append(featPOSTaggerTrainer)
-
-        return arrFeatures
-
-class POSClassifierTrainerFeatureFactory(FeatureFactory):
-    def __init__(self):
-        super(FeatureFactory,self).__init__()
-        self.BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        self.BASE_DIR = os.path.abspath(os.path.join(self.BASE_DIR,os.pardir))
-
-
-    def createFeatures(self):
-
-        basedir = self.BASE_DIR + "/nltk-trainer-master/"
-        arrFeatures = [ ]
-
-        featPOSClassifierTrainer = POSClassifierTrainerFeature("POS Tagger Trainer: train a classifier of part of speech",
-                        "Based on nltk-trainer-master in https://github.com/japerk/nltk-trainer",
-                        FeatureVisibilityEnum.public,
-                        FormatEnum.text_plain,FeatureTimePerDocumentEnum.MICROSECONDS,basedir)
-
-        featPOSClassifierTrainer.addConfigurableParam(ConfigurableParam("language","Language",
-                                                                      "The language of training.",
-                                                                      None,ParamTypeEnum.choices=[]))
-
-        featPOSClassifierTrainer.addConfigurableParam(ConfigurableParam("corpus","Corpus",
-                                                                      "The predefined corpus used to train.",
-                                                                      None,ParamTypeEnum.choices=[]))
-
-        featPOSClassifierTrainer.addConfigurableParam(ConfigurableParam("mode","Mode",
-                                                                      "The mode (per paragraph, file or sentence) used to train.",
-                                                                      None,ParamTypeEnum.choices=[]))
-
-        featPOSClassifierTrainer.addConfigurableParam(ConfigurableParam("classifier","Classifier",
-                                                                      "The classifier to train corpus.",
-                                                                      None,ParamTypeEnum.choices=[]))
-
-        arrFeatures.append(featPOSClassifierTrainer)
-
-        return arrFeatures
-"""
+                return arrFeaturesImplementadas
+'''
