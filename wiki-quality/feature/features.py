@@ -176,7 +176,7 @@ class FeatureCalculatorManager(object):
             # Rodar todos os docuemntos para todas as features que não
             # necessitam de algum metodo de preprocessamento de todo o conjunto de documento
 
-        docWriter.write_header(arr_features_to_extract)
+        arr_features_to_extract = docWriter.write_header(arr_features_to_extract)
 
         for doc in datReader.get_documents():
             arr_features_result = self.computeFeatureSet(doc, arr_features_to_extract,format)
@@ -358,7 +358,7 @@ class FeatureCalculatorManager(object):
                 feat.checkParagraph(docText, paragraph_buffer)
         #timeToProc.printDelta("Last  checking")
         #para todoas as WordBasedFeatue ou SentenceBased feature, rodar o compute_feature
-
+        
         aux = 0
         for feat in arr_features:
             arr_feat_result[aux] = feat.compute_feature(docText)

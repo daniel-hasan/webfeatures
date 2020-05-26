@@ -24,9 +24,15 @@ class DatasetDocWriter(FeatureDocumentsWriter):
         self.data = {"header":{},"data":{}}
 
     def write_header(self,arr_features):
+        
+        carr = CaracterInterface()
+        arr_features = carr.obtemObjetosFeatures(arr_features.get("arr_features"))
         arr_feat = enumerate(arr_features)
+        
         for i,objFeature in arr_feat:
             self.data["header"][i]= {"name":objFeature.name, "params":objFeature.get_params_str()}
+        
+        return arr_features
 
     def write_document(self,document, arr_feats_used, arr_feats_result):
         self.document = document
@@ -45,12 +51,11 @@ class DatasetDocWriter(FeatureDocumentsWriter):
 class CaracterInterface:
 
     def execute(self,zipfile,result_datasetfile,arr_features_to_extract,format):
-        """
-        zipfile: nome do zip com arquivos contendo texto para serem processados
-        result_datasetfile: nome do arquivo de saida
-        arr_features_to_extract: gerado por meio do le_arquivo
-        format: FormatEnum.text_plain
-        """
+        #zipfile: nome do zip com arquivos contendo texto para serem processados
+        #result_datasetfile: nome do arquivo de saida
+        #arr_features_to_extract: gerado por meio do le_arquivo
+        #format: FormatEnum.text_plain
+        
         datReader = DatasetDocReader(zipfile)
         docWriter = DatasetDocWriter(result_datasetfile)
         FeatureCalculator.featureManager.computeFeatureSetDocuments(datReader,docWriter,arr_features_to_extract,format)
@@ -75,8 +80,21 @@ class CaracterInterface:
 
                 for feat in objFeatFact.createFeatures():
                     dictFeatures[feat.name] = feat #para cada feature cria uma instancia no dicionario com o nome da feature
-
+            
+            #Verifica se todas as features recebidas do usuário pelo arquivo JSON existem
             for feature in arrNomesFeatures:
+                opcao = 0
+                if(type(feature)==str):
+                    if((feature not in dictFeatures)):
+                        print(">>>>> ERROR! A feature '"+feature+"' não foi encontrada.")
+                        opcao = input(">>>>> Deseja continuar mesmo assim? 0-NÃO 1-SIM ")
+                        if (opcao==0):
+                            sys.exit()
+                        else:
+                            arrNomesFeatures.remove(feature)
+            
+            for feature in arrNomesFeatures:
+                
                 type_ent = type(feature)
 
                 obj_feature = None
@@ -94,7 +112,8 @@ class CaracterInterface:
 
 
     def imprimirFeatures(self):
-        arr = []
+        arr_feat_name = []
+        arr_feature_factories = []
         objEnglish = LanguageEnum.en
         for SubClass in FeatureFactory.__subclasses__(): #percorre todas as features
             objFeatFact = None
@@ -102,20 +121,29 @@ class CaracterInterface:
                 objFeatFact = SubClass(objEnglish)# instancia as features de acordo com o idioma
             else:
                 objFeatFact = SubClass()
-        for feat in objFeatFact.createFeatures():
-            arr.append(feat.name)
-            print(feat.name)    #printa o nome de todas as features
-        return arr
+            arr_feature_factories.append(objFeatFact)
+
+        for objFeatFact in arr_feature_factories:
+            for feat in objFeatFact.createFeatures():
+                arr_feat_name.append(feat.name) #adiciona o nome das features no vetor arr
+                
+        arr_feat_name.sort()
+        for name in arr_feat_name:
+            print(name)    #printa o nome de todas as features
+        return arr_feat_name
 
 if __name__ == "__main__":
+
     import sys
+    car = CaracterInterface()
+
     if(sys.argv[1] == "-L"):
-        print("Lista de features:")	#printa a lista de features
-        car = CaracterInterface()
+        print("Lista de features:")
         print(car.imprimirFeatures())
     else:
-        #<arquivozip> <json com as features> <arquivo de saida>
-
-        #executar o le arquivo
-        arrNomesFeatures = func(sys.argv[1])
-        #Dict=obtemObjetosFeatures(arrNomesFeatures)
+        nome_arquivo_zip = sys.argv[1]
+        nome_arquivo_json = sys.argv[2]
+        nome_arquivo_saida = sys.argv[3]
+        format = sys.argv[4]
+        arr_features_to_extract = car.le_arquivo(nome_arquivo_json)
+        car.execute(nome_arquivo_zip, nome_arquivo_saida, arr_features_to_extract, format)
