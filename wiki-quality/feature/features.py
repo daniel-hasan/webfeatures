@@ -13,6 +13,7 @@ from os.path import join, isfile, isdir
 from os import listdir
 import re
 import datetime
+import json
 
 from utils.basic_entities import FormatEnum, CheckTime
 
@@ -197,8 +198,9 @@ class FeatureCalculatorManager(object):
             # rodar todas as features que necessitam dele.
             docWriter.write_document(doc,arr_features_to_extract,arr_features_result)
 
-
         docWriter.finishAllDocuments()
+        
+        return docWriter
 
     def reduce_array(self,arrToReduce,arrIdx):
             arrIdx.sort(reverse=True)
@@ -222,7 +224,6 @@ class FeatureCalculatorManager(object):
 
         @author:
         '''
-
 
         str_text = docText.str_text
         arr_feat_result = []
@@ -380,7 +381,7 @@ class FeatureCalculatorManager(object):
         for feat in arr_features:
             feat.finish_document(docText)
         #timeToProc.printDelta("Finish document")
-
+        
         return arr_feat_result
 
 class FeatureVisibilityEnum(Enum):

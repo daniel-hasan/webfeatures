@@ -1,2 +1,1 @@
-{"arr_features":["Images count","Word Count","To be verbs count",
-                  {"name":"To be verbs count"}]}
+{"arr_features":["Images count","Word Count","To be verbs count","Sentences starting with articles"]}

@@ -58,8 +58,9 @@ class CaracterInterface:
         
         datReader = DatasetDocReader(zipfile)
         docWriter = DatasetDocWriter(result_datasetfile)
-        FeatureCalculator.featureManager.computeFeatureSetDocuments(datReader,docWriter,arr_features_to_extract,format)
-
+        saida = FeatureCalculator.featureManager.computeFeatureSetDocuments(datReader,docWriter,arr_features_to_extract,format)
+        return saida
+        
     def le_arquivo(self,arq_json):
         features = json.loads(open(arq_json).read())
         return features
@@ -131,9 +132,29 @@ class CaracterInterface:
         for name in arr_feat_name:
             print(name)    #printa o nome de todas as features
         return arr_feat_name
+    
+    def gerarArrFeatName_SemImpressao(self):
+        
+        arr_feat_name = []
+        arr_feature_factories = []
+        objEnglish = LanguageEnum.en
+        for SubClass in FeatureFactory.__subclasses__(): #percorre todas as features
+            objFeatFact = None
+            if(SubClass.IS_LANGUAGE_DEPENDENT):
+                objFeatFact = SubClass(objEnglish)# instancia as features de acordo com o idioma
+            else:
+                objFeatFact = SubClass()
+            arr_feature_factories.append(objFeatFact)
+
+        for objFeatFact in arr_feature_factories:
+            for feat in objFeatFact.createFeatures():
+                arr_feat_name.append(feat.name) #adiciona o nome das features no vetor arr
+                
+        arr_feat_name.sort()
+        return arr_feat_name
 
 if __name__ == "__main__":
-
+    
     import sys
     car = CaracterInterface()
 
@@ -146,4 +167,5 @@ if __name__ == "__main__":
         nome_arquivo_saida = sys.argv[3]
         format = sys.argv[4]
         arr_features_to_extract = car.le_arquivo(nome_arquivo_json)
-        car.execute(nome_arquivo_zip, nome_arquivo_saida, arr_features_to_extract, format)
+        saida = car.execute(nome_arquivo_zip, nome_arquivo_saida, arr_features_to_extract, format)
+        

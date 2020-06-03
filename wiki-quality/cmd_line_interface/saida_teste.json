@@ -1,0 +1,1 @@
+{"header": {"0": {"name": "Images count", "params": ""}, "1": {"name": "Word Count", "params": ""}, "2": {"name": "To be verbs count", "params": ""}, "3": {"name": "Sentences starting with articles", "params": ""}}, "data": {"a.txt": [0, 155, 3, 0], "b.txt": [0, 155, 3, 0]}}

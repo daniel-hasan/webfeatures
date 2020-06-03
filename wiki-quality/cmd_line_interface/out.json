@@ -1,1 +1,1 @@
-{"header": {"0": {"name": "Images count", "params": ""}, "1": {"name": "Word Count", "params": ""}, "2": {"name": "To be verbs count", "params": ""}, "3": {"name": "To be verbs count", "params": ""}}, "data": {"a.txt": [0, 2, 0, 0], "b.txt": [0, 2, 0, 0], "c.txt": [0, 2, 0, 0]}}
+{"header": {"0": {"name": "Word Count", "params": ""}, "1": {"name": "Images count", "params": ""}, "2": {"name": "To be verbs count", "params": ""}}, "data": {"a.txt": [155, 0, 3]}}
