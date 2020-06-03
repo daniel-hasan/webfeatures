@@ -22,14 +22,14 @@ sudo apt-get install python3 python3-pip git
 1. Instale o django e o mysqldbda
 
 ```
-pip3 install django==1.11.4
+sudo apt-get install libmysqlclient-dev
 pip3 install mysqlclient
 ```
   - caso tenha problemas instalando o mysql pelo pip, instale por meio do apt-get: `sudo apt-get install python3-mysqldb`
 mysqlclient or MySQL-python
-1. Instale Demais dependencias
+1. Instale Demais dependencias (digite no diretório raiz do projeto)
 ```
-pip3 install django-bootstrap4
+pip3 install -r requirements.txt
 ```
 1. Clone o repositório na pasta desejada
 ```bash

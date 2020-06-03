@@ -10,8 +10,10 @@ import html
 from html.parser import HTMLParser
 import os
 from os.path import join, isfile, isdir
-from posix import listdir
+from os import listdir
 import re
+import datetime
+import json
 
 from utils.basic_entities import FormatEnum, CheckTime
 
@@ -48,6 +50,18 @@ class DocumentCache(object):
 
     def setOwnership(self, itemName, objRequest):
         self.owner[itemName] = objRequest
+class Review(object):
+    def __init__(self,int_rev_id,rev_timestamp,rev_size,str_reviewer_name,int_rev_user_id):
+        self.int_rev_id = int_rev_id
+        self.rev_timestamp = rev_timestamp
+        self.rev_size = rev_size
+        self.str_reviewer_name = str_reviewer_name
+        self.int_rev_user_id = int_rev_user_id
+
+    @property
+    def timestamp_to_datetime(self):
+        return datetime.datetime.fromtimestamp(self.rev_timestamp)
+
 
 class Document(object):
     def __init__(self,int_doc_id,str_doc_name,str_text):
@@ -176,7 +190,7 @@ class FeatureCalculatorManager(object):
             # Rodar todos os docuemntos para todas as features que não
             # necessitam de algum metodo de preprocessamento de todo o conjunto de documento
 
-        docWriter.write_header(arr_features_to_extract)
+        arr_features_to_extract = docWriter.write_header(arr_features_to_extract)
 
         for doc in datReader.get_documents():
             arr_features_result = self.computeFeatureSet(doc, arr_features_to_extract,format)
@@ -184,8 +198,9 @@ class FeatureCalculatorManager(object):
             # rodar todas as features que necessitam dele.
             docWriter.write_document(doc,arr_features_to_extract,arr_features_result)
 
-
         docWriter.finishAllDocuments()
+        
+        return docWriter
 
     def reduce_array(self,arrToReduce,arrIdx):
             arrIdx.sort(reverse=True)
@@ -209,7 +224,6 @@ class FeatureCalculatorManager(object):
 
         @author:
         '''
-
 
         str_text = docText.str_text
         arr_feat_result = []
@@ -358,7 +372,7 @@ class FeatureCalculatorManager(object):
                 feat.checkParagraph(docText, paragraph_buffer)
         #timeToProc.printDelta("Last  checking")
         #para todoas as WordBasedFeatue ou SentenceBased feature, rodar o compute_feature
-
+        
         aux = 0
         for feat in arr_features:
             arr_feat_result[aux] = feat.compute_feature(docText)
@@ -367,7 +381,7 @@ class FeatureCalculatorManager(object):
         for feat in arr_features:
             feat.finish_document(docText)
         #timeToProc.printDelta("Finish document")
-
+        
         return arr_feat_result
 
 class FeatureVisibilityEnum(Enum):
@@ -484,4 +498,13 @@ class ConfigurableParam(object):
 class GraphBasedFeature(FeatureCalculator):
         @abstractmethod
         def compute_feature(self,graph):
+                pass
+
+class ReviewBasedFeature(FeatureCalculator):
+        def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document,curr_date):
+            super().__init__(name,description,reference,visibility,text_format,feature_time_per_document)
+            self.curr_date = datetime.datetime.fromtimestamp(curr_date)
+
+        @abstractmethod
+        def checkReview(self,review):
                 pass
