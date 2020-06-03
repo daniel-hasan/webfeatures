@@ -1,11 +1,15 @@
 import json
 from feature.features import FeatureDocumentsReader, FeatureDocumentsWriter, FeatureCalculator
 from feature.features import Document as DocumentFeature
-from utils.uncompress_data import CompressedFile
 from feature.feature_factory.feature_factory import FeatureFactory
+from utils.uncompress_data import CompressedFile
+<<<<<<< HEAD
+from feature.feature_factory.feature_factory import FeatureFactory
+=======
+from utils.basic_entities import LanguageEnum
+>>>>>>> 8179693eab3a24feca475f027b767578b3037e3a
 
 class DatasetDocReader(FeatureDocumentsReader):
-
     def __init__(self, dataset):
         self.dataset = dataset
 
@@ -50,29 +54,58 @@ class CaracterInterface:
         FeatureCalculator.featureManager.computeFeatureSetDocuments(datReader,docWriter,arr_features_to_extract,format)
 
     def le_arquivo(arq_json):
+<<<<<<< HEAD
         #ler do JSON e retorna vetor de strings
+=======
+>>>>>>> 8179693eab3a24feca475f027b767578b3037e3a
         features = json.loads(open(arq_json).read())
-
         return features
 
-    def obtemObjetosFeatures(arrNomesFeatures):
-        dictFeatures = {}
-        arr_obj_featurres = []
-        #cria um dicionário com todas as features em que as chaves são os nomes delas
-        for SubClass in FeatureFactory.__subclasses__():
-            objFeatFact = None
-            if(SubClass.IS_LANGUAGE_DEPENDENT):
-                objFeatFact = SubClass(objEnglish)#Passar o idioma correto
-            else:
-                objFeatFact = SubClass()
 
+<<<<<<< HEAD
             for feat in objFeatFact.createFeatures():
                 dictFeature[feat.name] = feat          #para cada feature cria uma instancia no dicionario com o nome da feature
         for feature in arrNomesFeatures:
             arr_obj_features.append(dictFeature[feature])
         return arr_obj_features
+=======
+>>>>>>> 8179693eab3a24feca475f027b767578b3037e3a
 
-    def imprimirFeatures():
+    def obtemObjetosFeatures(arrNomesFeatures):
+            objEnglish = LanguageEnum.en
+            dictFeatures = {}
+            arr_obj_features = []
+            #cria um dicionário com todas as features em que as chaves são os nomes delas
+            for SubClass in FeatureFactory._subclasses_():
+                objFeatFact = None
+                if(SubClass.IS_LANGUAGE_DEPENDENT):
+                    objFeatFact = SubClass(objEnglish)#Passar o idioma correto
+                else:
+                    objFeatFact = SubClass()
+
+                for feat in objFeatFact.createFeatures():
+                    dictFeatures[feat.name] = feat #para cada feature cria uma instancia no dicionario com o nome da feature
+
+            for feature in arrNomesFeatures:
+                type_ent = type(feature)
+
+                obj_feature = None
+
+                if type_ent == str:
+                    obj_feature = dictFeatures[feature]
+                elif type_ent == dict:
+                    obj_feature = dictFeatures[feature["name"]]
+                    if "param" in feature:
+                        for param_name,param_value in feature["param"].items():
+                            obj_feature.__dict__[param_name] = param_value
+
+                arr_obj_features.append(obj_feature)
+            return arr_obj_features
+
+
+    def imprimirFeatures(self):
+        arr = []
+        objEnglish = LanguageEnum.en
         for SubClass in FeatureFactory.__subclasses__(): #percorre todas as features
             objFeatFact = None
             if(SubClass.IS_LANGUAGE_DEPENDENT):
@@ -80,16 +113,22 @@ class CaracterInterface:
             else:
                 objFeatFact = SubClass()
         for feat in objFeatFact.createFeatures():
+            arr.append(feat.name)
             print(feat.name)    #printa o nome de todas as features
+        return arr
 
+<<<<<<< HEAD
 
 	###################################################################
 	#IF main
+=======
+>>>>>>> 8179693eab3a24feca475f027b767578b3037e3a
 if __name__ == "__main__":
-	import sys
-	if(sys.argv[1] == "-L"):
-		print("Lista de features:")	#printa a lista de features
-		print(imprimirFeatures())
-	else:
-		arrNomesFeatures = func(sys.argv[1])
-		#Dict=obtemObjetosFeatures(arrNomesFeatures)
+    import sys
+    if(sys.argv[1] == "-L"):
+        print("Lista de features:")	#printa a lista de features
+        car = CaracterInterface()
+        print(car.imprimirFeatures())
+    else:
+        arrNomesFeatures = func(sys.argv[1])
+        #Dict=obtemObjetosFeatures(arrNomesFeatures)
