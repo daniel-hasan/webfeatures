@@ -176,4 +176,3 @@ if __name__ == "__main__":
         format = sys.argv[4]
         arr_features_to_extract = car.le_arquivo(nome_arquivo_json)
         saida = car.execute(nome_arquivo_zip, nome_arquivo_saida, arr_features_to_extract, format)
-        

@@ -1,16 +1,11 @@
-import json
-#from feature.features import FeatureDocumentsReader, FeatureDocumentsWriter, FeatureCalculator
-#from feature.features import
-#from utils.uncompress_data import CompressedFile
-
 import unittest
-from .CaracterInterface import * #importamos
+import json
+from .CaracterInterface import *
 import os.path
 import sys
 
 
 
-#teste
 class TestCaracterInterface(unittest.TestCase):
     def testObtemObjetosFeatures(self):
         
