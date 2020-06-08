@@ -133,7 +133,7 @@ class CaracterInterface:
             print(name)    #printa o nome de todas as features
         return arr_feat_name
     
-    def gerarArrFeatName_SemImpressao(self):
+    def gera_arqtest(self):
         
         arr_feat_name = []
         arr_feature_factories = []
@@ -151,6 +151,14 @@ class CaracterInterface:
                 arr_feat_name.append(feat.name) #adiciona o nome das features no vetor arr
                 
         arr_feat_name.sort()
+        
+        lista_features = arr_feat_name
+        conteudo_arquivo_json = {}
+        conteudo_arquivo_json["arr_features"] = lista_features
+        conteudo_arquivo_json = json.dumps(conteudo_arquivo_json)
+        arquivo_json = open("cmd_line_interface/arqtest2.json","w")
+        arquivo_json.write(conteudo_arquivo_json)
+        arquivo_json.close()
         return arr_feat_name
 
 if __name__ == "__main__":
