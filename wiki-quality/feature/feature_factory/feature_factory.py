@@ -14,7 +14,7 @@ from feature.featureImpl.readability_features import ARIFeature, \
 from feature.featureImpl.structure_features import *
 from feature.featureImpl.style_features import *
 from feature.featureImpl.semantic_features import *
-from feature.featureImpl.graph import *
+#from feature.featureImpl.graph import *
 from feature.features import  FeatureVisibilityEnum
 from utils.basic_entities import FormatEnum, FeatureTimePerDocumentEnum
 
@@ -396,6 +396,7 @@ class POSTaggerFeatureFactory(FeatureFactory):
 
         return arrFeatures
 
+'''
 class GraphFeatureFactory(FeatureFactory):
     DEVELOPMENT = True
     def createFeatures(self):
@@ -437,3 +438,4 @@ class GraphFeatureFactory(FeatureFactory):
                 arrFeaturesImplementadas.append(cc)
 
                 return arrFeaturesImplementadas
+'''
