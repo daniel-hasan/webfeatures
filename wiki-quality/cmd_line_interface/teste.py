@@ -11,7 +11,7 @@ class TestCaracterInterface(unittest.TestCase):
         
         novoCaracterInterface = CaracterInterface()
         
-        arrNomesFeatures = ["Section count","Subsection count","Complete URL link count"]
+        arrNomesFeatures = ["Section count","Subsection count", {"name":"Large phrase rate","param":{"Size threshold":2}}]
         
         arr_obj_features = novoCaracterInterface.obtemObjetosFeatures(arrNomesFeatures)
         
@@ -20,7 +20,12 @@ class TestCaracterInterface(unittest.TestCase):
         ok = False
         for feat,nome in zip(arr_obj_features,arrNomesFeatures):
             ok=True
-            self.assertEqual(feat.name,nome,"Erro! Nomes apresentam divergência")
+            
+            if(type(nome) == dict):
+                self.assertEqual(feat.name,nome["name"],"Erro! Nomes apresentam divergência")
+            else:
+                self.assertEqual(feat.name,nome,"Erro! Nomes apresentam divergência")
+            
            
         self.assertTrue(ok,"Certifique-se que as listas não estejam vazias!")
         

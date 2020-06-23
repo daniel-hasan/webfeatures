@@ -56,8 +56,8 @@ class CaracterInterface:
         #arr_features_to_extract: gerado por meio do le_arquivo
         #format: FormatEnum.text_plain
         
-        datReader = DatasetDocReader(zipfile)
-        docWriter = DatasetDocWriter(result_datasetfile)
+        datReader = DatasetDocReader(zipfile) #descompacta o arquivo zip de entrada (que contém os textos)
+        docWriter = DatasetDocWriter(result_datasetfile) #arquivo saida
         saida = FeatureCalculator.featureManager.computeFeatureSetDocuments(datReader,docWriter,arr_features_to_extract,format)
         return saida
         
@@ -93,19 +93,18 @@ class CaracterInterface:
                             sys.exit()
                         else:
                             arrNomesFeatures.remove(feature)
-            
+                            
             for feature in arrNomesFeatures:
                 
                 type_ent = type(feature)
-
                 obj_feature = None
-
                 if type_ent == str:
                     obj_feature = dictFeatures[feature]
                 elif type_ent == dict:
                     obj_feature = dictFeatures[feature["name"]]
                     if "param" in feature:
                         for param_name,param_value in feature["param"].items():
+                            obj_feature.addConfigurableParam(param_name)
                             obj_feature.__dict__[param_name] = param_value
 
                 arr_obj_features.append(obj_feature)
@@ -138,17 +137,21 @@ class CaracterInterface:
         arr_feat_name = []
         arr_feature_factories = []
         objEnglish = LanguageEnum.en
+        dictFeatures = {}
+        arr_obj_features = []
+        
         for SubClass in FeatureFactory.__subclasses__(): #percorre todas as features
             objFeatFact = None
             if(SubClass.IS_LANGUAGE_DEPENDENT):
                 objFeatFact = SubClass(objEnglish)# instancia as features de acordo com o idioma
             else:
                 objFeatFact = SubClass()
+                    
             arr_feature_factories.append(objFeatFact)
 
         for objFeatFact in arr_feature_factories:
             for feat in objFeatFact.createFeatures():
-                arr_feat_name.append(feat.name) #adiciona o nome das features no vetor arr
+                    arr_feat_name.append(feat.name) #adiciona o nome das features no vetor arr
                 
         arr_feat_name.sort()
         

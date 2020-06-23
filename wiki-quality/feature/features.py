@@ -266,7 +266,7 @@ class FeatureCalculatorManager(object):
         arrWordFeats = [feat for feat in arr_features if isinstance(feat, WordBasedFeature)]
         arrSentFeats = [feat for feat in arr_features if isinstance(feat, SentenceBasedFeature)]
         arrParFeats = [feat for feat in arr_features if isinstance(feat, ParagraphBasedFeature)]
-
+        
 
         #timeToProc.printDelta("proc char feats")
         #print("Arr features size: "+str(len(arr_features))+" Char: "+str(len(arrCharFeats)))
@@ -420,8 +420,8 @@ class FeatureCalculator(object):
     def get_params_str(self):
         arrParams = []
         for param in self.arr_configurable_param:
-            if(param.att_name in self.__dict__):
-                arrParams.append(param.name+":"+self.__dict__[param.att_name])
+            if(param in self.__dict__):
+                arrParams.append(param+":"+str(self.__dict__[param]))
 
         return "; ".join(arrParams)
     @abstractmethod
