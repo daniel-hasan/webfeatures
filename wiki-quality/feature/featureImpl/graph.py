@@ -1,20 +1,54 @@
 from feature import GraphBasedFeature
-class Indegree(GraphBasedFeature):
-    def compute_feature(self,graph):
+from feature.features import *
+
+class Indegree(FeatureCalculator):
+    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document):
+
+        self.name = name
+        self.description = description
+        self.reference = reference
+        self.visibility = visibility
+        self.text_format = text_format
+        self.feature_time_per_document = feature_time_per_document
+        self.arr_configurable_param = []
+    
+    def compute_feature(self, graph):
             dic_result = {}
             for vertice_id in graph.get_vertice_ids():
                     dic_result[vertice_id] = len(graph.get_vertices_entrada(vertice_id))
             return dic_result
 
-class Outdegree(GraphBasedFeature):
-    def compute_feature(self,grafo):
+class Outdegree(FeatureCalculator):
+    
+    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document):
+
+        self.name = name
+        self.description = description
+        self.reference = reference
+        self.visibility = visibility
+        self.text_format = text_format
+        self.feature_time_per_document = feature_time_per_document
+        self.arr_configurable_param = []
+        
+    def compute_feature(self, graph):
         dicresult = {}
-        for index in range(0,len(grafo.getvertices())):
-            dicresult[index] = len(grafo.get_vertices_saida(index))
+        for index in range(0,len(graph.getvertices())):
+            dicresult[index] = len(graph.get_vertices_saida(index))
         return dicresult
 
-class AssortativeInputInput (GraphBasedFeature):
-    def compute_feature(self,graph):
+class AssortativeInputInput(FeatureCalculator):
+    
+    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document):
+
+        self.name = name
+        self.description = description
+        self.reference = reference
+        self.visibility = visibility
+        self.text_format = text_format
+        self.feature_time_per_document = feature_time_per_document
+        self.arr_configurable_param = []
+        
+    def compute_feature(self, graph):
         dic_result = {}
         for vertice_id in graph.get_vertice_ids():
             dic_result[vertice_id] = len(graph.get_vertices_entrada(vertice_id))
@@ -32,8 +66,19 @@ class AssortativeInputInput (GraphBasedFeature):
 
         return dic_result
 
-class AssortativeInputOutput(GraphBasedFeature):
-    def compute_feature(self,graph):
+class AssortativeInputOutput(FeatureCalculator):
+    
+    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document):
+
+        self.name = name
+        self.description = description
+        self.reference = reference
+        self.visibility = visibility
+        self.text_format = text_format
+        self.feature_time_per_document = feature_time_per_document
+        self.arr_configurable_param = []
+        
+    def compute_feature(self, graph):
         dic_result = {}
         for vertice_id in graph.get_vertice_ids():
             dic_result[vertice_id] = len(graph.get_vertices_entrada(vertice_id))
@@ -49,8 +94,19 @@ class AssortativeInputOutput(GraphBasedFeature):
                 dic_result[vertice_id] = 0
         return dic_result
 
-class AssortativeOutputOutput(GraphBasedFeature):
-    def compute_feature(self,graph):
+class AssortativeOutputOutput(FeatureCalculator):
+    
+    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document):
+
+        self.name = name
+        self.description = description
+        self.reference = reference
+        self.visibility = visibility
+        self.text_format = text_format
+        self.feature_time_per_document = feature_time_per_document
+        self.arr_configurable_param = []
+        
+    def compute_feature(self, graph):
         dic_result = {}
         for vertice_id in graph.get_vertice_ids():
             dic_result[vertice_id] = len(graph.get_vertices_saida(vertice_id))
@@ -66,8 +122,19 @@ class AssortativeOutputOutput(GraphBasedFeature):
                  dic_result[vertice_id] = 0
         return dic_result
 
-class AssortativeOutputInput(GraphBasedFeature):
-    def compute_feature(self,graph):
+class AssortativeOutputInput(FeatureCalculator):
+    
+    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document):
+
+        self.name = name
+        self.description = description
+        self.reference = reference
+        self.visibility = visibility
+        self.text_format = text_format
+        self.feature_time_per_document = feature_time_per_document
+        self.arr_configurable_param = []
+        
+    def compute_feature(self, graph):
         dic_result = {}
         for vertice_id in graph.get_vertice_ids():
             dic_result[vertice_id] = len(graph.get_vertices_saida(vertice_id))
@@ -83,12 +150,19 @@ class AssortativeOutputInput(GraphBasedFeature):
                 dic_result[vertice_id] = 0
         return dic_result
 
-class PageRank(GraphBasedFeature):
-    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document,
-                    damping_factor=0.85,convergence=0.01):
-        super().__init__(name,description,reference,visibility,text_format,feature_time_per_document)
+class PageRank(FeatureCalculator):
+    
+    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document, damping_factor=0.85,convergence=0.01):
+        self.name = name
+        self.description = description
+        self.reference = reference
+        self.visibility = visibility
+        self.text_format = text_format
+        self.feature_time_per_document = feature_time_per_document
+        self.arr_configurable_param = []
         self.damping_factor = damping_factor
         self.convergence =convergence
+        
     def compute_feature(self,grafo):
         rank={}
         s=self.convergence
@@ -120,14 +194,25 @@ class PageRank(GraphBasedFeature):
                 rank[i] = val_rank
         return rank
 
-class Reciprocity(GraphBasedFeature):
-    def compute_feature(self,grafo):
+class Reciprocity(FeatureCalculator):
+    
+    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document):
+
+        self.name = name
+        self.description = description
+        self.reference = reference
+        self.visibility = visibility
+        self.text_format = text_format
+        self.feature_time_per_document = feature_time_per_document
+        self.arr_configurable_param = []
+        
+    def compute_feature(self, graph):
         dicresult = {}
-        for index in range(0,len(grafo.getvertices())):
+        for index in range(0,len(graph.getvertices())):
             cont = 0
-            lista = grafo.get_vertices_saida(index)
+            lista = graph.get_vertices_saida(index)
             for dados in lista:
-                if(index in grafo.get_vertices_saida(dados)):
+                if(index in graph.get_vertices_saida(dados)):
                     cont+=1
                 else:
                     pass
@@ -137,11 +222,18 @@ class Reciprocity(GraphBasedFeature):
                 dicresult[index] = 0
         return dicresult
 
-class ClusteringCoefficient(GraphBasedFeature):
-    def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document,
-                    distance=1.0):
-        super().__init__(name,description,reference,visibility,text_format,feature_time_per_document)
-        self.distance = distance
+class ClusteringCoefficient(FeatureCalculator):
+    
+    def __init__(self, name, description, reference, visibility, text_format, feature_time_per_document, distance=1.0):
+
+        self.name = name
+        self.description = description
+        self.reference = reference
+        self.visibility = visibility
+        self.text_format = text_format
+        self.feature_time_per_document = feature_time_per_document
+        self.arr_configurable_param = []
+        self.distance = distance 
 
     def compute_feature(self,grafo):
         dicresult={}

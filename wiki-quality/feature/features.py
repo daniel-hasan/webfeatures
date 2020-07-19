@@ -14,6 +14,7 @@ from os import listdir
 import re
 import datetime
 import json
+from feature.graphImpl import *
 
 from utils.basic_entities import FormatEnum, CheckTime
 
@@ -64,7 +65,7 @@ class Review(object):
 
 
 class Document(object):
-    def __init__(self,int_doc_id,str_doc_name,str_text):
+    def __init__(self,int_doc_id,str_doc_name,str_text=""):
         self.int_doc_id = int_doc_id
         self.str_doc_name = str_doc_name
         self.str_text = str_text
@@ -189,14 +190,30 @@ class FeatureCalculatorManager(object):
 
             # Rodar todos os docuemntos para todas as features que não
             # necessitam de algum metodo de preprocessamento de todo o conjunto de documento
-
+        
         arr_features_to_extract = docWriter.write_header(arr_features_to_extract)
-
-        for doc in datReader.get_documents():
-            arr_features_result = self.computeFeatureSet(doc, arr_features_to_extract,format)
-            #Para cada um processamento do documentSet necessário,
-            # rodar todas as features que necessitam dele.
-            docWriter.write_document(doc,arr_features_to_extract,arr_features_result)
+        
+        if(format == "graph"):
+            
+            leitor = LeitorArestaArquivo(datReader)
+            grafo = grafolistaadjacencia()
+            line = leitor.le_aresta()
+            while line != None:
+                grafo.adiciona_Aresta(line[0],line[1])
+                line = leitor.le_aresta()
+            
+            leitor.fechar()
+            
+            for feat in arr_features_to_extract:
+                result = self.computeFeatureSetGraph(grafo,feat)
+                docWriter.write_graph(feat.name, result)
+                
+        
+        if(format == "textplain" or format == "html"):
+            
+            for doc in datReader.get_documents():
+                arr_features_result = self.computeFeatureSet(doc,arr_features_to_extract,format)
+                docWriter.write_document(doc,arr_features_to_extract,arr_features_result)
 
         docWriter.finishAllDocuments()
         
@@ -206,6 +223,10 @@ class FeatureCalculatorManager(object):
             arrIdx.sort(reverse=True)
             for idx in arrIdx:
                 del arrToReduce[idx]
+                
+    def computeFeatureSetGraph(self,grafo,feat):
+        result = feat.compute_feature(grafo)
+        return result
 
     def computeFeatureSet(self,docText,arr_features,format):
         '''
@@ -383,6 +404,8 @@ class FeatureCalculatorManager(object):
         #timeToProc.printDelta("Finish document")
         
         return arr_feat_result
+    
+    
 
 class FeatureVisibilityEnum(Enum):
     '''
@@ -496,9 +519,18 @@ class ConfigurableParam(object):
         self.arr_choices = arr_choices
 
 class GraphBasedFeature(FeatureCalculator):
-        @abstractmethod
+        def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document):
+
+            self.name = name
+            self.description = description
+            self.reference = reference
+            self.visibility = visibility
+            self.text_format = text_format
+            self.feature_time_per_document = feature_time_per_document
+        
         def compute_feature(self,graph):
-                pass
+            pass
+            
 
 class ReviewBasedFeature(FeatureCalculator):
         def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document,curr_date):

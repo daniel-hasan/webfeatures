@@ -1,5 +1,6 @@
-
 from feature.graph import *
+import os
+
 '''
 Created on 26 de Set de 2018
 @author: Rubio Torres Castro Viana <rubiotorres15@gmail.com>
@@ -8,12 +9,13 @@ Created on 26 de Set de 2018
     Classe LeitorArestaarquivo:
     Classe para ler arestas de arquivos
         Metodos:
-            __init__: Classe inicial que abre o arquivo
+            __init__: Método construtor que abre o arquivo
             Le_aresta: Nome Le linha a linha e retorna uma tupla <x,y>
             Fechar: Fecha o arquivo
 """
 
 class LeitorArestaArquivo(LeitorAresta):
+    
     def __init__(self,arquivo):
         self.pointer = open(arquivo,"r")
 
@@ -23,7 +25,6 @@ class LeitorArestaArquivo(LeitorAresta):
             return None
         str_line = str_line.strip('\n')
         return str_line.split(',')
-
 
     def fechar(self):
         self.pointer.close()
@@ -84,11 +85,9 @@ class grafolistaadjacencia(Grafo):
         return vertices
 
 
-"""
+
 if __name__ == "__main__":
-    arquivo = LeitorArestaArquivo("tests/grafo_mini.txt")
+    
+    arquivo = LeitorArestaArquivo("feature/grafo_mini.txt")
     artigo = grafolistaadjacencia(arquivo)
-    print(artigo.get_vertices_entrada(0))
     ran = AssortatividadeSaidaEntrada()
-    print(ran.compute_feature(artigo))
-"""

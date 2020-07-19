@@ -15,7 +15,7 @@ class DatasetDocReader(FeatureDocumentsReader):
             file_zip = CompressedFile.get_compressed_file(file)
 
             for name,strFileTxt in file_zip.read_each_file():
-                    yield DocumentFeature(name,name,str(strFileTxt))
+                yield DocumentFeature(name,name,str(strFileTxt))
 
 
 class DatasetDocWriter(FeatureDocumentsWriter):
@@ -34,12 +34,15 @@ class DatasetDocWriter(FeatureDocumentsWriter):
         
         return arr_features
 
-    def write_document(self,document, arr_feats_used, arr_feats_result):
+    def write_document(self,document,arr_feats_used,arr_feats_result):
+        
         self.document = document
         self.arr_feats_used = arr_feats_used
         self.arr_feats_result = arr_feats_result
-
         self.data["data"][self.document.int_doc_id] = self.arr_feats_result
+        
+    def write_graph(self,name_feature_graph,result):
+        self.data["data"][name_feature_graph] = result
 
     def finishAllDocuments(self):
 
@@ -51,18 +54,25 @@ class DatasetDocWriter(FeatureDocumentsWriter):
 class CaracterInterface:
 
     def execute(self,zipfile,result_datasetfile,arr_features_to_extract,format):
-        #zipfile: nome do zip com arquivos contendo texto para serem processados
+        #zipfile: nome do zip com arquivos contendo texto para serem processados ou o arquivo csv com informações sobre o grafo
         #result_datasetfile: nome do arquivo de saida
         #arr_features_to_extract: gerado por meio do le_arquivo
         #format: FormatEnum.text_plain
         
-        datReader = DatasetDocReader(zipfile) #descompacta o arquivo zip de entrada (que contém os textos)
+        if(format == "textplain" or format == "html"):
+            datReader = DatasetDocReader(zipfile) #descompacta o arquivo zip de entrada (que contém os textos)
+            
+        if(format == "graph"):
+            datReader = zipfile
+        
         docWriter = DatasetDocWriter(result_datasetfile) #arquivo saida
         saida = FeatureCalculator.featureManager.computeFeatureSetDocuments(datReader,docWriter,arr_features_to_extract,format)
         return saida
         
     def le_arquivo(self,arq_json):
-        features = json.loads(open(arq_json).read())
+        arq_json = open(arq_json,"r")
+        features = json.loads(arq_json.read())
+        arq_json.close()
         return features
 
 
