@@ -1,5 +1,5 @@
 import json
-from feature.features import FeatureDocumentsReader, FeatureDocumentsWriter, FeatureCalculator
+from feature.features import FeatureDocumentsReader, FeatureDocumentsWriter, FeatureCalculator, ReviewBasedFeature, GraphBasedFeature
 from feature.features import Document as DocumentFeature
 from feature.feature_factory.feature_factory import FeatureFactory
 from utils.uncompress_data import CompressedFile
@@ -161,18 +161,64 @@ class CaracterInterface:
 
         for objFeatFact in arr_feature_factories:
             for feat in objFeatFact.createFeatures():
-                    arr_feat_name.append(feat.name) #adiciona o nome das features no vetor arr
-                
-        arr_feat_name.sort()
+                if(isinstance(feat, GraphBasedFeature)==False and isinstance(feat, ReviewBasedFeature)==False):
+                    if(feat.arr_configurable_param!=[]):
+                        dic_param = {}
+                        for param in feat.arr_configurable_param:
+                            dic_param[param.name] = param.default_value
+                        feat_com_parametro = {"name":feat.name,"param":dic_param}
+                        arr_feat_name.append(feat_com_parametro)
+                    else:
+                        arr_feat_name.append(feat.name)
         
         lista_features = arr_feat_name
         conteudo_arquivo_json = {}
         conteudo_arquivo_json["arr_features"] = lista_features
         conteudo_arquivo_json = json.dumps(conteudo_arquivo_json)
-        arquivo_json = open("cmd_line_interface/arqtest2.json","w")
+        arquivo_json = open("cmd_line_interface/arqtest.json","w")
         arquivo_json.write(conteudo_arquivo_json)
         arquivo_json.close()
         return arr_feat_name
+    
+    def gera_arqtest_graph(self):
+        
+        arr_feat_name = []
+        arr_feature_factories = []
+        objEnglish = LanguageEnum.en
+        dictFeatures = {}
+        arr_obj_features = []
+        
+        for SubClass in FeatureFactory.__subclasses__(): #percorre todas as features
+            objFeatFact = None
+            if(SubClass.IS_LANGUAGE_DEPENDENT):
+                objFeatFact = SubClass(objEnglish)# instancia as features de acordo com o idioma
+            else:
+                objFeatFact = SubClass()
+                    
+            arr_feature_factories.append(objFeatFact)
+
+        for objFeatFact in arr_feature_factories:
+            for feat in objFeatFact.createFeatures():
+                if(isinstance(feat, GraphBasedFeature)):
+                    if(feat.arr_configurable_param!=[]):
+                        dic_param = {}
+                        for param in feat.arr_configurable_param:
+                            dic_param[param.name] = param.default_value
+                        feat_com_parametro = {"name":feat.name,"param":dic_param}
+                        arr_feat_name.append(feat_com_parametro)
+                    else:
+                        arr_feat_name.append(feat.name)
+        
+        lista_features = arr_feat_name
+        conteudo_arquivo_json = {}
+        conteudo_arquivo_json["arr_features"] = lista_features
+        conteudo_arquivo_json = json.dumps(conteudo_arquivo_json)
+        arquivo_json = open("cmd_line_interface/graph_arqtest.json","w")
+        arquivo_json.write(conteudo_arquivo_json)
+        arquivo_json.close()
+        return arr_feat_name
+        
+    
 
 if __name__ == "__main__":
     

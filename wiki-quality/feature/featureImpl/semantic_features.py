@@ -35,7 +35,8 @@ class PartOfSpeechTaggerFeature(TextBasedFeature):
 
 
     def compute_feature(self,document):
-        return self.tagger.tag(word_tokenize(document))
+        #return self.tagger.tag(word_tokenize(document))
+        return 0
 
     def finish_document(self,document):
         pass
@@ -62,8 +63,9 @@ class BagOfPOSFeature(PartOfSpeechTaggerFeature):
         super().__init__(name, description, reference, visibility, text_format, feature_time_per_document, language)
 
     def compute_feature(self, document):
-        feature = super(PartOfSpeechTaggerFeature).compute_feature(document)
-        return {tag[1]:feature.count(tag[1]) for tag[1] in set(feature)}
+        #feature = super(PartOfSpeechTaggerFeature).compute_feature(document)
+        #return {tag[1]:feature.count(tag[1]) for tag[1] in set(feature)}
+        return 0
 
     def finish_document(self, document):
         pass

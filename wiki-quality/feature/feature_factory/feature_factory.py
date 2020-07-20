@@ -409,9 +409,7 @@ class GraphFeatureFactory(FeatureFactory):
                                         AssortativeInputInput("Assortative Input Input", "Assortative Input/Input Metric","reference", FeatureVisibilityEnum.public, FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS),
                                         AssortativeInputOutput("Assortative Input Output", "Assortative Input/Output Metric","reference", FeatureVisibilityEnum.public, FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS),
                                         AssortativeOutputInput("Assortative Output Input", "Assortative Output/Input Metric","reference", FeatureVisibilityEnum.public, FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS),
-                                        AssortativeOutputOutput("Assortative Output Output", "Assortative Output/Output Metric","reference", FeatureVisibilityEnum.public, FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS),
-                                        PageRank("PageRank", "PageRank Metric say how much popular is this article","reference", FeatureVisibilityEnum.public, FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS,0.95,0.01),
-                                        ClusteringCoefficient("Clustering Coefficient","In graph theory, a clustering coefficient is a measure of the degree to which nodes in a graph tend to cluster together.","reference", FeatureVisibilityEnum.public, FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS,1)]
+                                        AssortativeOutputOutput("Assortative Output Output", "Assortative Output/Output Metric","reference", FeatureVisibilityEnum.public, FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS)]
 
                 pr = PageRank("PageRank", "PageRank Metric say how much popular is this article","reference", FeatureVisibilityEnum.public, FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS,0.85,0.01)
        

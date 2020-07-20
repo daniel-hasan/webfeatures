@@ -396,11 +396,14 @@ class FeatureCalculatorManager(object):
         
         aux = 0
         for feat in arr_features:
-            arr_feat_result[aux] = feat.compute_feature(docText)
-            aux = aux + 1
+            if(isinstance(feat, GraphBasedFeature)==False and isinstance(feat, ReviewBasedFeature)==False):
+                arr_feat_result[aux] = feat.compute_feature(docText)
+                aux = aux + 1
+                
         #timeToProc.printDelta("Compute feature")
         for feat in arr_features:
-            feat.finish_document(docText)
+            if(isinstance(feat, GraphBasedFeature)==False and isinstance(feat, ReviewBasedFeature)==False):
+                feat.finish_document(docText)
         #timeToProc.printDelta("Finish document")
         
         return arr_feat_result

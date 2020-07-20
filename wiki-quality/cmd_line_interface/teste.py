@@ -118,6 +118,8 @@ class TestCaracterInterface(unittest.TestCase):
         
         car = CaracterInterface()
         
+        car.gera_arqtest_graph()
+        
         if(os.path.exists("cmd_line_interface/graph_saida_anterior.json") and os.stat("cmd_line_interface/graph_saida_anterior.json").st_size != 0):
             
             with open("cmd_line_interface/graph_saida_anterior.json") as f:

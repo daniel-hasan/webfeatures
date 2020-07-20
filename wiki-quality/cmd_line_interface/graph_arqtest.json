@@ -1,1 +1,1 @@
-{"arr_features":["Indegree","Outdegree","Assortative Input Input","Assortative Input Output","Assortative Output Output","Assortative Output Input","PageRank","Clustering Coefficient"]}
+{"arr_features": ["Indegree", "Outdegree", "Assortative Input Input", "Assortative Input Output", "Assortative Output Input", "Assortative Output Output", {"name": "PageRank", "param": {"Damping Factor": 0.85, "Convergence": 0.01}}, {"name": "Clustering Coefficient", "param": {"Distance": 1.0}}]}

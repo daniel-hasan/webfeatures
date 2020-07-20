@@ -1,7 +1,7 @@
 from feature import GraphBasedFeature
 from feature.features import *
 
-class Indegree(FeatureCalculator):
+class Indegree(GraphBasedFeature):
     def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document):
 
         self.name = name
@@ -18,7 +18,7 @@ class Indegree(FeatureCalculator):
                     dic_result[vertice_id] = len(graph.get_vertices_entrada(vertice_id))
             return dic_result
 
-class Outdegree(FeatureCalculator):
+class Outdegree(GraphBasedFeature):
     
     def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document):
 
@@ -36,7 +36,7 @@ class Outdegree(FeatureCalculator):
             dicresult[index] = len(graph.get_vertices_saida(index))
         return dicresult
 
-class AssortativeInputInput(FeatureCalculator):
+class AssortativeInputInput(GraphBasedFeature):
     
     def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document):
 
@@ -66,7 +66,7 @@ class AssortativeInputInput(FeatureCalculator):
 
         return dic_result
 
-class AssortativeInputOutput(FeatureCalculator):
+class AssortativeInputOutput(GraphBasedFeature):
     
     def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document):
 
@@ -94,7 +94,7 @@ class AssortativeInputOutput(FeatureCalculator):
                 dic_result[vertice_id] = 0
         return dic_result
 
-class AssortativeOutputOutput(FeatureCalculator):
+class AssortativeOutputOutput(GraphBasedFeature):
     
     def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document):
 
@@ -122,7 +122,7 @@ class AssortativeOutputOutput(FeatureCalculator):
                  dic_result[vertice_id] = 0
         return dic_result
 
-class AssortativeOutputInput(FeatureCalculator):
+class AssortativeOutputInput(GraphBasedFeature):
     
     def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document):
 
@@ -150,7 +150,7 @@ class AssortativeOutputInput(FeatureCalculator):
                 dic_result[vertice_id] = 0
         return dic_result
 
-class PageRank(FeatureCalculator):
+class PageRank(GraphBasedFeature):
     
     def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document, damping_factor=0.85,convergence=0.01):
         self.name = name
@@ -194,7 +194,7 @@ class PageRank(FeatureCalculator):
                 rank[i] = val_rank
         return rank
 
-class Reciprocity(FeatureCalculator):
+class Reciprocity(GraphBasedFeature):
     
     def __init__(self,name,description,reference,visibility,text_format,feature_time_per_document):
 
@@ -222,7 +222,7 @@ class Reciprocity(FeatureCalculator):
                 dicresult[index] = 0
         return dicresult
 
-class ClusteringCoefficient(FeatureCalculator):
+class ClusteringCoefficient(GraphBasedFeature):
     
     def __init__(self, name, description, reference, visibility, text_format, feature_time_per_document, distance=1.0):
 
