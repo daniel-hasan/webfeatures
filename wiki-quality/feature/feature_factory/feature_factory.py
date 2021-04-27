@@ -14,10 +14,11 @@ from feature.featureImpl.readability_features import ARIFeature, \
 from feature.featureImpl.structure_features import *
 from feature.featureImpl.style_features import *
 from feature.featureImpl.semantic_features import *
+from feature.featureImpl.review_features import *
 from feature.featureImpl.graph import *
 from feature.features import  FeatureVisibilityEnum
 from utils.basic_entities import FormatEnum, FeatureTimePerDocumentEnum
-
+import nltk
 
 class FeatureFactory(object):
     '''
@@ -25,6 +26,7 @@ class FeatureFactory(object):
     @author: Daniel Hasan Dalip <hasan@decom.cefetmg.br>
     '''
     IS_LANGUAGE_DEPENDENT = False
+    DEVELOPMENT = False
 
     @abstractmethod
     def createFeatures(self):
@@ -154,15 +156,13 @@ class StructureFeatureFactory(FeatureFactory):
                                           ),
                        ]
 
-
-
-
         #featTagCount = TagCountFeature("Section div Count", "Count the number of HTML div sections in the text", "reference",
         #                                 FeatureVisibilityEnum.public,
         #                                 FormatEnum.HTML,
         #                                 FeatureTimePerDocumentEnum.MILLISECONDS,["div"])
         #arrFeatures.append(featTagCount)
         return arrFeatures
+
 class StyleFeatureFactory(FeatureFactory):
     def createFeatures(self):
         '''
@@ -398,10 +398,10 @@ class POSTaggerFeatureFactory(FeatureFactory):
 
 class GraphFeatureFactory(FeatureFactory):
     DEVELOPMENT = True
-    
+
     def __init__(self):
         super(FeatureFactory,self).__init__()
-        
+
     def createFeatures(self):
                 arrFeaturesImplementadas = [
                                         Indegree("Indegree","Indegree Metric metric","reference", FeatureVisibilityEnum.public, FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS),
@@ -412,17 +412,87 @@ class GraphFeatureFactory(FeatureFactory):
                                         AssortativeOutputOutput("Assortative Output Output", "Assortative Output/Output Metric","reference", FeatureVisibilityEnum.public, FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS)]
 
                 pr = PageRank("PageRank", "PageRank Metric say how much popular is this article","reference", FeatureVisibilityEnum.public, FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS,0.85,0.01)
-       
+
                 pr.addConfigurableParam(ConfigurableParam("damping_factor","Damping Factor", "Damping Factor.",0.85,ParamTypeEnum.float))
-        
+
                 pr.addConfigurableParam(ConfigurableParam("convergence","Convergence", "Convergence.",0.01,ParamTypeEnum.float))
 
-                
+
                 cc = ClusteringCoefficient("Clustering Coefficient","In graph theory, a clustering coefficient is a measure of the degree to which nodes in a graph tend to cluster together.","reference", FeatureVisibilityEnum.public, FormatEnum.HTML, FeatureTimePerDocumentEnum.MILLISECONDS,1)
-                
+
                 cc.addConfigurableParam(ConfigurableParam("distance", "Distance", "Distance.", 1.0, ParamTypeEnum.float))
 
                 arrFeaturesImplementadas.append(pr)
                 arrFeaturesImplementadas.append(cc)
-                
+
                 return arrFeaturesImplementadas
+            
+"""
+
+class ReviewFeatureFactory(FeatureFactory):
+    def createFeatures(self):
+        '''
+        Cria as features de revisao (idade, numero de revisoes etc).
+        Parametros:
+        '''
+
+        arrFeatures = []
+        curr_date = now()
+
+        objArticleAge = ArticleAge("Article age","Calculates article age in days","review feature",
+                FeatureVisibilityEnum.public,FormatEnum.HTML,FeatureTimePerDocumentEnum.MILLISECONDS,curr_date)
+        objReviewCount = ReviewCount("Number of revisions","Number of article revisions","review feature",
+                FeatureVisibilityEnum.public,FormatEnum.HTML,FeatureTimePerDocumentEnum.MILLISECONDS,curr_date)
+        objAnonymousReviews = AnonymousReviewCount("Number of reviews - anonymous users","Number of anonymous user reviews","review feature",
+                FeatureVisibilityEnum.public,FormatEnum.HTML,FeatureTimePerDocumentEnum.MILLISECONDS,curr_date)
+        objRegisteredReviews = RegisteredReviewCount("Number of Reviews - registered users","Number of registered user reviews","review feature",
+                FeatureVisibilityEnum.public,FormatEnum.HTML,FeatureTimePerDocumentEnum.MILLISECONDS,curr_date)
+        objAverageUser = AverageReviewsPerUser("Average user reviews","Revision average per user","review feature",
+                FeatureVisibilityEnum.public,FormatEnum.HTML,FeatureTimePerDocumentEnum.MILLISECONDS,curr_date)
+        objDeviationUser = DeviationReviewsPerUser("Standard deviation of user reviews","Standard deviation from average revisions per user","review feature",
+                FeatureVisibilityEnum.public,FormatEnum.HTML,FeatureTimePerDocumentEnum.MILLISECONDS,curr_date)
+        objModSize = ReviewModSize("Percentage of bits modified","Percentage of size of curr. version != from reference","review feature",
+                FeatureVisibilityEnum.public,FormatEnum.HTML,FeatureTimePerDocumentEnum.MILLISECONDS,curr_date,90)
+        objReviewOccasion = ReviewOccasion("Percentage of occasional user reviews","Reviews by reviewers with less than 4 edits","review feature",
+                FeatureVisibilityEnum.public,FormatEnum.HTML,FeatureTimePerDocumentEnum.MILLISECONDS,curr_date,4)
+        objNDays = NDaysProportionReview("Review percentage in the last n days","Proportion of r-rcount in last 3 months","review feature",
+                FeatureVisibilityEnum.public,FormatEnum.HTML,FeatureTimePerDocumentEnum.MILLISECONDS,curr_date,90)
+        objTopN = MostActiveReviews("Review percentage of most active users","Percentage of reviews performed by users 5% more active.","review feature",
+                FeatureVisibilityEnum.public,FormatEnum.HTML,FeatureTimePerDocumentEnum.MILLISECONDS,curr_date,0.05)
+        objAgePerReview = AverageTimeWithoutBeingReviewed("Age per review","Average time an article has passed without being reviewed in the last 30 reviews","review feature",
+                FeatureVisibilityEnum.public,FormatEnum.HTML,FeatureTimePerDocumentEnum.MILLISECONDS,curr_date,30)
+        objReviewsPerDay = PercentReviewsPerDay("Reviews per day","Percentage of reviews per day","review feature",
+                FeatureVisibilityEnum.public,FormatEnum.HTML,FeatureTimePerDocumentEnum.MILLISECONDS,curr_date)
+
+        objModSize.addConfigurableParam(ConfigurableParam("num_days","Number of days",
+                                                                "The article must be at least that age (in days) to calculate the size of the modification.",
+                                                                90,ParamTypeEnum.int))
+        objReviewOccasion.addConfigurableParam(ConfigurableParam("max_rev_occasional","Maximum number of reviews",
+                                                                "The user must have (at most) this number of reviews to be considered an occasional user.",
+                                                                4,ParamTypeEnum.int))
+        objNDays.addConfigurableParam(ConfigurableParam("num_days","Number of days",
+                                                                "The article must be at least that age (in days) to calculate the proportion of revisions.",
+                                                                90,ParamTypeEnum.int))
+        objTopN.addConfigurableParam(ConfigurableParam("percentage_top_users","Number of days",
+                                                                "Não sei o q escreveeeerrrr.",
+                                                                0.05,ParamTypeEnum.int))
+        objAgePerReview.addConfigurableParam(ConfigurableParam("num_rev","Number of reviews",
+                                                                "The article must have been revised this number of times to calculate the average.",
+                                                                30,ParamTypeEnum.int)) #NAO SEI SE O QUE ESCREVI TA CERTO...
+
+        arr_features = [
+            objArticleAge,
+            objReviewCount,
+            objAnonymousReviews,
+            objRegisteredReviews,
+            objAverageUser,
+            objDeviationUser,
+            objModSize,
+            objReviewOccasion,
+            objNDays,
+            objTop5,
+            objAgePerReview,
+            objReviewsPerDay
+           ]
+
+        return  arrFeatures"""
